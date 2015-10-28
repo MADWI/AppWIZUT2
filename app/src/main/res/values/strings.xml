@@ -3,6 +3,13 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_text">Mobile Application Developers</string>
+
+    <string name="nav_calendar">Kalendarz</string>
+    <string name="nav_announcements">Ogłoszenia</string>
+    <string name="nav_about_us">O nas</string>
+    <string name="nav_settings">Ustawienia</string>
+    <string name="nav_plan_changes">Zmiany w planie</string>
 
     <string name="action_settings">Settings</string>
 </resources>
