@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity
      * Fragments selectable from drawer
      *
      * Arguments are:
-     *   id - R.id.[,,,] matching name in 'menu/activity_main_drawer.xml'
+     *   id - R.id.[...] matching name in 'menu/activity_main_drawer.xml'
      *   name - unique name used internally for remembering which fragment was recently open
      *   fragmentClass - class for fragment
      *   fragmentArguments - arguments for fragment (optional)
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity
      * Note: Drawer menu items that don't open fragment (e.g. ones opening activity)
      *       should not go here but to 'if (id == R.id.[...]'
      *       in {@link #onNavigationItemSelected(MenuItem)} method
-     *       and should specify android:checkableBehavior="0" in xml
+     *       and should specify android:checkable="false" in xml
      */
     private static final DrawerFragmentItem[] DRAWER_FRAGMENTS = new DrawerFragmentItem[]{
             new DrawerFragmentItem(R.id.plan_changes,   "chg", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Changes]")),
