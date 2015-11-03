@@ -9,6 +9,7 @@
     <string name="nav_announcements">Ogłoszenia</string>
     <string name="nav_about_us">O nas</string>
     <string name="nav_settings">Ustawienia</string>
+    <string name="public_transport">Rozkład jazdy</string>
     <string name="nav_plan_changes">Zmiany w planie</string>
 
     <string name="action_settings">Settings</string>

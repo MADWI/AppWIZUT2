@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity
             new DrawerFragmentItem(R.id.plan_changes,   "chg", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Changes]")),
     //        new DrawerFragmentItem(R.id.event_calendar, "cal", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Calendar]")),
             new DrawerFragmentItem(R.id.about_us,       "abo", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[About]")),
-            new DrawerFragmentItem(R.id.announcements,  "ann", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Announcements]"))
+            new DrawerFragmentItem(R.id.announcements,  "ann", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Announcements]")),
+            new DrawerFragmentItem(R.id.public_transport, "tra", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Public Transport]"))
     };
 
     private static final String PREF_LAST_DRAWER_FRAGMENT = "last_selected_drawer_fragment";

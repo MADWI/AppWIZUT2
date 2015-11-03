@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+<group android:checkableBehavior="single">
         <item
             android:id="@+id/plan_changes"
             android:icon="@drawable/ic_mode_edit_black_24dp"
@@ -19,6 +19,10 @@
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/nav_settings"
             android:checkable="false" />
+        <item
+            android:id="@+id/public_transport"
+            android:icon="@drawable/ic_directions_subway_black_24dp"
+            android:title="@string/public_transport"/>
         <item
             android:id="@+id/about_us"
             android:icon="@drawable/ic_android_black_24dp"
