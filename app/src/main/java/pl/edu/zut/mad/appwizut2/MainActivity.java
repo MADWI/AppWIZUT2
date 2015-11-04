@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
             new DrawerFragmentItem(R.id.plan_changes,   "chg", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Changes]")),
     //        new DrawerFragmentItem(R.id.event_calendar, "cal", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Calendar]")),
             new DrawerFragmentItem(R.id.about_us,       "abo", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[About]")),
-            new DrawerFragmentItem(R.id.announcements,  "ann", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Announcements]")),
+            new DrawerFragmentItem(R.id.announcements,  "ann", AnnouncementFragment.class),
             new DrawerFragmentItem(R.id.public_transport, "tra", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Public Transport]"))
     };
 
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.settings) {
             // TODO: open settings
             Toast.makeText(this, "TODO: open settings", Toast.LENGTH_SHORT).show();
-        }else if(id == R.id.event_calendar){
+        }else if(id == R.id.event_calendar) {
             showCalendar();
         }else {
             DrawerFragmentItem drawerFragmentItem = findDrawerItemFragmentWithId(id);

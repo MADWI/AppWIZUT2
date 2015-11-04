@@ -47,6 +47,4 @@ public class PlaceholderFragment extends Fragment {
         ((TextView) view.findViewById(R.id.placeholder_text)).setText(mPlaceholderTitle + FILLER_TEXT);
         return view;
     }
-
-
 }
