@@ -19,11 +19,9 @@ public class HTTPConnect {
 
     private static final String TAG = "HTTPConnect";
     private String addressURL = null;
-    private String content;
+    private StringBuilder content;
 
     HTTPConnect (String addressURL) {
-        // serviceUrl = "http://www.wi.zut.edu.pl";
-        //serviceUrl = "http://www.wi.zut.edu.pl/ogloszenia?format=json";
         this.addressURL = addressURL;
     }
 
@@ -48,15 +46,15 @@ public class HTTPConnect {
 
             // create JSON object from content
             InputStream is = urlConnection.getInputStream();
-            StringBuilder sb = new StringBuilder();
+            content = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             String nextLine;
             while ((nextLine = reader.readLine()) != null) {
-                sb.append(nextLine);
+                content.append(nextLine);
             }
 
-            return sb.toString();
+            return content.toString();
 
         } catch (MalformedURLException e) {
             Log.e(TAG,"URL address is not valid" + e.getMessage());

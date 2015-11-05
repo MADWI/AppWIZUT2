@@ -24,18 +24,17 @@ import java.util.List;
 public class AnnouncementFragment extends Fragment {
 
     private static List<ListItemContainer> result;
-    private static final String TAG_TITLE = "title";
-    private static final String TAG_DATE = "created";
-    private static final String TAG_AUTHOR = "author";
-    private static final String TAG_BODY = "text";
-    private static final String TAG_ENTRY = "entry";
+
+    private String pageContent;
+    private RecyclerView listItem;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         View rootView = inflater.inflate(R.layout.item_list, container, false);
-        RecyclerView listItem = (RecyclerView) rootView.findViewById(R.id.itemList);
+        listItem = (RecyclerView) rootView.findViewById(R.id.itemList);
         listItem.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -47,33 +46,18 @@ public class AnnouncementFragment extends Fragment {
         StrictMode.setThreadPolicy(policy);
 
         HTTPConnect con = new HTTPConnect(HTTPLinks.ANNOUNCEMENTS);
-        String content = con.getContent();
+        pageContent = con.getContent();
 
-        if (content != null) {
-            try {
-                JSONObject jsonObject = new JSONObject(content);
-                JSONArray jsonArray = jsonObject.getJSONArray(TAG_ENTRY);
-                result = new ArrayList<ListItemContainer>();
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    ListItemContainer announcement = new ListItemContainer();
-                    JSONObject jAnnouncement = jsonArray.getJSONObject(i);
-                    announcement.setTitle(jAnnouncement.getString(TAG_TITLE));
-                    announcement.setDate(jAnnouncement.getString(TAG_DATE));
-                    announcement.setAuthor(jAnnouncement.getString(TAG_AUTHOR));
-                    announcement.setBody(jAnnouncement.getString(TAG_BODY));
-                    result.add(announcement);
-                }
-                ListItemAdapter listItemAdapter = new ListItemAdapter(result);
-                listItem.setAdapter(listItemAdapter);
-            } catch (JSONException e) {
-                Log.e("JSON", e.getMessage());
-            }
+        if (pageContent != null) {
+            ListItemBuilder listItemBuilder = new ListItemBuilder();
+            listItemBuilder.createListItem(pageContent, listItem);
         } else {
             Toast.makeText(getContext(), R.string.err_internet, Toast.LENGTH_SHORT).show();
             Log.e("Internet", "No internet connection");
         }
-
         return rootView;
     }
 }
+
+
+
