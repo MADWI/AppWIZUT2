@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity
      *       and should specify android:checkable="false" in xml
      */
     private static final DrawerFragmentItem[] DRAWER_FRAGMENTS = new DrawerFragmentItem[]{
-            new DrawerFragmentItem(R.id.plan_changes,   "chg", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Changes]")),
+            new DrawerFragmentItem(R.id.plan_changes,   "chg", PlanChangesFragment.class),
     //        new DrawerFragmentItem(R.id.event_calendar, "cal", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Calendar]")),
             new DrawerFragmentItem(R.id.about_us,       "abo", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[About]")),
             new DrawerFragmentItem(R.id.announcements,  "ann", AnnouncementFragment.class),
