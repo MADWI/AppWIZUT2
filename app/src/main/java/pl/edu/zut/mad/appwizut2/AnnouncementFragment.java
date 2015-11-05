@@ -40,12 +40,7 @@ public class AnnouncementFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         listItem.setLayoutManager(layoutManager);
 
-        // only for development environment
-        // change to AsyncTask
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        HTTPConnect con = new HTTPConnect(HTTPLinks.ANNOUNCEMENTS);
+        HTTPConnect con = new HTTPConnect(HTTPLinks.ANNOUNCEMENTS, getContext());
         pageContent = con.getContent();
 
         if (pageContent != null) {
