@@ -5,9 +5,11 @@ import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,23 +34,21 @@ public class AnnouncementFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        View view = inflater.inflate(R.layout.item_list, container, false);
-        RecyclerView listItem = (RecyclerView) view.findViewById(R.id.itemList);
+        View rootView = inflater.inflate(R.layout.item_list, container, false);
+        RecyclerView listItem = (RecyclerView) rootView.findViewById(R.id.itemList);
         listItem.setHasFixedSize(true);
 
-        LinearLayoutManager llm = new LinearLayoutManager(inflater.getContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        listItem.setLayoutManager(llm);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        listItem.setLayoutManager(layoutManager);
 
         // only for development environment
         // change to AsyncTask
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        HTTPConnect con = new HTTPConnect();
+        HTTPConnect con = new HTTPConnect(HTTPLinks.ANNOUNCEMENTS);
         String content = con.getContent();
 
-        //LinearLayoutManager llm = new LinearLayoutManager(inflater.getContext());
         if (content != null) {
             try {
                 JSONObject jsonObject = new JSONObject(content);
@@ -64,13 +64,16 @@ public class AnnouncementFragment extends Fragment {
                     announcement.setBody(jAnnouncement.getString(TAG_BODY));
                     result.add(announcement);
                 }
-
+                ListItemAdapter listItemAdapter = new ListItemAdapter(result);
+                listItem.setAdapter(listItemAdapter);
             } catch (JSONException e) {
+                Log.e("JSON", e.getMessage());
             }
-            ListItemAdapter listItemAdapter = new ListItemAdapter(result);
-            listItem.setAdapter(listItemAdapter);
+        } else {
+            Toast.makeText(getContext(), R.string.err_internet, Toast.LENGTH_SHORT).show();
+            Log.e("Internet", "No internet connection");
         }
 
-        return inflater.inflate(R.layout.item_list, container, false);
+        return rootView;
     }
 }

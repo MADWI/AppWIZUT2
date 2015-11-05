@@ -1,5 +1,8 @@
 package pl.edu.zut.mad.appwizut2;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,12 +17,14 @@ import java.net.URL;
  */
 public class HTTPConnect {
 
-    private String serviceUrl = null;
+    private static final String TAG = "HTTPConnect";
+    private String addressURL = null;
     private String content;
 
-    HTTPConnect () {
+    HTTPConnect (String addressURL) {
         // serviceUrl = "http://www.wi.zut.edu.pl";
-        serviceUrl = "http://www.wi.zut.edu.pl/ogloszenia?format=json";
+        //serviceUrl = "http://www.wi.zut.edu.pl/ogloszenia?format=json";
+        this.addressURL = addressURL;
     }
 
     public String getContent(){
@@ -28,14 +33,14 @@ public class HTTPConnect {
 
         try {
             // create connection
-            URL urlToRequest = new URL(serviceUrl);
+            URL urlToRequest = new URL(addressURL);
             urlConnection = (HttpURLConnection) urlToRequest.openConnection();
             urlConnection.setConnectTimeout(10000);
             urlConnection.setReadTimeout(10000);
 
             // handle issues
             int statusCode = urlConnection.getResponseCode();
-
+            Log.d("STATUS CODE", "" + statusCode);
             // handle errors
             if (statusCode != HttpURLConnection.HTTP_OK) {
                 return null;
@@ -46,7 +51,7 @@ public class HTTPConnect {
             StringBuilder sb = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
-            String nextLine = "";
+            String nextLine;
             while ((nextLine = reader.readLine()) != null) {
                 sb.append(nextLine);
             }
@@ -54,11 +59,11 @@ public class HTTPConnect {
             return sb.toString();
 
         } catch (MalformedURLException e) {
-            // URL is invalid
+            Log.e(TAG,"URL address is not valid" + e.getMessage());
         } catch (SocketTimeoutException e) {
-            // data retrival or connection timed out
+            Log.e(TAG,"socket tiemout" + e.getMessage());
         } catch (IOException e) {
-            // Toast.makeText(A, "No internet connection", Toast.LENGTH_LONG).show();
+            Log.e(TAG,e.getMessage());
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
