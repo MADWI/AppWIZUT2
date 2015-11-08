@@ -24,8 +24,6 @@ public class HttpConnect {
      */
     private static final String TAG = "HttpConnect";
 
-    private final int TIMEOUT;
-
     /** Zmienna przechowujaca zrodlo strony jako String */
     private String strona;
 
@@ -35,14 +33,10 @@ public class HttpConnect {
 
     /**
      * Konstruktor sluzacy do polaczenia ze strona WWW.
-     *  @param timeout
-     *            maksymalny czas oczekiwania na odpowiedz serwera w
-     *            milisekundach
      * @param adres
      */
-    public HttpConnect(int timeout, String adres) {
+    public HttpConnect(String adres) {
         strona = "";
-        TIMEOUT=timeout;
 
         try {
             url = new URL(adres);
@@ -76,7 +70,6 @@ public class HttpConnect {
         BufferedReader reader = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setConnectTimeout(TIMEOUT);
             urlConnection.connect();
             if(urlConnection == null)
                 return false;
