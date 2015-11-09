@@ -22,17 +22,15 @@ import java.util.List;
  */
 public abstract class FeedFragment extends Fragment{
 
-    private List<ListItemContainer> result;
-    private String pageContent;
-    private RecyclerView listItemView;
-    private Context context;
-    private String addressUrl;
-
     private static final String TAG_TITLE = "title";
     private static final String TAG_DATE = "created";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_BODY = "text";
     private static final String TAG_ENTRY = "entry";
+
+    private String pageContent;
+    private RecyclerView itemListView;
+    private String addressUrl;
 
     protected void setFeedUrl(String addressUrl) {
         this.addressUrl = addressUrl;
@@ -40,26 +38,25 @@ public abstract class FeedFragment extends Fragment{
 
     protected View initView(LayoutInflater inflater, ViewGroup container, Context context) {
         View rootView = inflater.inflate(R.layout.item_list, container, false);
-        listItemView = (RecyclerView) rootView.findViewById(R.id.itemList);
-        listItemView.setHasFixedSize(true);
+        itemListView = (RecyclerView) rootView.findViewById(R.id.itemList);
+        itemListView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
-        listItemView.setLayoutManager(layoutManager);
+        itemListView.setLayoutManager(layoutManager);
 
         HTTPConnect con = new HTTPConnect(addressUrl, context);
         pageContent = con.getContent();
 
         if (pageContent != null) {
-            createListItem();
+            createItemList();
         } else {
             Toast.makeText(context, R.string.err_internet, Toast.LENGTH_SHORT).show();
             Log.e("Internet", "No internet connection");
         }
-
         return rootView;
     }
 
-    boolean createListItem() {
+    boolean createItemList() {
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
             JSONArray arrayContent = jsonPageContent.getJSONArray(TAG_ENTRY);
@@ -75,7 +72,7 @@ public abstract class FeedFragment extends Fragment{
                 result.add(listItemContainer);
             }
             ListItemAdapter listItemAdapter = new ListItemAdapter(result);
-            listItemView.setAdapter(listItemAdapter);
+            itemListView.setAdapter(listItemAdapter);
         } catch (JSONException e) {
             Log.e("JSON: ", e.getMessage());
             return false;
