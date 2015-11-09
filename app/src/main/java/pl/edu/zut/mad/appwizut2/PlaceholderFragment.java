@@ -2,12 +2,17 @@ package pl.edu.zut.mad.appwizut2;
 
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.io.File;
+
+import pl.edu.zut.mad.appwizut2.connections.WeekParityChecker;
 
 
 /**
@@ -37,6 +42,8 @@ public class PlaceholderFragment extends Fragment {
         if (getArguments() != null) {
             mPlaceholderTitle = getArguments().getString(ARG_PLACEHOLDER_TITLE);
         }
+
+        //caldroidFragment = new CaldroidFragment();
     }
 
     @Override

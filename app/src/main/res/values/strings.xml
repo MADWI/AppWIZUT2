@@ -13,4 +13,6 @@
     <string name="nav_plan_changes">Zmiany w planie</string>
 
     <string name="action_settings">Settings</string>
+
+    <string name="no_Internet">Brak połączenia z Internetem</string>
 </resources>

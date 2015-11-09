@@ -2,7 +2,6 @@ package pl.edu.zut.mad.appwizut2;
 
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -22,9 +21,16 @@ import com.roomorama.caldroid.CaldroidListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+
+import pl.edu.zut.mad.appwizut2.connections.GetPlanChanges;
+import pl.edu.zut.mad.appwizut2.connections.PlanChangesOfflineHandler;
+import pl.edu.zut.mad.appwizut2.connections.WeekParityChecker;
+import pl.edu.zut.mad.appwizut2.models.DayParity;
+import pl.edu.zut.mad.appwizut2.models.MessagePlanChanges;
 
 
 public class MainActivity extends AppCompatActivity
@@ -66,7 +72,49 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //caldroidFragment = new CaldroidFragment();
+
+        /**
+         * Przykład pobierania i zapisu offline zmian w planie i parzystosci dni
+         */
+        /*
+        final PlanChangesOfflineHandler messagesChecker = new PlanChangesOfflineHandler(this);
+        ArrayList<MessagePlanChanges> data = messagesChecker.getMessagesData();
+        if (data == null){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    GetPlanChanges changes = new GetPlanChanges();
+                    ArrayList<MessagePlanChanges> onlineData = changes.getServerMessages();
+                    if (onlineData != null){
+                        messagesChecker.saveMessagesData(onlineData);
+                        ArrayList<MessagePlanChanges> offlineData = messagesChecker.getMessagesData();
+
+                    }
+                    changes = null;
+                }
+            }).start();
+        }else {
+            //pobranie najnowszej zmiany w planie
+            MessagePlanChanges last = messagesChecker.lastOfflineMessage();
+            // lub po prostu:
+            last = data.get(0); //gdy pobralismy wczesniej juz wszystkie zmiany
+
+        }
+
+        WeekParityChecker parityChecker = new WeekParityChecker(getApplicationContext());
+        ArrayList<DayParity> parities = parityChecker.readOfflineParity();
+        if (parities == null){
+            //pobierany dane odnosnie dni
+            parityChecker.downloadAndSaveNewestData(new WeekParityChecker.FinishedRefresh() {
+                @Override
+                public void data(ArrayList<DayParity> fetchedData) {
+                    System.out.println("offline");
+                }
+            });
+        }else {
+            //posiadamy juz dni offline
+        }
+        */
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
