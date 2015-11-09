@@ -46,12 +46,16 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
         // TODO fix rotate
 
-        bundle = new Bundle();
         Calendar cal = Calendar.getInstance();
+
+        bundle = new Bundle();
         bundle.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
         bundle.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
         bundle.putBoolean(CaldroidFragment.ENABLE_SWIPE, true);
         bundle.putBoolean(CaldroidFragment.SIX_WEEKS_IN_CALENDAR, true);
+
+        //Zmiana layoutu na customowy
+        bundle.putInt(CaldroidFragment.THEME_RESOURCE, R.style.CaldroidCustomized);
 
         // SETTING THE BACKGROUND
         // Create a hash map
