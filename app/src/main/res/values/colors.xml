@@ -7,6 +7,8 @@
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="green">#8FCC85</color>
     <color name="colorPrimaryBright">#BBDEFB</color>
+    <color name="announcement_default">#64B5F6</color>
+    <color name="item_date">#42A5F5</color>
     <color name="white">#ffffff</color>
     <color name="days_off">#817b7b</color>
 </resources>
