@@ -34,7 +34,8 @@
     </style>
 
     <style name="CaldroidCustomizedNormalCell" parent="CaldroidDefaultDarkCell">
-        <item name="android:padding">5dp</item>
+        <item name="android:padding">15dp</item>
+        <item name="android:background">@color/calendar_default</item>
     </style>
 
     <style name="CaldroidCustomizedSquareCell" parent="CaldroidCustomizedCell" />

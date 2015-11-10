@@ -79,6 +79,12 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         refreshView();
     }
 
+    @Override
+    protected void retrieveInitialArgs() {
+        setThemeResource(R.style.CaldroidCustomized);
+        super.retrieveInitialArgs();
+    }
+
     // Setup listener
     public CaldroidListener listener = new CaldroidListener() {
         @Override
