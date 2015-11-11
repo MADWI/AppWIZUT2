@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/calendar_default"
+    >
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/white"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:textStyle="normal"
+        android:translationZ="3dp"/>
+
+    <ListView
+        android:id="@+id/calendarEvents"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/calendar_default" />
+
+</LinearLayout>
