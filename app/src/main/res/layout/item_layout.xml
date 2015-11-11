@@ -13,7 +13,7 @@ android:layout_margin="5dp">
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/announcement_view"
-    android:background="@color/announcement_default">
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -37,14 +37,6 @@ android:layout_margin="5dp">
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@android:color/white"
-            android:layout_above="@+id/author"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:id="@+id/separator" />
 
         <TextView
             android:id="@+id/author"
@@ -83,7 +75,8 @@ android:layout_margin="5dp">
         android:padding="2dp"
         android:text="body"
         android:gravity="center_vertical"
-        android:textColor="@color/white"
+        android:textColor="@color/textGray"
+        android:background="@color/backgroundGray"
         android:textSize="16sp"
         android:layout_below="@id/itemHeaderLayout"
         android:layout_marginTop="1dp"/>
