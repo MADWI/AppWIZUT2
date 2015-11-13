@@ -50,7 +50,7 @@ public class PlanChangesOfflineHandler {
      */
     public  boolean saveMessagesData(ArrayList<MessagePlanChanges> data){
 
-        File documents = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File documents = context.getFilesDir();
 
         File offlineMessagesFile = new File(documents,Constans.OFFLINE_DATA_FOLDER + "/Messages");
 
@@ -75,7 +75,7 @@ public class PlanChangesOfflineHandler {
      * @return posiadane offline zmiany w planie
      */
     public  ArrayList<MessagePlanChanges> getMessagesData(){
-        File documents = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File documents = context.getFilesDir();
 
         File offlineMessagesFile = new File(documents,Constans.OFFLINE_DATA_FOLDER + "/Messages");
 

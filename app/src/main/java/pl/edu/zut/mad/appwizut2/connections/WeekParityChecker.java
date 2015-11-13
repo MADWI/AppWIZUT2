@@ -67,7 +67,7 @@ public class WeekParityChecker {
 	 */
 	public static void folderSetup(Context context){
 
-		File documents = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+		File documents = context.getFilesDir();
 
 
 		boolean offlineFolder = new File(documents,Constans.OFFLINE_DATA_FOLDER).mkdirs();
@@ -238,7 +238,7 @@ public class WeekParityChecker {
 	 */
 	public  void  saveOfflineParity(ArrayList<DayParity> daysParityList){
 		folderSetup(context);
-		File dataFile = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+		File dataFile = context.getFilesDir();
 
 		try {
 			File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
@@ -262,7 +262,7 @@ public class WeekParityChecker {
 	 * @author Damian Malarczyk
 	 */
 	public ArrayList<DayParity> readOfflineParity(){
-		File dataFile = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+		File dataFile = context.getFilesDir();
 		try {
 			File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
 			FileInputStream daysOutput = new FileInputStream(daysParityFile);
