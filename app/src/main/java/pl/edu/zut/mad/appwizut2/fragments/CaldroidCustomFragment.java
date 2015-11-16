@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
 import java.text.ParseException;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
+import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.activities.MainActivity;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
@@ -41,6 +43,12 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
         parityList = new AsyncTaskGetParityList().execute().get();
 
+    }
+
+    @Override
+    public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
+        // TODO Auto-generated method stub
+        return new CaldroidCustomAdapter(getActivity(), month, year, getCaldroidData(), extraData);
     }
 
     @Override
@@ -81,7 +89,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         return wrapper;
     }
 
-    private void initUI(){
+    private void initUI() {
 
         // TODO fix rotate
 
@@ -106,10 +114,9 @@ public class CaldroidCustomFragment extends CaldroidFragment {
                 String parity = dayParities.getParity();
                 if (parity.equals("parzysty")) {
                     hm.put(ParseDate(dayParities.getDate()), R.color.even);
-                } else{
+                } else {
                     hm.put(ParseDate(dayParities.getDate()), R.color.uneven);
                 }
-                //TODO: set days_off
             }
         }
 
@@ -130,33 +137,10 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         public void onSelectDate(Date date, View view) {
             clickedDate.setText("Wydarzenia " + REVERSED_FORMATTER.format(date));
         }
-
-        @Override
-        public void onChangeMonth(int month, int year) {
-            String text = "month: " + month + " year: " + year;
-            Toast.makeText(getActivity().getApplicationContext(), text, Toast.LENGTH_SHORT)
-                    .show();
-        }
-
-        @Override
-        public void onLongClickDate(Date date, View view) {
-            Toast.makeText(getActivity().getApplicationContext(),
-                    "Long click " + FORMATTER.format(date), Toast.LENGTH_SHORT)
-                    .show();
-        }
-
-        @Override
-        public void onCaldroidViewCreated() {
-            if (getLeftArrowButton() != null) {
-                Toast.makeText(getActivity().getApplicationContext(),
-                        "Caldroid view is created", Toast.LENGTH_SHORT).show();
-            }
-        }
     };
 
     // CUSTOM FUNCTION FOR PARSING STRING TO DATA
-    public Date ParseDate(String date_str)
-    {
+    public Date ParseDate(String date_str) {
         Date dateStr = null;
         try {
             dateStr = FORMATTER.parse(date_str);
@@ -174,13 +158,13 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         @Override
         protected ArrayList<DayParity> doInBackground(Void... params) {
 
-                tempArray = checker.getAllParity();
-                if (tempArray != null) {
-                    return tempArray;
-                } else {
-                    Log.i(TAG, "Nie mozna pobrac");
+            tempArray = checker.getAllParity();
+            if (tempArray != null) {
+                return tempArray;
+            } else {
+                Log.i(TAG, "Nie mozna pobrac");
 
-                }
+            }
             return null;
         }
 
