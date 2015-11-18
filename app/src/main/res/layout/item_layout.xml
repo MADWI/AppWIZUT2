@@ -12,43 +12,61 @@ android:layout_margin="5dp">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/announcement_view">
+    android:id="@+id/announcement_view"
+    android:background="@color/white">
 
-    <TextView
-        android:id="@+id/title"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="3dp"
-        android:textStyle="bold"
-        android:background="@android:color/holo_blue_dark"
-        android:text="title"
-        android:gravity="center_vertical"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"/>
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/colorPrimary"
+        android:id="@+id/itemHeaderLayout">
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="1dp"
-        android:text="date"
-        android:gravity="center_vertical"
-        android:textSize="10sp"
-        android:layout_below="@id/title"
-        android:layout_marginTop="0dp"
-        android:layout_alignParentLeft="true"/>
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:textStyle="bold"
+            android:text="title"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-    <TextView
-        android:id="@+id/author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="1dp"
-        android:text="author"
-        android:gravity="center_vertical"
-        android:textSize="10sp"
-        android:layout_below="@id/title"
-        android:layout_marginTop="0dp"
-        android:layout_alignParentRight="true"/>
+
+        <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="1dp"
+            android:text="author"
+            android:gravity="center_vertical"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_below="@+id/title"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="1dp"
+            android:text="date"
+            android:gravity="center_vertical"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_below="@+id/title"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/body"
@@ -57,8 +75,10 @@ android:layout_margin="5dp">
         android:padding="2dp"
         android:text="body"
         android:gravity="center_vertical"
-        android:textSize="14sp"
-        android:layout_below="@id/date"
+        android:textColor="@color/textGray"
+        android:background="@color/backgroundGray"
+        android:textSize="16sp"
+        android:layout_below="@id/itemHeaderLayout"
         android:layout_marginTop="1dp"/>
 
 </RelativeLayout>
