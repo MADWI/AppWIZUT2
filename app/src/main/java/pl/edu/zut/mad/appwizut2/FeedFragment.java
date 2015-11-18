@@ -56,7 +56,7 @@ public abstract class FeedFragment extends Fragment{
         return rootView;
     }
 
-    boolean createItemList() {
+    protected boolean createItemList() {
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
             JSONArray arrayContent = jsonPageContent.getJSONArray(TAG_ENTRY);
