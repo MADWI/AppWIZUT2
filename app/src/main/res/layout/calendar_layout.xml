@@ -5,22 +5,32 @@
     android:background="@color/calendar_default"
     >
 
-    <TextView
-        android:id="@+id/dateTextView"
-        android:textSize="20sp"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/white"
-        android:background="@color/colorPrimary"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:textStyle="normal"
-        android:translationZ="3dp"/>
+    <FrameLayout
+        android:id="@+id/calendar_goes_here"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
-    <ListView
-        android:id="@+id/calendarEvents"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/calendar_default" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/dateTextView"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:textStyle="normal"
+            android:translationZ="3dp"/>
+
+        <ListView
+            android:id="@+id/calendarEvents"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/calendar_default" />
+    </LinearLayout>
 </LinearLayout>

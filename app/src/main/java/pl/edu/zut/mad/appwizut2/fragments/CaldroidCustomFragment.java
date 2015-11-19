@@ -85,7 +85,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         // Wrap calendarView into out fragment
         ViewGroup wrapper = (ViewGroup) inflater.inflate(R.layout.calendar_layout, container, false);
         clickedDate = (TextView) wrapper.findViewById(R.id.dateTextView);
-        wrapper.addView(calendarView, 0);
+        ((ViewGroup) wrapper.findViewById(R.id.calendar_goes_here)).addView(calendarView, 0);
         return wrapper;
     }
 
