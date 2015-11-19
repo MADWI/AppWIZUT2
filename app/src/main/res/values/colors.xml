@@ -9,4 +9,6 @@
     <color name="colorPrimaryBright">#BBDEFB</color>
     <color name="white">#ffffff</color>
     <color name="days_off">#817b7b</color>
+    <color name="textGray">#424242</color>
+    <color name="backgroundGray">#EEEEEE</color>
 </resources>
