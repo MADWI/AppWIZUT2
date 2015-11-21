@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
@@ -18,14 +17,12 @@ import com.roomorama.caldroid.CaldroidListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.activities.MainActivity;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.utils.WeekParityChecker;
 
@@ -35,8 +32,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
     private static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy");
     private final ArrayList<DayParity> parityList;
-    private static Bundle bundle;
-    private boolean enableExecuteRefresh = true;
     private TextView clickedDate;
 
     public CaldroidCustomFragment() throws ExecutionException, InterruptedException {
@@ -91,19 +86,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
     private void initUI() {
 
-        // TODO fix rotate
-
-        Calendar cal = Calendar.getInstance();
-
-        bundle = new Bundle();
-        bundle.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
-        bundle.putInt(CaldroidFragment.YEAR, cal.get(Calendar.YEAR));
-        bundle.putBoolean(CaldroidFragment.ENABLE_SWIPE, true);
-        bundle.putBoolean(CaldroidFragment.SIX_WEEKS_IN_CALENDAR, true);
-
-        //Zmiana layoutu na customowy
-        bundle.putInt(CaldroidFragment.THEME_RESOURCE, R.style.CaldroidCustomized);
-
         // SETTING THE BACKGROUND
         // Create a hash map
         HashMap hm = new HashMap();
@@ -119,8 +101,9 @@ public class CaldroidCustomFragment extends CaldroidFragment {
                 }
             }
         }
-
-        setBackgroundResourceForDates(hm);
+        if(!hm.isEmpty()) {
+            setBackgroundResourceForDates(hm);
+        }
         setCaldroidListener(listener);
         refreshView();
     }
@@ -130,6 +113,8 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         setThemeResource(R.style.CaldroidCustomized);
         super.retrieveInitialArgs();
     }
+
+
 
     // Setup listener
     public CaldroidListener listener = new CaldroidListener() {
@@ -171,7 +156,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         @Override
         protected void onPreExecute() {
             Log.i(TAG, "onPreExecute");
-            enableExecuteRefresh = false;
 
         }
 
@@ -179,7 +163,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         protected void onPostExecute(ArrayList<DayParity> result) {
             Log.i(TAG, "onPostExecute");
             initUI();
-            enableExecuteRefresh = true;
         }
 
     }
