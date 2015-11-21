@@ -2,6 +2,7 @@ package pl.edu.zut.mad.appwizut2.connections;
 
 import android.util.Log;
 
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +47,7 @@ public class GetPlanChanges {
 	 */
 	public GetPlanChanges() {
 		con = new HttpConnect(10000, adres);
+
 	}
 
 	/**
@@ -55,6 +57,7 @@ public class GetPlanChanges {
 	 */
 	public MessagePlanChanges getLastMessage() {
 		Log.i(TAG, "getLastMessage");
+
 		strona = con.getPage();
 		MessagePlanChanges tempMsg = new MessagePlanChanges();
 
@@ -90,6 +93,7 @@ public class GetPlanChanges {
 					return null;
 				}
 			}
+            
 			return tempMsg;
 		} else
 			return null;
@@ -103,6 +107,7 @@ public class GetPlanChanges {
 	 */
 	public ArrayList<MessagePlanChanges> getServerMessages() {
 		Log.i(TAG, "getServerMessages");
+
 		strona = con.getPage();
 		/* parse response from server */
 		if (!strona.equals("")) {

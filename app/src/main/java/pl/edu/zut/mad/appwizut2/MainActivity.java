@@ -1,10 +1,15 @@
 package pl.edu.zut.mad.appwizut2;
 
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,7 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import pl.edu.zut.mad.appwizut2.connections.GetPlanChanges;
-import pl.edu.zut.mad.appwizut2.connections.PlanChangesOfflineHandler;
+import pl.edu.zut.mad.appwizut2.connections.PlanyChangesHandler;
 import pl.edu.zut.mad.appwizut2.connections.WeekParityChecker;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.models.MessagePlanChanges;
@@ -72,47 +77,52 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //proźba o uprawnienia Android *M*
+        WeekParityChecker.checkMPermission(this);
 
         /**
-         * Przykład pobierania i zapisu offline zmian w planie i parzystosci dni
+         * Przykład jak korzystać z offlie API
          */
         /*
-        final PlanChangesOfflineHandler messagesChecker = new PlanChangesOfflineHandler(this);
-        ArrayList<MessagePlanChanges> data = messagesChecker.getMessagesData();
-        if (data == null){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    GetPlanChanges changes = new GetPlanChanges();
-                    ArrayList<MessagePlanChanges> onlineData = changes.getServerMessages();
-                    if (onlineData != null){
-                        messagesChecker.saveMessagesData(onlineData);
-                        ArrayList<MessagePlanChanges> offlineData = messagesChecker.getMessagesData();
-
-                    }
-                    changes = null;
-                }
-            }).start();
-        }else {
-            //pobranie najnowszej zmiany w planie
-            MessagePlanChanges last = messagesChecker.lastOfflineMessage();
-            // lub po prostu:
-            last = data.get(0); //gdy pobralismy wczesniej juz wszystkie zmiany
-
+        boolean canTestOffline = true;
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED){
+                    canTestOffline = false;
+            }
         }
 
-        WeekParityChecker parityChecker = new WeekParityChecker(getApplicationContext());
-        ArrayList<DayParity> parities = parityChecker.readOfflineParity();
-        if (parities == null){
-            //pobierany dane odnosnie dni
-            parityChecker.downloadAndSaveNewestData(new WeekParityChecker.FinishedRefresh() {
+        if (canTestOffline) {
+             PlanyChangesHandler handler = new PlanyChangesHandler(getBaseContext());
+            handler.getLastMessage(new PlanyChangesHandler.DataCallback() {
                 @Override
-                public void data(ArrayList<DayParity> fetchedData) {
-                    System.out.println("offline");
+                public void foundData(ArrayList<MessagePlanChanges> data) {
+                    System.out.println("ee");
                 }
             });
-        }else {
-            //posiadamy juz dni offline
+            handler.getCurrentData(new PlanyChangesHandler.DataCallback() {
+                @Override
+                public void foundData(ArrayList<MessagePlanChanges> data) {
+                    System.out.println("ee");
+                }
+            });
+
+             WeekParityChecker checker = new WeekParityChecker(getBaseContext());
+
+            checker.getNextDaysParity(new WeekParityChecker.DataTwoDaysCallback() {
+                @Override
+                public void twoDaysData(String[] data) {
+                    System.out.println("ee");
+                }
+            });
+            checker.getCurrentData(new WeekParityChecker.DataCallback() {
+                @Override
+                public void foundData(ArrayList<DayParity> data) {
+                    System.out.println("ee");
+                }
+            });
+
+
         }
         */
 
@@ -295,6 +305,25 @@ public class MainActivity extends AppCompatActivity
         super.onSaveInstanceState(outState);
         if (caldroidFragment != null) {
             caldroidFragment.saveStatesToKey(outState, "CALDROID_SAVED_STATE");
+        }
+    }
+
+
+    /**
+     * odpowiedź na proźbę o uprawnienia Android *M*
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode){
+            case WeekParityChecker.MY_PERMISSIONS_WRITE_EXTERNAL: {
+                if (grantResults.length > 0){
+                    WeekParityChecker.folderSetup(this);
+                }
+
+            }
         }
     }
 

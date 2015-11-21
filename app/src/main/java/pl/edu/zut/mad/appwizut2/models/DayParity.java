@@ -9,7 +9,7 @@ import java.util.GregorianCalendar;
  * @version 1.0.0
  */
 
-/* DM - Serializable - aby lepiej zapisywać dane w plikach */
+/* Serializable - aby lepiej zapisywać dane w plikach */
 public class DayParity implements Serializable {
 
 	private String date;

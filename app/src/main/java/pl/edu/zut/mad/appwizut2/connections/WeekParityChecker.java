@@ -1,8 +1,14 @@
 package pl.edu.zut.mad.appwizut2.connections;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -53,7 +59,10 @@ public class WeekParityChecker {
 	 */
 	private static final String TAG = "WeekParityChecker";
 
-	public Context context;
+	private Context context;
+	public static final int MY_PERMISSIONS_WRITE_EXTERNAL = 0;
+    private boolean changesMade = false;
+    private ArrayList<DayParity> currentData;
 
 	/** Domyslny konstruktor klasy. */
 	public WeekParityChecker(Context context) {
@@ -87,6 +96,15 @@ public class WeekParityChecker {
 		return;// folder istnieje
 	}
 
+	public static void checkMPermission(Activity activity){
+		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+					!= PackageManager.PERMISSION_GRANTED){
+				ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_WRITE_EXTERNAL);
+			};
+
+		}
+	}
 	/**
 	 * Metoda zwraca tablice stringow, ktora mowi czy dzien obecny i nastepny jest
 	 * nieparzysty/parzysty.
@@ -94,7 +112,7 @@ public class WeekParityChecker {
 	 * @return Tablica stringow mowiaca o nieparzystosci/parzystosci dnia obecnego
 	 *         i nastepnego.
 	 */
-	public String[] getParity() {
+	private String[] getParity() {
 		String pageSource = WeekParityChecker.getURLSource(ZUT_WI_JSON);
 
 		String[] currentWeek = new String[2];
@@ -154,7 +172,7 @@ public class WeekParityChecker {
 	 * @return HashMap z informacjami o wszystkich dniach (ich
 	 *         nieparzystosci/parzystosci)
 	 */
-	public ArrayList<DayParity> getAllParity() {
+	private ArrayList<DayParity> getAllParity() {
 
 		String pageSource = getURLSource(ZUT_WI_JSON);
 		ArrayList<DayParity> daysParityList = new ArrayList<DayParity>();
@@ -229,29 +247,76 @@ public class WeekParityChecker {
 		return daysParityList;
 	}
 
+    // odwolanie do danych po skonczeniu pobierania, dla wszystkich dni
+    public interface DataCallback {
+        void foundData(ArrayList<DayParity> data);
+
+    }
+
+    //odwolanie do danych po skonczeniu pobierania, dla dzis i jutra
+    public interface  DataTwoDaysCallback {
+        void twoDaysData(String[] data);
+    }
+
+
+    /**
+     *
+     * @param callback zwraca pobrane dane (online jeśli nie mamy jeszcze danych offline)
+     * @author Damian Malarczyk
+     */
+    public void getCurrentData(final DataCallback callback){
+
+        if (currentData == null){
+            currentData = readOfflineParity();
+            if (currentData == null && HttpConnect.isOnline(context)){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentData = getAllParity();
+                        changesMade = true;
+                        currentData = trimDataTillToday(currentData);
+                        saveIfChangesMade();
+                        callback.foundData(currentData);
+                    }
+                }).start();
+            }else {
+               callback.foundData(currentData);
+            }
+
+        }else {
+            callback.foundData(currentData);
+        }
+    }
+
+
+
+
+
 	/**
 	 * Zapis danych dla trybu offline
 	 * Metoda publiczna, aby umożliwić oddzielne korzystanie z metody @getAllParity
 	 * bez używania metody @downloadAndSaveNewestData
-	 * @param daysParityList
+	 *
 	 * @author Damian Malarczyk
 	 */
-	public  void  saveOfflineParity(ArrayList<DayParity> daysParityList){
-		folderSetup(context);
-		File dataFile = context.getFilesDir();
+	private void  saveIfChangesMade(){
+        if (changesMade) {
+            folderSetup(context);
+            File dataFile = context.getFilesDir();
 
-		try {
-			File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
-			if (!daysParityFile.exists())
-				daysParityFile.createNewFile();
-			FileOutputStream daysOutput = new FileOutputStream(daysParityFile);
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(daysOutput);
-			objectOutputStream.writeObject(daysParityList);
-			objectOutputStream.close();
-			daysOutput.close();
-		}catch (IOException e){
-			e.printStackTrace();
-		}
+            try {
+                File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
+                if (!daysParityFile.exists())
+                    daysParityFile.createNewFile();
+                FileOutputStream daysOutput = new FileOutputStream(daysParityFile);
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(daysOutput);
+                objectOutputStream.writeObject(currentData);
+                objectOutputStream.close();
+                daysOutput.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
 	}
 
@@ -261,7 +326,7 @@ public class WeekParityChecker {
 	 * jeśli posiadamy informacje o dniach które już przeminęły to są one usuwane
 	 * @author Damian Malarczyk
 	 */
-	public ArrayList<DayParity> readOfflineParity(){
+	private ArrayList<DayParity> readOfflineParity(){
 		File dataFile = context.getFilesDir();
 		try {
 			File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
@@ -273,27 +338,8 @@ public class WeekParityChecker {
 				objectOutputStream.close();
 				daysOutput.close();
 
+                return(trimDataTillToday(daysParityList));
 
-				Date now = new Date();
-				if (daysParityList != null && daysParityList.size() > 0) {
-					DayParity nextParity = daysParityList.get(0);
-
-					boolean foundEqualOrAfter = false;
-					while (nextParity != null && !foundEqualOrAfter) {
-						if (laterOrEqualThanDate(now, nextParity.getDate())) {
-							foundEqualOrAfter = true;
-							saveOfflineParity(daysParityList);
-							return daysParityList;
-						} else {
-							if (daysParityList.size() > 1) {
-								daysParityList.remove(nextParity);
-								nextParity = daysParityList.get(0);
-							} else {
-								return null;
-							}
-						}
-					}
-				}
 			}
 
 		}catch (Exception e){
@@ -302,30 +348,38 @@ public class WeekParityChecker {
 		return null;
 	}
 
+    /**
+     *
+     * @param data
+     * @return zwraca przyciętne dni parzystości, tylko od dnia dzisiejszego naprzód
+     * @author Damian Malarczyk
+     */
+    private ArrayList<DayParity> trimDataTillToday(ArrayList<DayParity> data){
+        Date now = new Date();
+        if (data != null && data.size() > 0) {
+            DayParity nextParity = data.get(0);
 
-	// odwolanie do danych po skonczeniu pobierania
-	public interface FinishedRefresh {
-		void data(ArrayList<DayParity> fetchedData);
-	}
+            boolean foundEqualOrAfter = false;
+            while (nextParity != null && !foundEqualOrAfter) {
+                if (laterOrEqualThanDate(now, nextParity.getDate())) {
 
-	/**
-	 *
-	 * @param finishedCallback - metoda delegująca, pozwalająca na odwołanie się do nowo pobranych danych
-	 */
-	public void downloadAndSaveNewestData(final FinishedRefresh finishedCallback ){
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (HttpConnect.isOnline(context)) {
-					ArrayList<DayParity> dayParities = getAllParity();
-					if (dayParities != null) {
-						saveOfflineParity(dayParities);
-						finishedCallback.data(readOfflineParity());
-					}
-				}
-			}
-		}).start();
-	}
+
+                    return data;
+                } else {
+                    if (data.size() > 1) {
+                        data.remove(nextParity);
+                        nextParity = data.get(0);
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+
 
 	/**
 	 * Metoda pomocnicza
@@ -333,39 +387,50 @@ public class WeekParityChecker {
 	 * oraz to czy kolejne dni są dniami w których odbywają się zajęcia
 	 * @author Damian Malarczyk
 	 */
-	private String[] readNextDaysParity(){
-		String[] weekParity = new String[2];
-		ArrayList<DayParity> parities = readOfflineParity();
+	private void  readNextDaysParity(final DataTwoDaysCallback callback){
 
-		DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		getCurrentData(new DataCallback() {
+            @Override
+            public void foundData(ArrayList<DayParity> data) {
+                String[] weekParity = new String[2];
+                DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
 
-		Calendar calendar = Calendar.getInstance();
-		String today = format.format(calendar.getTime());
-		calendar.add(Calendar.DAY_OF_YEAR,1);
-		String tomorrow = format.format(calendar.getTime());
-
-
-		if (parities != null && parities.size() >= 2) {
-			weekParity[0] = "-";
-			weekParity[1] = "-";
-			DayParity first = parities.get(0);
-			DayParity second = parities.get(1);
+                Calendar calendar = Calendar.getInstance();
+                String today = format.format(calendar.getTime());
+                calendar.add(Calendar.DAY_OF_YEAR,1);
+                String tomorrow = format.format(calendar.getTime());
 
 
-			if (first.getDate().equals(today)){
-				weekParity[0] = first.getParity();
-				if (second.getDate().equals(tomorrow)){
-					weekParity[1] = second.getParity();
+                if (data != null && data.size() >= 2) {
+                    weekParity[0] = "-";
+                    weekParity[1] = "-";
+                    DayParity first = data.get(0);
+                    DayParity second = data.get(1);
 
-				}
 
-			}else if (first.getDate().equals(tomorrow)){
-				weekParity[1] = first.getParity();
+                    if (first.getDate().equals(today)){
+                        weekParity[0] = first.getParity();
+                        if (second.getDate().equals(tomorrow)){
+                            weekParity[1] = second.getParity();
 
-			}
-			return weekParity;
-		}
-		return  null;
+                        }
+
+                    }else if (first.getDate().equals(tomorrow)){
+                        weekParity[1] = first.getParity();
+
+                    }
+                    callback.twoDaysData(weekParity);
+                }else {
+                    callback.twoDaysData(null);
+                }
+
+            }
+
+
+        });
+
+
+
 	}
 
 	/**
@@ -376,35 +441,43 @@ public class WeekParityChecker {
 	 * @return parzystość dwóch następnych dni
 	 * @author Damian Malarczyk
 	 */
-	public  String[] getNextDaysParity(){
-		SharedPreferences preferences = SharedPrefUtils.getSharedPreferences(context);
+	public  void getNextDaysParity(final DataTwoDaysCallback callback){
+		final SharedPreferences preferences = SharedPrefUtils.getSharedPreferences(context);
 		String lastCheckDay = preferences.getString(Constans.LAST_DAY_PARITY_UPDATE, "brak");
 
 		Date today = new Date();
-		DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
-		String todayString = format.format(today);
 
-		String[] weekParity = null;
+		DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		final String todayString = format.format(today);
+
+
 
 		if (!todayString.equals(lastCheckDay)){
-			weekParity = readNextDaysParity();
-			if (weekParity != null) {
-				SharedPreferences.Editor prefEditor = preferences.edit();
-				prefEditor.putString(Constans.WEEK_PARITY, weekParity[0]);
-				prefEditor.putString(Constans.WEEK_PARITY_NEXT, weekParity[1]);
-				prefEditor.putString(Constans.LAST_DAY_PARITY_UPDATE, todayString);
-				prefEditor.commit();
+            readNextDaysParity(new DataTwoDaysCallback() {
+                @Override
+                public void twoDaysData(String[] data) {
+                    if (data != null && data.length == 2) {
+                        SharedPreferences.Editor prefEditor = preferences.edit();
+                        prefEditor.putString(Constans.WEEK_PARITY, data[0]);
+                        prefEditor.putString(Constans.WEEK_PARITY_NEXT, data[1]);
+                        prefEditor.putString(Constans.LAST_DAY_PARITY_UPDATE, todayString);
+                        prefEditor.commit();
 
-			}
+                    }
+                    callback.twoDaysData(data);
+                }
+            });
+
 
 		}else {
-			weekParity = new String[2];
+
+			String[] weekParity = new String[2];
 			weekParity[0] = preferences.getString(Constans.WEEK_PARITY,"-");
 			weekParity[1] = preferences.getString(Constans.WEEK_PARITY_NEXT,"-");
-
+            callback.twoDaysData(weekParity);
 
 		}
-		return weekParity;
+
 
 	}
 

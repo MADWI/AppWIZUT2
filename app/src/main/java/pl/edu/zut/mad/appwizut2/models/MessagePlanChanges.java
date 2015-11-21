@@ -84,7 +84,10 @@ public class MessagePlanChanges implements Serializable, Equatable<MessagePlanCh
 	}
 
 
-	/* porównywanie wiadomości w oparciu o ich tytuł*/
+	/**
+	 *  porównywanie wiadomości w oparciu o ich tytuł
+	 *
+	 */
 	@Override
 	public boolean compares(MessagePlanChanges another) {
 		if (another.title.trim().equals(title.trim()))
