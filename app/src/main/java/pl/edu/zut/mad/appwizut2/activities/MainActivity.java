@@ -14,10 +14,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-
+import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlaceholderFragment;
-import pl.edu.zut.mad.appwizut2.R;
 
 
 public class MainActivity extends AppCompatActivity
@@ -54,6 +53,51 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /**
+         * Przykład jak korzystać z offlie API
+         */
+        /*
+        boolean canTestOffline = true;
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED){
+                    canTestOffline = false;
+            }
+        }
+
+        if (canTestOffline) {
+             PlanyChangesHandler handler = new PlanyChangesHandler(getBaseContext());
+            handler.getLastMessage(new PlanyChangesHandler.DataCallback() {
+                @Override
+                public void foundData(ArrayList<MessagePlanChanges> data) {
+                    System.out.println("ee");
+                }
+            });
+            handler.getCurrentData(new PlanyChangesHandler.DataCallback() {
+                @Override
+                public void foundData(ArrayList<MessagePlanChanges> data) {
+                    System.out.println("ee");
+                }
+            });
+
+             WeekParityChecker checker = new WeekParityChecker(getBaseContext());
+
+            checker.getNextDaysParity(new WeekParityChecker.DataTwoDaysCallback() {
+                @Override
+                public void twoDaysData(String[] data) {
+                    System.out.println("ee");
+                }
+            });
+            checker.getCurrentData(new WeekParityChecker.DataCallback() {
+                @Override
+                public void foundData(ArrayList<DayParity> data) {
+                    System.out.println("ee");
+                }
+            });
+
+
+        }
+        */
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
