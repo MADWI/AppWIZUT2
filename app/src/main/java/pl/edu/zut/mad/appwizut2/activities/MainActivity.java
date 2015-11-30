@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.fragments.BusTimetableFragment;
 import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlaceholderFragment;
 
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity
             new DrawerFragmentItem(R.id.event_calendar, "cal", CaldroidCustomFragment.class),
             new DrawerFragmentItem(R.id.about_us,       "abo", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[About]")),
             new DrawerFragmentItem(R.id.announcements,  "ann", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Announcements]")),
-            new DrawerFragmentItem(R.id.public_transport, "tra", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Public Transport]"))
+            new DrawerFragmentItem(R.id.public_transport, "tra", BusTimetableFragment.class)
     };
 
     private static final String PREF_LAST_DRAWER_FRAGMENT = "last_selected_drawer_fragment";
