@@ -31,14 +31,9 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private final WeekParityChecker checker = new WeekParityChecker();
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
     private static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy");
-    private final ArrayList<DayParity> parityList;
+    private static ArrayList<DayParity> parityList;
     private TextView clickedDate;
 
-    public CaldroidCustomFragment() throws ExecutionException, InterruptedException {
-
-        parityList = new AsyncTaskGetParityList().execute().get();
-
-    }
 
     @Override
     public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
@@ -55,6 +50,14 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         }
         // Call super
         super.onCreate(savedInstanceState);
+
+        if (parityList == null) {
+            try {
+                parityList = new AsyncTaskGetParityList().execute().get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
         // TODO: We completely disabled Caldroid's state saving (since it's only causing problems)
         // Now we have to implement retaining currently selected month/year outselves
     }
@@ -81,6 +84,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         ViewGroup wrapper = (ViewGroup) inflater.inflate(R.layout.calendar_layout, container, false);
         clickedDate = (TextView) wrapper.findViewById(R.id.dateTextView);
         ((ViewGroup) wrapper.findViewById(R.id.calendar_goes_here)).addView(calendarView, 0);
+
         return wrapper;
     }
 
@@ -101,7 +105,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
                 }
             }
         }
-        if(!hm.isEmpty()) {
+        if (!hm.isEmpty()) {
             setBackgroundResourceForDates(hm);
         }
         setCaldroidListener(listener);
@@ -115,7 +119,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     }
 
 
-
     // Setup listener
     public CaldroidListener listener = new CaldroidListener() {
         @Override
@@ -123,6 +126,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             clickedDate.setText("Wydarzenia " + REVERSED_FORMATTER.format(date));
         }
     };
+
 
     // CUSTOM FUNCTION FOR PARSING STRING TO DATA
     public Date ParseDate(String date_str) {
@@ -134,6 +138,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         }
         return dateStr;
     }
+
 
     private class AsyncTaskGetParityList extends
             AsyncTask<Void, Void, ArrayList<DayParity>> {

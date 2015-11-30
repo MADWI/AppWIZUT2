@@ -5,12 +5,12 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidGridAdapter;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import hirondelle.date4j.DateTime;
 
@@ -34,21 +34,23 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
             cellView = inflater.inflate(R.layout.custom_cell, null);
         }
 
-        int width = cellView.getWidth();
         int topPadding = cellView.getPaddingTop();
         int leftPadding = cellView.getPaddingLeft();
         int bottomPadding = cellView.getPaddingBottom();
         int rightPadding = cellView.getPaddingRight();
 
-        LinearLayout eventsContainer = (LinearLayout) cellView.findViewById(R.id.events_container);
+        EventsIndicatorView eventsIndicator = (EventsIndicatorView) cellView.findViewById(R.id.events_indicator);
         TextView tv1 = (TextView) cellView.findViewById(R.id.tv1);
+
+        // Example of setting event count
+        eventsIndicator.setLineCount(new Random().nextInt(7));
+        //eventsIndicator.setLineCount(2);
 
         // Get dateTime of this cell
         DateTime dateTime = this.datetimeList.get(position);
         Resources resources = context.getResources();
 
         tv1.setTextColor(resources.getColor(R.color.caldroid_white));
-
 
         // Set color of the dates in previous / next month
         if (dateTime.getMonth() != month) {
@@ -57,10 +59,9 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
         }
 
 
-
         if (!(dateTime.equals(getToday()))) {
             cellView.setBackgroundResource(R.color.calendar_default);
-        }else {
+        } else {
             cellView.setBackgroundResource(com.caldroid.R.drawable.red_border_gray_bg);
         }
 
@@ -68,8 +69,7 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
         tv1.setText("" + dateTime.getDay());
 
         //TODO set dynamically width of date and events_container doesn't work...
-        //tv1.setWidth(width / 4);
-        //eventsContainer.setMinimumWidth( width/4 );
+
         // Somehow after setBackgroundResource, the padding collapse.
         // This is to recover the padding
         cellView.setPadding(leftPadding, topPadding, rightPadding,
