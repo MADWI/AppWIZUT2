@@ -46,7 +46,7 @@ public class GetPlanChanges {
 	 * Konstruktor klasy wykorzystujacy obiekt HttpConnect do polaczenia ze strona
 	 */
 	public GetPlanChanges() {
-		con = new HttpConnect(10000, adres);
+		con = new HttpConnect(adres);
 
 	}
 

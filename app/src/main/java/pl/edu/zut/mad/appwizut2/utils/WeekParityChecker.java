@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 
+import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
-import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 
 /**
  * Klasa sprawdzajaca nieparzystosc/parzystosc dni tygodnia
