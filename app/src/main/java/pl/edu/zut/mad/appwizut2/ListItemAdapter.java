@@ -76,7 +76,6 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
 
         @Override
         public void onClick(View v) {
-         //   Log.e(TAG, "onClick tag = " + vBody.getTag());
             mExpanded = !mExpanded;
 
             if (mExpanded) {

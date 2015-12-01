@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by macko on 07.11.2015.
@@ -31,6 +35,8 @@ public abstract class FeedFragment extends Fragment{
     private String pageContent;
     private RecyclerView itemListView;
     private String addressUrl;
+
+    private static final Pattern patternQuot = Pattern.compile("(&quot;)");
 
     protected void setFeedUrl(String addressUrl) {
         this.addressUrl = addressUrl;
@@ -68,11 +74,17 @@ public abstract class FeedFragment extends Fragment{
                 listItemContainer.setTitle(item.getString(TAG_TITLE));
                 listItemContainer.setDate(item.getString(TAG_DATE));
                 listItemContainer.setAuthor(item.getString(TAG_AUTHOR));
-                listItemContainer.setBody(item.getString(TAG_BODY));
+
+                String body = item.getString(TAG_BODY);
+                Matcher matcher = patternQuot.matcher(body);
+                body = matcher.replaceAll("\"");
+
+                listItemContainer.setBody(body);
                 result.add(listItemContainer);
             }
             ListItemAdapter listItemAdapter = new ListItemAdapter(result);
             itemListView.setAdapter(listItemAdapter);
+
         } catch (JSONException e) {
             Log.e("JSON: ", e.getMessage());
             return false;
