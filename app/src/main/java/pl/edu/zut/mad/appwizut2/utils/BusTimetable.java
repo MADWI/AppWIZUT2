@@ -81,7 +81,7 @@ public class BusTimetable extends ListFragment {
             String jsonStr="";
 
             // Making a request to url and getting response
-            for(int o=0;o<9;o++) {
+            for(int o=0;o<10;o++) {
                 switch (o) {
                     case 0:
                         lineNo = "4";
