@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_default_tab_titles">
+        <item>Ostatnio otwarta</item>
+        <item>Zmiany w planie</item>
+        <item>Kalendarz</item>
+        <item>Ogłoszenia</item>
+        <item>Rozkład jazdy</item>
+    </string-array>
+    <string-array name="pref_default_tab_values">
+        <item>___</item>
+        <item>chg</item>
+        <item>cal</item>
+        <item>ann</item>
+        <item>tra</item>
+    </string-array>
+    <string-array name="pref_languages_list">
+        <item>Polski</item>
+        <item>Angielski</item>
+    </string-array>
+    <string-array name="pref_default_languages_list">
+        <item>pl</item>
+        <item>ang</item>
+    </string-array>
+    <string-array name="list_rodzaj_studiow">
+        <item>Stacjonarne</item>
+        <item>Niestacjonarne</item>
+    </string-array>
+    <string-array name="list_kierunek_studiow">
+        <item>Informatyka</item>
+        <item>ZIP</item>
+        <item>Bioinformatyka</item>
+        <item>Inżynieria cyfryzacji</item>
+    </string-array>
+    <string-array name="list_stopien_studiow">
+        <item>I</item>
+        <item>II</item>
+    </string-array>
+    <string-array name="list_rok_studiow">
+        <item>Pierwszy</item>
+        <item>Drugi</item>
+        <item>Trzeci</item>
+        <item>Czwarty</item>
+    </string-array>
+    <string-array name="actions_on_plan">
+        <item>Otwórz</item>
+        <item>Usuń</item>
+    </string-array>
+
+</resources>
