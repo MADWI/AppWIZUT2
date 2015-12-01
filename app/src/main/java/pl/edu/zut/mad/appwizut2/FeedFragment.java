@@ -39,7 +39,7 @@ public abstract class FeedFragment extends Fragment{
     protected View initView(LayoutInflater inflater, ViewGroup container, Context context) {
         View rootView = inflater.inflate(R.layout.item_list, container, false);
         itemListView = (RecyclerView) rootView.findViewById(R.id.itemList);
-        itemListView.setHasFixedSize(true);
+      //  itemListView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         itemListView.setLayoutManager(layoutManager);
