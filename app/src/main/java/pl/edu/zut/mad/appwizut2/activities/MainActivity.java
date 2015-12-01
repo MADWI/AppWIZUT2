@@ -1,6 +1,7 @@
 package pl.edu.zut.mad.appwizut2.activities;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -66,7 +67,11 @@ public class MainActivity extends AppCompatActivity
 
         // Open recently used fragment
         if (savedInstanceState == null) {
-            String lastItemName = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_LAST_DRAWER_FRAGMENT, null);
+//            String lastItemName = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_LAST_DRAWER_FRAGMENT, null);
+//            DrawerFragmentItem item = findDrawerItemFragmentWithName(lastItemName);
+//            openFragment(item);
+//            navigationView.setCheckedItem(item.id);
+            String lastItemName = PreferenceManager.getDefaultSharedPreferences(this).getString("default_tab", null);
             DrawerFragmentItem item = findDrawerItemFragmentWithName(lastItemName);
             openFragment(item);
             navigationView.setCheckedItem(item.id);
@@ -81,11 +86,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void rememberSelectedItem(DrawerFragmentItem item) {
-        PreferenceManager
-                .getDefaultSharedPreferences(this)
-                .edit()
-                .putString(PREF_LAST_DRAWER_FRAGMENT, item.name)
-                .apply();
+//        PreferenceManager
+//                .getDefaultSharedPreferences(this)
+//                .edit()
+//                .putString(PREF_LAST_DRAWER_FRAGMENT, item.name)
+//                .apply();
+        PreferenceManager.getDefaultSharedPreferences(this).getString("default_tab", null);
     }
 
     @Override
@@ -129,8 +135,8 @@ public class MainActivity extends AppCompatActivity
         // Only actions that don't open fragment go here
         // See note at DRAWER_FRAGMENTS above
         if (id == R.id.settings) {
-            // TODO: open settings
-            Toast.makeText(this, "TODO: open settings", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, SettingsActivity.class));
+            Toast.makeText(this, "Ustawienia", Toast.LENGTH_SHORT).show();
         }else {
             DrawerFragmentItem drawerFragmentItem = findDrawerItemFragmentWithId(id);
             if (drawerFragmentItem != null) {

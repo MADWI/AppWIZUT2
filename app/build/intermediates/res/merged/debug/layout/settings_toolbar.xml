@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/AppTheme.AppBarOverlay"
+    android:id="@+id/settings_toolbar"
+    app:popupTheme="@style/AppTheme.PopupOverlay"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    app:navigationIcon="?attr/homeAsUpIndicator"
+    app:title="@string/title_activity_settings"
+    /><!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/layout/settings_toolbar.xml -->

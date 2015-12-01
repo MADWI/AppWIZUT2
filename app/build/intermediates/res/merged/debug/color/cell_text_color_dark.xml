@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:caldroid="http://schemas.android.com/apk/res-auto">
+
+    <item android:color="@color/caldroid_darker_gray" android:state_pressed="false" caldroid:state_date_disabled="true"/>
+    <item android:color="@color/caldroid_lighter_gray" caldroid:state_date_prev_next_month="true"/>
+    <item android:color="@color/caldroid_white"/>
+
+</selector><!-- From: file:/Users/thomasdao/Documents/workspace/Caldroid/caldroid/src/main/res/color/cell_text_color_dark.xml --><!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.2.1/res/color/cell_text_color_dark.xml -->
