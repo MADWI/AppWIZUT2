@@ -16,4 +16,13 @@
     <string name="action_settings">Settings</string>
 
     <string name="no_Internet">Brak połączenia z Internetem</string>
+    <string name="show_pdf">Pokaż PDF</string>
+
+    <string-array name="week_days_short">
+        <item>PON</item>
+        <item>WT</item>
+        <item>ŚR</item>
+        <item>CZW</item>
+        <item>PT</item>
+    </string-array>
 </resources>

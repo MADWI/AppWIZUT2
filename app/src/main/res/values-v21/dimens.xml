@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Cards in schedules -->
+    <dimen name="schedule_card_corner_radius">20dp</dimen>
+    <dimen name="schedule_card_left_margin">0dp</dimen>
+</resources>
