@@ -8,19 +8,22 @@ public class ListItemContainer {
     private String date;
     private String author;
     private String body;
+    private String id;
 
     ListItemContainer() {
         this.title = "";
         this.date = "";
         this.author = "";
         this.body = "";
+        this.id = "";
     }
 
-    ListItemContainer(String title, String date, String body, String author) {
+    ListItemContainer(String title, String date, String body, String author, String id) {
         this.title = title;
         this.date = date;
         this.author = author;
         this.body = body;
+        this.id = id;
     }
 
     public String getTitle() {
@@ -37,6 +40,10 @@ public class ListItemContainer {
         return body;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -49,5 +56,9 @@ public class ListItemContainer {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

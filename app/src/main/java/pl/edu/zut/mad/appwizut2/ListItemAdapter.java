@@ -31,20 +31,20 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
     }
 
     @Override
-    public void onBindViewHolder(ListItemViewHolder holder, int position) {
-        ListItemContainer item = listItem.get(position);
+    public void onBindViewHolder(final ListItemViewHolder holder, int position) {
+        final ListItemContainer item = listItem.get(position);
         holder.vTitle.setText(item.getTitle());
         holder.vDate.setText(item.getDate());
         holder.vAuthor.setText(item.getAuthor());
         holder.vBody.setText(item.getBody());
+        holder.vId = Integer.valueOf(item.getId());
 
-        if (holder.vBody.getTag() == null) {
-            holder.vBody.setTag(position);
-        }
-        if (ListItemViewHolder.expandedViews.contains(holder.vDate.getText())) {
+        if (ListItemViewHolder.expandedViews.contains(holder.vId)){
             holder.vBody.setExpanded(true, false);
+            holder.mExpanded = true;
         } else {
             holder.vBody.setExpanded(false, false);
+            holder.mExpanded = false;
         }
     }
 
@@ -53,11 +53,12 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         return listItem.size();
     }
 
-    public static class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView vTitle;
         private TextView vDate;
         private TextView vAuthor;
         private FoldableTextView vBody;
+        private int vId;
         private boolean mExpanded;
         private static HashSet expandedViews = null;
 
@@ -68,22 +69,21 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
             vDate = (TextView) v.findViewById(R.id.date);
             vAuthor = (TextView) v.findViewById(R.id.author);
             vBody = (FoldableTextView) v.findViewById(R.id.body);
-
+            mExpanded = false;
             if (expandedViews == null)
                 expandedViews = new HashSet();
         }
 
-
         @Override
         public void onClick(View v) {
             mExpanded = !mExpanded;
+            vBody.setExpanded(mExpanded, true);
 
             if (mExpanded) {
-                expandedViews.add(vDate.getText());
+                expandedViews.add(vId);
             } else {
-                expandedViews.remove(vDate.getText());
+                expandedViews.remove(vId);
             }
-            vBody.setExpanded(mExpanded, true);
         }
     }
 }

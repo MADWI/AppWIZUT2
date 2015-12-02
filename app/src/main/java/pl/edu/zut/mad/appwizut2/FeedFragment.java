@@ -31,7 +31,7 @@ public abstract class FeedFragment extends Fragment{
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_BODY = "text";
     private static final String TAG_ENTRY = "entry";
-
+    private static final String TAG_ID = "id";
     private String pageContent;
     private RecyclerView itemListView;
     private String addressUrl;
@@ -74,6 +74,7 @@ public abstract class FeedFragment extends Fragment{
                 listItemContainer.setTitle(item.getString(TAG_TITLE));
                 listItemContainer.setDate(item.getString(TAG_DATE));
                 listItemContainer.setAuthor(item.getString(TAG_AUTHOR));
+                listItemContainer.setId(item.getString(TAG_ID));
 
                 String body = item.getString(TAG_BODY);
                 Matcher matcher = patternQuot.matcher(body);
