@@ -264,8 +264,6 @@ public class WeekParityChecker {
 
             try {
                 File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
-                if (!daysParityFile.exists())
-					daysParityFile.createNewFile();
                 FileOutputStream daysOutput = new FileOutputStream(daysParityFile);
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(daysOutput);
                 objectOutputStream.writeObject(currentData);
