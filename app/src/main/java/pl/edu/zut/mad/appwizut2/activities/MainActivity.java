@@ -29,7 +29,6 @@ import pl.edu.zut.mad.appwizut2.fragments.AnnouncementFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlaceholderFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlanChangesFragment;
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.connections.WeekParityChecker;
 
 
 public class MainActivity extends AppCompatActivity
@@ -256,23 +255,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /**
-     * odpowiedź na proźbę o uprawnienia Android *M*
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode){
-            case WeekParityChecker.MY_PERMISSIONS_WRITE_EXTERNAL: {
-                if (grantResults.length > 0){
-                    WeekParityChecker.folderSetup(this);
-                }
 
-            }
-        }
-    }
 
     // Setup listener
     private CaldroidListener listener = new CaldroidListener() {

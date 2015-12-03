@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -114,10 +113,6 @@ public class HttpConnect {
         ConnectivityManager cm = (ConnectivityManager) ctx
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        if (ni != null && ni.isAvailable() && ni.isConnected()) {
-            return true;
-        } else {
-            return false;
-        }
+        return ni != null && ni.isAvailable() && ni.isConnected();
     }
 }

@@ -1,19 +1,17 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.utils.Interfaces.CompletitionCallback;
 
 /**
@@ -104,15 +102,16 @@ public class OfflineHandler<T extends Serializable> {
 
         try {
             FileInputStream fileInputStream = new FileInputStream(offlineMessagesFile);
-            if (fileInputStream != null) {
-                ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
-                currentData = (List<T>)inputStream.readObject();
-                inputStream.close();
-                fileInputStream.close();
-                return currentData;
-            }
-        }catch (Exception e){
 
+            ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
+            currentData = (List<T>)inputStream.readObject();
+            inputStream.close();
+            fileInputStream.close();
+            return currentData;
+
+        }catch (Exception e){
+            Log.e("read offline error","reading current data error");
+            e.printStackTrace();
         }
 
         return null;
@@ -178,29 +177,12 @@ public class OfflineHandler<T extends Serializable> {
     /**
      *Metoda tworząca podstawowe foldery niezbędne do obsługi zarówno parzystości jak i zmian w planie w trybie offline
      *
-     *@author Damian Malarczyk
+     *
      */
     public static void folderSetup(Context context){
 
         File documents = context.getFilesDir();
-
-
-        boolean offlineFolder = new File(documents,Constans.OFFLINE_DATA_FOLDER).mkdirs();
-        File planyChangesFile = new File(documents,OfflineDataHandlerToPath(OfflineDataHandlerKeys.PLAN_CHANGES));
-
-        File announcementsFile = new File(documents, OfflineDataHandlerToPath(OfflineDataHandlerKeys.ANNOUNCEMENTS));
-        File daysParityFile = new File(documents, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
-        if (!planyChangesFile.exists()){
-            try {
-                boolean result = planyChangesFile.createNewFile();
-                boolean result1 = announcementsFile.createNewFile();
-                boolean result2 = daysParityFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return;// folder istnieje
+        new File(documents,Constans.OFFLINE_DATA_FOLDER).mkdirs();
     }
 
     /**

@@ -44,7 +44,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     private static final String TAG_ID = "id";
     private static final String INSTANCE_CURRENT_KEY = "current_data";
     private static final String INSTANCE_CURRENT_SIZE = "current_size";
-    private String pageContent;
+
 
 
     private RecyclerView itemListView;
@@ -89,6 +89,9 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         itemListView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         itemListView.setLayoutManager(layoutManager);
+
+        //inicjalizacja pustego adaptera w celu uniknięcia błędu nieokreślonego layoutu
+        itemListView.setAdapter(new ListItemAdapter(new ArrayList<ListItemContainer>()));
 
         return rootView;
     }
@@ -149,7 +152,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
             }
 
         } catch (JSONException e) {
-            Log.e("FeedFragment: ","JSONException:" + e.getMessage());
+            Log.i("FeedFragment: ","JSONException:" + e.getMessage());
             return null;
         }
         return itemList;
@@ -178,13 +181,13 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         protected Void doInBackground(String... params) {
             if (HttpConnect.isOnline(context)) {
                 HttpConnect connection = new HttpConnect(addressUrl);
-                pageContent = connection.getPage();
+                String pageContent = connection.getPage();
                 currentData = createItemList(pageContent);
                 offlineHandler.setCurrentOfflineData(currentData);
                 offlineHandler.saveCurrentData(new Interfaces.CompletitionCallback() {
                     @Override
                     public void finished(Boolean success) {
-                        Log.e("offline data save","result: " + (success == true ? "success" : "error"));
+                        Log.i("offline data save","result: " + (success ? "success" : "error"));
                     }
                 });
 

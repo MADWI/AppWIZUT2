@@ -2,18 +2,13 @@ package pl.edu.zut.mad.appwizut2.fragments;
 
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import java.io.File;
-
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.connections.WeekParityChecker;
 
 
 /**
