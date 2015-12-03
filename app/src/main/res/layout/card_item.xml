@@ -35,7 +35,7 @@ android:layout_margin="5dp">
             android:textSize="16sp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"/>
 
 
         <TextView
@@ -78,6 +78,7 @@ android:layout_margin="5dp">
         android:textColor="@color/textGray"
         android:background="@color/backgroundGray"
         android:textSize="16sp"
+
         android:layout_below="@id/itemHeaderLayout"
         android:layout_marginTop="1dp"/>
 
@@ -87,7 +88,7 @@ android:layout_margin="5dp">
         android:layout_height="wrap_content"
         android:paddingRight="5sp"
         android:paddingBottom="4sp"
-        android:text="... Zobacz więcej"
+        android:text="@string/card_see_more"
 
         android:textSize="12sp"
         android:textColor="@color/caldroid_holo_blue_light"

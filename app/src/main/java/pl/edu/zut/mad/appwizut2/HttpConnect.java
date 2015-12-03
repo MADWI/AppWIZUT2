@@ -14,11 +14,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class HTTConnect {
+public class HttpConnect {
     /***
      * Zmienna do debuggowania.
      */
-    private static final String TAG = "HTTConnect";
+    private static final String TAG = "HttpConnect";
 
     /** Zmienna przechowujaca zrodlo strony jako String */
     private String strona;
@@ -30,7 +30,7 @@ public class HTTConnect {
      * Konstruktor sluzacy do polaczenia ze strona WWW.
      * @param adres
      */
-    public HTTConnect(String adres) {
+    public HttpConnect(String adres) {
         strona = "";
 
         try {

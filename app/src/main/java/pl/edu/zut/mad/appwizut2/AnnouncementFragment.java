@@ -18,7 +18,6 @@ public class AnnouncementFragment extends FeedFragment{
         View rootView = super.initView(inflater, container, getContext());
         return rootView;
     }
-
 }
 
 

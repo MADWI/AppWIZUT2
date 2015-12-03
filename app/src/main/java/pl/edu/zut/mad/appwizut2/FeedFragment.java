@@ -97,7 +97,7 @@ public abstract class FeedFragment extends Fragment{
             progressDialog.setMessage("Downloading");
             progressDialog.show();
 
-            if (!HTTConnect.isOnline(context)) {
+            if (!HttpConnect.isOnline(context)) {
                 cancel(true);
                 progressDialog.dismiss();
             }
@@ -105,7 +105,7 @@ public abstract class FeedFragment extends Fragment{
 
         @Override
         protected Void doInBackground(String... params) {
-            HTTConnect connection = new HTTConnect(addressUrl);
+            HttpConnect connection = new HttpConnect(addressUrl);
             pageContent = connection.getPage();
             return null;
         }
