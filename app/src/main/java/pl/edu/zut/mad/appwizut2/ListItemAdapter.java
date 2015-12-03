@@ -1,7 +1,6 @@
 package pl.edu.zut.mad.appwizut2;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
     public ListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.item_layout, parent, false);
+                .inflate(R.layout.card_item, parent, false);
 
         return new ListItemViewHolder(itemView);
     }
@@ -58,6 +57,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         private TextView vDate;
         private TextView vAuthor;
         private FoldableTextView vBody;
+        private TextView vSeeMore;
         private int vId;
         private boolean mExpanded;
         private static HashSet expandedViews = null;
@@ -65,10 +65,12 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         public ListItemViewHolder(View v) {
             super(v);
             v.setOnClickListener(this);
+
             vTitle = (TextView) v.findViewById(R.id.title);
             vDate = (TextView) v.findViewById(R.id.date);
             vAuthor = (TextView) v.findViewById(R.id.author);
             vBody = (FoldableTextView) v.findViewById(R.id.body);
+            vSeeMore = (TextView) v.findViewById(R.id.seeMore);
             mExpanded = false;
             if (expandedViews == null)
                 expandedViews = new HashSet();
@@ -81,8 +83,10 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
 
             if (mExpanded) {
                 expandedViews.add(vId);
+                vSeeMore.setVisibility(View.GONE);
             } else {
                 expandedViews.remove(vId);
+                vSeeMore.setVisibility(View.VISIBLE);
             }
         }
     }

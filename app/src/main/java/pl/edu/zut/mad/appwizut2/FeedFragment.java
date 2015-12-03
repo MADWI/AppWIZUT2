@@ -1,16 +1,15 @@
 package pl.edu.zut.mad.appwizut2;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +34,7 @@ public abstract class FeedFragment extends Fragment{
     private String pageContent;
     private RecyclerView itemListView;
     private String addressUrl;
-
+    private Context context;
     private static final Pattern patternQuot = Pattern.compile("(&quot;)");
 
     protected void setFeedUrl(String addressUrl) {
@@ -43,30 +42,26 @@ public abstract class FeedFragment extends Fragment{
     }
 
     protected View initView(LayoutInflater inflater, ViewGroup container, Context context) {
+        this.context = context;
+
         View rootView = inflater.inflate(R.layout.item_list, container, false);
         itemListView = (RecyclerView) rootView.findViewById(R.id.itemList);
-      //  itemListView.setHasFixedSize(true);
+        itemListView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         itemListView.setLayoutManager(layoutManager);
 
-        HTTPConnect con = new HTTPConnect(addressUrl, context);
-        pageContent = con.getContent();
+        DownloadContentTask task = new DownloadContentTask();
+        task.execute(addressUrl);
 
-        if (pageContent != null) {
-            createItemList();
-        } else {
-            Toast.makeText(context, R.string.err_internet, Toast.LENGTH_SHORT).show();
-            Log.e("Internet", "No internet connection");
-        }
         return rootView;
     }
 
-    protected boolean createItemList() {
+    private List<ListItemContainer> createItemList(String pageContent) {
+        List<ListItemContainer> itemList = new ArrayList<>();
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
             JSONArray arrayContent = jsonPageContent.getJSONArray(TAG_ENTRY);
-            List<ListItemContainer> result = new ArrayList<>();
 
             for (int i = 0; i < arrayContent.length(); i++) {
                 ListItemContainer listItemContainer = new ListItemContainer();
@@ -81,15 +76,49 @@ public abstract class FeedFragment extends Fragment{
                 body = matcher.replaceAll("\"");
 
                 listItemContainer.setBody(body);
-                result.add(listItemContainer);
+                itemList.add(listItemContainer);
             }
-            ListItemAdapter listItemAdapter = new ListItemAdapter(result);
-            itemListView.setAdapter(listItemAdapter);
 
         } catch (JSONException e) {
-            Log.e("JSON: ", e.getMessage());
-            return false;
+            Log.e("FeedFragment: ","JSONException:" + e.getMessage());
+            return null;
         }
-        return true;
+        return itemList;
+    }
+
+    private class DownloadContentTask extends AsyncTask<String, Void, Void> {
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setMessage("Downloading");
+            progressDialog.show();
+
+            if (!HTTConnect.isOnline(context)) {
+                cancel(true);
+                progressDialog.dismiss();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            HTTConnect connection = new HTTConnect(addressUrl);
+            pageContent = connection.getPage();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            List<ListItemContainer> itemList = createItemList(pageContent);
+            if(itemList != null){
+                ListItemAdapter listItemAdapter = new ListItemAdapter(itemList);
+                itemListView.setAdapter(listItemAdapter);
+            }
+            progressDialog.dismiss();
+        }
     }
 }

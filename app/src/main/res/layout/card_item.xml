@@ -12,7 +12,7 @@ android:layout_margin="5dp">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/announcement_view"
+    android:id="@+id/cardItemView"
     android:background="@color/white">
 
     <RelativeLayout
@@ -80,6 +80,23 @@ android:layout_margin="5dp">
         android:textSize="16sp"
         android:layout_below="@id/itemHeaderLayout"
         android:layout_marginTop="1dp"/>
+
+    <TextView
+        android:id="@+id/seeMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="5sp"
+        android:paddingBottom="4sp"
+        android:text="... Zobacz więcej"
+
+        android:textSize="12sp"
+        android:textColor="@color/caldroid_holo_blue_light"
+        android:textStyle="bold"
+        android:background="@color/backgroundGray"
+        android:layout_below="@id/itemHeaderLayout"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
 

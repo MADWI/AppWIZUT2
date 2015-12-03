@@ -77,10 +77,12 @@ public class FoldableTextView extends AppCompatTextView {
                     mExpandness = (Float) valueAnimator.getAnimatedValue();
                     requestLayout();
                 }
+
             });
 
             mAnim.setDuration(500);
             mAnim.start();
+
         } else {
             mAnim = null;
             mExpandness = targetExpandness;
