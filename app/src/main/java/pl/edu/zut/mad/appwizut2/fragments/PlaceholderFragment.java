@@ -2,14 +2,12 @@ package pl.edu.zut.mad.appwizut2.fragments;
 
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import pl.edu.zut.mad.appwizut2.R;
 
 
@@ -52,6 +50,4 @@ public class PlaceholderFragment extends Fragment {
         ((TextView) view.findViewById(R.id.placeholder_text)).setText(mPlaceholderTitle + FILLER_TEXT);
         return view;
     }
-
-
 }
