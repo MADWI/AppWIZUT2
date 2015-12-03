@@ -1,9 +1,11 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.utils;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
+
+import pl.edu.zut.mad.appwizut2.R;
 
 /**
  * Created by mb on 30.11.15.

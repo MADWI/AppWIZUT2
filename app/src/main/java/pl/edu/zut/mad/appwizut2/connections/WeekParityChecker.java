@@ -518,7 +518,7 @@ public class WeekParityChecker {
 	private static String getURLSource(String url) {
 		String do_obrobki = "";
 
-		strona = new HttpConnect(1000000, url);
+		strona = new HttpConnect(url);
 		do_obrobki = strona.getPage();
 
 		return do_obrobki;

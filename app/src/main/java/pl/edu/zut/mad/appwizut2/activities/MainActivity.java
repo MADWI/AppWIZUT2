@@ -1,15 +1,10 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.activities;
 
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,16 +21,15 @@ import com.roomorama.caldroid.CaldroidListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import pl.edu.zut.mad.appwizut2.connections.GetPlanChanges;
-import pl.edu.zut.mad.appwizut2.connections.PlanyChangesHandler;
+import pl.edu.zut.mad.appwizut2.fragments.AnnouncementFragment;
+import pl.edu.zut.mad.appwizut2.fragments.PlaceholderFragment;
+import pl.edu.zut.mad.appwizut2.fragments.PlanChangesFragment;
+import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.connections.WeekParityChecker;
-import pl.edu.zut.mad.appwizut2.models.DayParity;
-import pl.edu.zut.mad.appwizut2.models.MessagePlanChanges;
 
 
 public class MainActivity extends AppCompatActivity
@@ -77,54 +71,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //proźba o uprawnienia Android *M*
-        WeekParityChecker.checkMPermission(this);
 
-        /**
-         * Przykład jak korzystać z offlie API
-         */
-        /*
-        boolean canTestOffline = true;
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED){
-                    canTestOffline = false;
-            }
-        }
-
-        if (canTestOffline) {
-             PlanyChangesHandler handler = new PlanyChangesHandler(getBaseContext());
-            handler.getLastMessage(new PlanyChangesHandler.DataCallback() {
-                @Override
-                public void foundData(ArrayList<MessagePlanChanges> data) {
-                    System.out.println("ee");
-                }
-            });
-            handler.getCurrentData(new PlanyChangesHandler.DataCallback() {
-                @Override
-                public void foundData(ArrayList<MessagePlanChanges> data) {
-                    System.out.println("ee");
-                }
-            });
-
-             WeekParityChecker checker = new WeekParityChecker(getBaseContext());
-
-            checker.getNextDaysParity(new WeekParityChecker.DataTwoDaysCallback() {
-                @Override
-                public void twoDaysData(String[] data) {
-                    System.out.println("ee");
-                }
-            });
-            checker.getCurrentData(new WeekParityChecker.DataCallback() {
-                @Override
-                public void foundData(ArrayList<DayParity> data) {
-                    System.out.println("ee");
-                }
-            });
-
-
-        }
-        */
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

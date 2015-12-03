@@ -1,16 +1,18 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.models;
+
+import java.io.Serializable;
 
 /**
  * Created by macko on 04.11.2015.
  */
-public class ListItemContainer {
+public class ListItemContainer implements Serializable {
     private String title;
     private String date;
     private String author;
     private String body;
     private String id;
 
-    ListItemContainer() {
+    public ListItemContainer() {
         this.title = "";
         this.date = "";
         this.author = "";
@@ -18,7 +20,7 @@ public class ListItemContainer {
         this.id = "";
     }
 
-    ListItemContainer(String title, String date, String body, String author, String id) {
+    public ListItemContainer(String title, String date, String body, String author, String id) {
         this.title = title;
         this.date = date;
         this.author = author;

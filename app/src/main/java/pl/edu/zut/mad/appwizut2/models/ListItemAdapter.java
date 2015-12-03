@@ -1,4 +1,4 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.models;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.util.Linkify;
@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import java.util.HashSet;
 import java.util.List;
+
+import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.utils.FoldableTextView;
 
 /**
  * Created by macko on 04.11.2015.

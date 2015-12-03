@@ -1,4 +1,4 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.fragments;
 
 
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
+import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.connections.WeekParityChecker;
 
 
