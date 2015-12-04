@@ -8,12 +8,9 @@ import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.network.PlanDownloader;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -24,7 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -34,6 +30,11 @@ public class MyGroups extends Activity implements OnClickListener {
      * Zmienna do debuggowania.
      */
     private static final String TAG = "SettingActivity";
+
+    /**
+     * savedInstanceState entry name used storing contents of page 2 during group selection
+     */
+    private static final String STATE_AVAILABLE_GROUPS = "avGroups";
 
     /** Obiekt klasy SharedPreferences (plik ustawien) */
     private SharedPreferences preferences;
@@ -95,6 +96,12 @@ public class MyGroups extends Activity implements OnClickListener {
     /** Zmienna w ktorej przechowywany jest rok studiow */
     private int rok;
 
+    /**
+     * Grupy które mogą być wybrane z menu na drugiej stronie,
+     * null jeśli nie przeszło się jeszcze na drugą stronę
+     */
+    private String[] mAvailableGroups = null;
+
     /** Metoda wywolywana przy starcie aktywnosci */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,6 +134,18 @@ public class MyGroups extends Activity implements OnClickListener {
 		 */
         res = getApplicationContext().getResources();
 
+        if (savedInstanceState != null) {
+            mAvailableGroups = savedInstanceState.getStringArray(STATE_AVAILABLE_GROUPS);
+            if (mAvailableGroups != null) {
+                switchToGroupSelection();
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArray(STATE_AVAILABLE_GROUPS, mAvailableGroups);
     }
 
     /** Metoda wywolywana przez klikniecie w dane View */
@@ -149,7 +168,7 @@ public class MyGroups extends Activity implements OnClickListener {
                                     + Integer.toString(rok));
                     if (HttpConnect.isOnline(this.getApplicationContext())) {
                         downloadGroups = new AsyncTaskDownloadGroups();
-                        downloadGroups.execute(this.getApplicationContext());
+                        downloadGroups.execute();
                     }
                 } else {
                     // second click , save group/type and refresh layout
@@ -160,8 +179,7 @@ public class MyGroups extends Activity implements OnClickListener {
                     SharedPrefUtils.saveString(preferences, Constans.TYPE, spinType
                             .getSelectedItem().toString());
 
-                    Intent refresh = Intents.actionRefresh(this);
-                    startService(refresh);
+                    Toast.makeText(this, "TODO: Maybe refresh schedule now", Toast.LENGTH_SHORT).show();
 
                     finish();
                 }
@@ -176,16 +194,12 @@ public class MyGroups extends Activity implements OnClickListener {
 
     /** Klasa realizujaca pobieranie grup dziekanskich ze strony */
     private class AsyncTaskDownloadGroups extends
-            AsyncTask<Context, Void, String[]> {
-
-        /** Obiekt klasy Context */
-        private Context ctx;
+            AsyncTask<Void, Void, String[]> {
 
         /** Wykonywanie zadan w tle watku glownego */
         @Override
-        protected String[] doInBackground(Context... params) {
+        protected String[] doInBackground(Void... params) {
             Log.i(TAG, "doInBackground");
-            ctx = params[0];
 
             String[] tempGroups = null;
 
@@ -213,30 +227,31 @@ public class MyGroups extends Activity implements OnClickListener {
             progresDialog.dismiss();
 
             if (result != null && result.length > 0) {
-                pick_studies.setVisibility(View.INVISIBLE);
-                pic_group.setVisibility(View.VISIBLE);
-
-                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                        ctx, android.R.layout.simple_spinner_item, result);
-
-                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                spinGroup.setAdapter(spinnerArrayAdapter);
+                mAvailableGroups = result;
+                switchToGroupSelection();
 
             } else
-                Toast.makeText(ctx,
-                        ctx.getString(R.string.cannot_download_groups),
+                Toast.makeText(MyGroups.this,
+                        getString(R.string.cannot_download_groups),
                         Toast.LENGTH_SHORT).show();
 
         }
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
+    /**
+     * Switch view to group selection (step 2)
+     */
+    private void switchToGroupSelection() {
+        pick_studies.setVisibility(View.INVISIBLE);
+        pic_group.setVisibility(View.VISIBLE);
 
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(
+                MyGroups.this, android.R.layout.simple_spinner_item, mAvailableGroups);
+
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinGroup.setAdapter(spinnerArrayAdapter);
     }
 
 }
