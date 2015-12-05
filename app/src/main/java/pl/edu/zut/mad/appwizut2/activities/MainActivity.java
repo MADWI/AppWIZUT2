@@ -117,6 +117,11 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.event_calendar) {
+            DrawerFragmentItem drawerFragmentItem = findDrawerItemFragmentWithId(id);
+            if (drawerFragmentItem != null) {
+                openFragment(drawerFragmentItem);
+                rememberSelectedItem(drawerFragmentItem);
+            }
             return true;
         }
 

@@ -191,7 +191,7 @@ public class WeekParityChecker {
 
 						String dayOfTheWeek = weekdays[dateJSON.get(Calendar.DAY_OF_WEEK)];
 						daysParityList.add(new DayParity(date, dayType, dayOfTheWeek,
-								dateJSON));
+								0, dateJSON));
 					}
 
 				}

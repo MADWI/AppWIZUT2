@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.utils.FoldableTextView;
@@ -43,11 +44,11 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         holder.vId = Integer.valueOf(item.getId());
 
         if (ListItemViewHolder.expandedViews.contains(holder.vId)){
-            holder.vBody.setExpanded(true, false);
+            holder.vBody.setExpanded(true, false, holder.vSeeMore);
             holder.mExpanded = true;
             holder.vSeeMore.setVisibility(View.GONE);
         } else {
-            holder.vBody.setExpanded(false, false);
+            holder.vBody.setExpanded(false, false, holder.vSeeMore);
             holder.mExpanded = false;
             holder.vSeeMore.setVisibility(View.VISIBLE);
         }
@@ -75,11 +76,12 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
             vTitle = (TextView) v.findViewById(R.id.title);
             vDate = (TextView) v.findViewById(R.id.date);
             vAuthor = (TextView) v.findViewById(R.id.author);
-            vBody = (FoldableTextView) v.findViewById(R.id.body);
-            vBody.setAutoLinkMask(Linkify.WEB_URLS);
-            vBody.setOnClickListener(this);
             vSeeMore = (TextView) v.findViewById(R.id.seeMore);
-            mExpanded = false;
+            vBody = (FoldableTextView) v.findViewById(R.id.body);
+            vBody.setOnClickListener(this);
+            vBody.setLinksClickable(true);
+            vBody.setAutoLinkMask(Linkify.WEB_URLS);
+
             if (expandedViews == null)
                 expandedViews = new HashSet();
         }
@@ -87,14 +89,12 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         @Override
         public void onClick(View v) {
             mExpanded = !mExpanded;
-            vBody.setExpanded(mExpanded, true);
+            vBody.setExpanded(mExpanded, true, vSeeMore);
 
             if (mExpanded) {
                 expandedViews.add(vId);
-                vSeeMore.setVisibility(View.GONE);
             } else {
                 expandedViews.remove(vId);
-                vSeeMore.setVisibility(View.VISIBLE);
             }
         }
     }

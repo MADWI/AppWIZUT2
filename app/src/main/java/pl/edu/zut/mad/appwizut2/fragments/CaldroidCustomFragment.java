@@ -24,12 +24,13 @@ import java.util.concurrent.ExecutionException;
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
+import pl.edu.zut.mad.appwizut2.utils.EventsManager;
 import pl.edu.zut.mad.appwizut2.utils.WeekParityChecker;
 
 public class CaldroidCustomFragment extends CaldroidFragment {
 
     private final WeekParityChecker checker = new WeekParityChecker();
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
+    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
     private static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy");
     private static ArrayList<DayParity> parityList;
     private TextView clickedDate;
@@ -50,6 +51,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         }
         // Call super
         super.onCreate(savedInstanceState);
+
 
         if (parityList == null) {
             try {
@@ -95,6 +97,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         HashMap hm = new HashMap();
         // Put elements to the map
 
+        HashMap events = new HashMap();
         if (parityList != null) {
             for (DayParity dayParities : parityList) {
                 String parity = dayParities.getParity();
@@ -103,8 +106,15 @@ public class CaldroidCustomFragment extends CaldroidFragment {
                 } else {
                     hm.put(ParseDate(dayParities.getDate()), R.color.uneven);
                 }
+                int eventsCount = dayParities.getEventsCount();
+                if(eventsCount > 0){
+                    events.put(dayParities.getDate(),eventsCount);
+                }
             }
         }
+        HashMap<String, Object> extraData = getExtraData();
+        extraData.put("EVENTS", events);
+
         if (!hm.isEmpty()) {
             setBackgroundResourceForDates(hm);
         }

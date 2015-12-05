@@ -1,9 +1,13 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import pl.edu.zut.mad.appwizut2.R;
 
@@ -63,7 +67,7 @@ public class FoldableTextView extends AppCompatTextView {
      * @param expanded true to expand, false to fold
      * @param animate true for animation, false for instant set
      */
-    public void setExpanded(boolean expanded, boolean animate) {
+    public void setExpanded(final boolean expanded, boolean animate, final TextView vSeeMore) {
         // If animation is running, cancel it
         if (mAnim != null) {
             mAnim.cancel();
@@ -80,6 +84,29 @@ public class FoldableTextView extends AppCompatTextView {
                     requestLayout();
                 }
 
+            });
+            mAnim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    if (expanded)
+                        vSeeMore.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (!expanded)
+                        vSeeMore.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
             });
 
             mAnim.setDuration(500);
