@@ -41,7 +41,7 @@ public class TimetableFragment extends Fragment implements ScheduleLoader.Schedu
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        new ScheduleLoader().getSchedule(this);
+        new ScheduleLoader(getActivity()).getSchedule(this);
     }
 
     @Nullable
