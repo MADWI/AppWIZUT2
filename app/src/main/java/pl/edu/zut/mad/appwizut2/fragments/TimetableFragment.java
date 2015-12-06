@@ -20,12 +20,14 @@ import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
+import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
+import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.ScheduleLoader;
 
 /**
  * Created by Dawid on 19.11.2015.
  */
-public class TimetableFragment extends Fragment implements ScheduleLoader.ScheduleLoadedListener {
+public class TimetableFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable> {
 
     private ViewPager mPager;
 
@@ -36,12 +38,20 @@ public class TimetableFragment extends Fragment implements ScheduleLoader.Schedu
     private Timetable mTimetable;
 
     private List<TimetableDayFragment> mActiveDayFragments = new ArrayList<>();
+    private ScheduleLoader mScheduleLoader;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        new ScheduleLoader(getActivity()).getSchedule(this);
+        mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleLoader.class);
+        mScheduleLoader.registerAndLoad(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        mScheduleLoader.unregister(this);
+        super.onDestroy();
     }
 
     @Nullable
@@ -70,7 +80,7 @@ public class TimetableFragment extends Fragment implements ScheduleLoader.Schedu
     }
 
     @Override
-    public void onScheduleLoaded(Timetable timetable) {
+    public void onDataLoaded(Timetable timetable) {
         if (timetable != null) {
             mTimetable = timetable;
             for (TimetableDayFragment dayFragment : mActiveDayFragments) {
@@ -109,6 +119,10 @@ public class TimetableFragment extends Fragment implements ScheduleLoader.Schedu
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.refresh) {
+            mScheduleLoader.requestRefresh();
+            return true;
+        }
         if (item.getItemId() == R.id.view_pdf) {
             Toast.makeText(getActivity(), "TODO: Show pdf", Toast.LENGTH_SHORT).show();
             return true;

@@ -1,14 +1,12 @@
 package pl.edu.zut.mad.appwizut2.network;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -24,7 +22,7 @@ import pl.edu.zut.mad.appwizut2.models.Timetable;
  * Helper class for loading schedule
  */
 // TODO: Refactor all the Loaders/OfflineHandlers/Checkers; make some common superclass
-public class ScheduleLoader {
+public class ScheduleLoader extends BaseDataLoader<Timetable> {
 
     /** Log tag */
     private static final String TAG = "ScheduleLoader";
@@ -32,11 +30,118 @@ public class ScheduleLoader {
     private static final String PARSED_SCHEDULE_URL = "http://bm29640.zut.edu.pl/parsed-schedules/PlanGrup/%s.json";
     private static final String PDF_SCHEDULE_URL = "http://wi.zut.edu.pl/Wydruki/PlanGrup/%s.pdf";
 
+    /**
+     * Group for which we're loading data
+     * in format used in paths on server e.g. "Stacjonarne/I1-110"
+     */
+    private String mGroup;
 
-    private Context mContext;
+    /**
+     * Date the schedule was last modified
+     */
+    private long mLastModified;
 
-    public ScheduleLoader(Context context) {
-        mContext = context.getApplicationContext(); // Don't leak activity
+    /**
+     * Schedule that we currently use; may be from or
+     */
+    private String mJsonScheduleAsString;
+
+    ScheduleLoader(DataLoadingManager loadingManager) {
+        super(loadingManager);
+        mGroup = getGroupFromSettings(getContext());
+    }
+
+    @Override
+    protected void onSettingsChanged() {
+        String newGroup = getGroupFromSettings(getContext());
+        if (!newGroup.equals(mGroup)) {
+            mLastModified = 0;
+            requestRefresh();
+        }
+    }
+
+    @Override
+    protected String getCacheName() {
+        return "Schedule";
+    }
+
+    @Override
+    protected boolean doDownload(boolean skipCache) {
+        HttpConnect conn = new HttpConnect(String.format(PARSED_SCHEDULE_URL, mGroup));
+        if (!skipCache) {
+            conn.ifModifiedSince(mLastModified);
+        }
+        try {
+            if (!conn.isNotModified()) {
+                mLastModified = conn.getLastModified();
+                mJsonScheduleAsString = conn.readAllAndClose();
+            }
+        } catch (IOException e) {
+            Log.w(TAG, "Unable to download data", e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected boolean loadFromCache(File cacheFile) {
+        DataInputStream cacheInput = null;
+        try {
+            cacheInput = new DataInputStream(new FileInputStream(cacheFile));
+
+            // 1: String indicating group for which the schedule is for
+            boolean isCached = mGroup.equals(cacheInput.readUTF());
+            if (!isCached) {
+                throw new Exception(); // Skip cache load
+            }
+
+            // 2: Last modified
+            mLastModified = cacheInput.readLong();
+
+            // 3: Actual cached data
+            mJsonScheduleAsString = cacheInput.readUTF();
+
+        } catch (Exception e) {
+            // No cache, force load
+            mLastModified = 0;
+            return false;
+        } finally {
+            IoUtils.closeQuietly(cacheInput);
+        }
+        return true;
+    }
+
+    @Override
+    protected boolean saveToCache(File cacheFile) {
+        DataOutputStream cacheOutput = null;
+        try {
+            cacheOutput = new DataOutputStream(new FileOutputStream(cacheFile));
+
+            // 1: String indicating group for which the schedule is for
+            cacheOutput.writeUTF(mGroup);
+
+            // 2: Last modified
+            cacheOutput.writeLong(mLastModified);
+
+            // 3: Actual cached data
+            cacheOutput.writeUTF(mJsonScheduleAsString);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to write cache", e);
+            return false;
+        } finally {
+            IoUtils.closeQuietly(cacheOutput);
+        }
+        return true;
+    }
+
+    @Override
+    protected Timetable getData() {
+        try {
+            return parseSchedule(new JSONObject(mJsonScheduleAsString));
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to parse schedule", e);
+            return null;
+        }
     }
 
     private Timetable parseSchedule(JSONObject json) {
@@ -90,111 +195,8 @@ public class ScheduleLoader {
         }
     }
 
-
-    public void getSchedule(final ScheduleLoadedListener callback) {
-        final String group = "Stacjonarne/I1-110"; // TODO: load from settings
-
-
-        new AsyncTask<Void, Void, Timetable>() {
-            @Override
-            protected Timetable doInBackground(Void... params) {
-                File cacheFile = new File(mContext.getFilesDir(), "Schedule");
-
-                String json = null;
-                long lastModified = 0;
-                boolean isCached;
-                boolean isDownloaded = false;
-
-                // Load cache and info
-                DataInputStream cacheInput = null;
-                try {
-                    cacheInput = new DataInputStream(new FileInputStream(cacheFile));
-
-                    // 1: String indicating group for which the schedule is for
-                    isCached = group.equals(cacheInput.readUTF());
-                    if (!isCached) {
-                        throw new Exception(); // Skip cache load
-                    }
-
-                    // 2: Last modified
-                    lastModified = cacheInput.readLong();
-
-                    // 3: Actual cached data
-                    json = cacheInput.readUTF();
-
-                } catch (Exception e) {
-                    // No cache, force load
-                    isCached = false;
-                } finally {
-                    closeQuietly(cacheInput);
-                }
-
-                // Download data
-                HttpConnect conn = new HttpConnect(String.format(PARSED_SCHEDULE_URL, group));
-                if (isCached) {
-                    conn.ifModifiedSince(lastModified);
-                }
-                try {
-                    if (!conn.isNotModified()) {
-                        lastModified = conn.getLastModified();
-                        json = conn.readAllAndClose();
-                        isDownloaded = true;
-                    }
-                } catch (IOException e) {
-                    Log.w(TAG, "Unable to download data", e);
-                }
-
-                // Save data to cache
-                if (isDownloaded) {
-                    DataOutputStream cacheOutput = null;
-                    try {
-                        cacheOutput = new DataOutputStream(new FileOutputStream(cacheFile));
-
-                        // 1: String indicating group for which the schedule is for
-                        cacheOutput.writeUTF(group);
-
-                        // 2: Last modified
-                        cacheOutput.writeLong(lastModified);
-
-                        // 3: Actual cached data
-                        cacheOutput.writeUTF(json);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to write cache", e);
-                    } finally {
-                        closeQuietly(cacheOutput);
-                    }
-                }
-
-                try {
-                    if (json != null) {
-                        return parseSchedule(new JSONObject(json));
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "Failed to parse schedule", e);
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Timetable timetable) {
-                callback.onScheduleLoaded(timetable);
-            }
-        }.execute();
+    static String getGroupFromSettings(Context context) {
+        return  "Stacjonarne/I1-110"; // TODO: really load from settings
     }
 
-    public interface ScheduleLoadedListener {
-        void onScheduleLoaded(Timetable timetable);
-    }
-
-
-    // TODO: Make public? (If so, then move to more appropriate class)
-    // Based on Apache Commons
-    private static void closeQuietly(Closeable input) {
-        try {
-            if (input != null) {
-                input.close();
-            }
-        } catch (IOException ignored) {
-        }
-    }
 }
