@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ public class PlaceholderFragment extends Fragment {
     // Text at top of placeholder fragment
     private static final String ARG_PLACEHOLDER_TITLE = "placeholder_title";
     private String mPlaceholderTitle;
+
 
     private static final String FILLER_TEXT = new String(new byte[100]).replace("\0", "\nABCD");
 
@@ -52,6 +54,5 @@ public class PlaceholderFragment extends Fragment {
         ((TextView) view.findViewById(R.id.placeholder_text)).setText(mPlaceholderTitle + FILLER_TEXT);
         return view;
     }
-
 
 }
