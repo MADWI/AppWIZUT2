@@ -55,7 +55,7 @@ public class PlanDownloader {
         Log.d(TAG, "Stopien: " + Integer.valueOf(stopien));
         Log.d(TAG, "Rok: " + Integer.valueOf(rok));
 
-        HttpConnect con = new HttpConnect(10000, siteIn + rodzajStudiow);
+        HttpConnect con = new HttpConnect(siteIn + rodzajStudiow);
         String site = null;
 
         // String[] outputTab = new String[]; //- Pamiec jest chyba dynamicznie

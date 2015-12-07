@@ -13,8 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 
+import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
-import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 
 /**
  * Klasa sprawdzajaca nieparzystosc/parzystosc dni tygodnia
@@ -198,7 +198,7 @@ public class WeekParityChecker {
     private static String getURLSource(String url) {
         String do_obrobki = "";
 
-        strona = new HttpConnect(100000, url);
+        strona = new HttpConnect(url);
         do_obrobki = strona.getPage();
 
         return do_obrobki;

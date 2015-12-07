@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 /**
  * Klasa wspomagajaca prace z SharedPreferences
  *
+ * 
  * @author Sebastian Swierczek
  * */
 public class SharedPrefUtils {
@@ -29,6 +30,7 @@ public class SharedPrefUtils {
     /**
      * Metoda czyszczaca dane z SharedPreferences
      *
+     * 
      * @param ctx
      *            kontekst aplikacji
      */
@@ -42,7 +44,6 @@ public class SharedPrefUtils {
 
     /**
      * Metoda do zapisu informacji w SharedPreferences
-     *
      * @param preferences
      *            obiekt SharedPreferences w ktorym zapisane sa dane
      * @param key

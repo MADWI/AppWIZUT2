@@ -53,7 +53,7 @@
     <attr format="reference" name="drawerArrowStyle"/>
     <attr format="dimension" name="height"/>
     <attr format="boolean" name="isLightTheme"/>
-    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.2.1/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.3.1/res/values/values.xml -->
     <eat-comment/>
     <attr format="reference" name="styleCaldroidGridView"/>
     <attr format="reference" name="styleCaldroidLeftArrow"/>
@@ -80,6 +80,11 @@
     <color name="abc_search_url_text_selected">@android:color/black</color>
     <color name="accent_material_dark">@color/material_deep_teal_200</color>
     <color name="accent_material_light">@color/material_deep_teal_500</color>
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/colors.xml -->
+    <eat-comment/>
+    <color name="backgroundGray">#EEEEEE</color>
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values/values.xml -->
+    <eat-comment/>
     <color name="background_floating_material_dark">@color/material_grey_800</color>
     <color name="background_floating_material_light">@android:color/white</color>
     <color name="background_material_dark">@color/material_grey_850</color>
@@ -92,7 +97,7 @@
     <color name="bright_foreground_material_light">@android:color/black</color>
     <color name="button_material_dark">#ff5a595b</color>
     <color name="button_material_light">#ffd6d7d7</color>
-    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.2.1/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.3.1/res/values/values.xml -->
     <eat-comment/>
     <color name="caldroid_333">#333</color>
     <color name="caldroid_555">#555</color>
@@ -103,17 +108,22 @@
     <color name="caldroid_holo_blue_light">#ff33b5e5</color>
     <color name="caldroid_light_red">#ff7f7f</color>
     <color name="caldroid_lighter_gray">#ddd</color>
-    <color name="caldroid_middle_gray">#888</color>
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/colors.xml -->
+    <eat-comment/>
+    <color name="caldroid_middle_gray">#ffffff</color>
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.3.1/res/values/values.xml -->
+    <eat-comment/>
     <color name="caldroid_sky_blue">#FFA3E8F7</color>
     <color name="caldroid_transparent">#00000000</color>
     <color name="caldroid_white">#FFFFFF</color>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/colors.xml -->
     <eat-comment/>
+    <color name="calendar_default">#64B5F6</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryBright">#BBDEFB</color>
     <color name="colorPrimaryDark">#1976D2</color>
-    <color name="days_off">#817b7b</color>
+    <color name="days_off">#9E9E9E</color>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.android.support/design/23.1.0/res/values/values.xml -->
     <eat-comment/>
     <color name="design_fab_shadow_end_color">@android:color/transparent</color>
@@ -133,20 +143,20 @@
     <color name="dim_foreground_material_light">#ff323232</color>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/colors.xml -->
     <eat-comment/>
-    <color name="even">#ffdb00</color>
+    <color name="even">#E57373</color>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values/values.xml -->
     <eat-comment/>
     <color name="foreground_material_dark">@android:color/white</color>
     <color name="foreground_material_light">@android:color/black</color>
-    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/colors.xml -->
-    <eat-comment/>
-    <color name="green">#8FCC85</color>
-    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values/values.xml -->
-    <eat-comment/>
     <color name="highlighted_text_material_dark">#6680cbc4</color>
     <color name="highlighted_text_material_light">#66009688</color>
     <color name="hint_foreground_material_dark">@color/bright_foreground_disabled_material_dark</color>
     <color name="hint_foreground_material_light">@color/bright_foreground_disabled_material_light</color>
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/colors.xml -->
+    <eat-comment/>
+    <color name="item_date">#42A5F5</color>
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values/values.xml -->
+    <eat-comment/>
     <color name="material_blue_grey_800">#ff37474f</color>
     <color name="material_blue_grey_900">#ff263238</color>
     <color name="material_blue_grey_950">#ff21272b</color>
@@ -179,7 +189,8 @@
     <color name="switch_thumb_normal_material_light">#fff1f1f1</color>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/colors.xml -->
     <eat-comment/>
-    <color name="uneven">#73dfdf</color>
+    <color name="textGray">#424242</color>
+    <color name="uneven">#448AFF</color>
     <color name="white">#ffffff</color>
     <declare-styleable name="ActionBar"><attr name="navigationMode"><enum name="normal" value="0"/><enum name="listMode" value="1"/><enum name="tabMode" value="2"/></attr><attr name="displayOptions"><flag name="none" value="0"/><flag name="useLogo" value="0x1"/><flag name="showHome" value="0x2"/><flag name="homeAsUp" value="0x4"/><flag name="showTitle" value="0x8"/><flag name="showCustom" value="0x10"/><flag name="disableHome" value="0x20"/></attr><attr name="title"/><attr format="string" name="subtitle"/><attr format="reference" name="titleTextStyle"/><attr format="reference" name="subtitleTextStyle"/><attr format="reference" name="icon"/><attr format="reference" name="logo"/><attr format="reference" name="divider"/><attr format="reference" name="background"/><attr format="reference|color" name="backgroundStacked"/><attr format="reference|color" name="backgroundSplit"/><attr format="reference" name="customNavigationLayout"/><attr name="height"/><attr format="reference" name="homeLayout"/><attr format="reference" name="progressBarStyle"/><attr format="reference" name="indeterminateProgressStyle"/><attr format="dimension" name="progressBarPadding"/><attr name="homeAsUpIndicator"/><attr format="dimension" name="itemPadding"/><attr format="boolean" name="hideOnContentScroll"/><attr format="dimension" name="contentInsetStart"/><attr format="dimension" name="contentInsetEnd"/><attr format="dimension" name="contentInsetLeft"/><attr format="dimension" name="contentInsetRight"/><attr format="dimension" name="elevation"/><attr format="reference" name="popupTheme"/></declare-styleable>
     <declare-styleable name="ActionBarLayout"><attr name="android:layout_gravity"/></declare-styleable>
@@ -299,6 +310,7 @@
     <eat-comment/>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="body_of_card_min_height">40dp</dimen>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.android.support/design/23.1.0/res/values/values.xml -->
     <eat-comment/>
     <dimen name="design_appbar_elevation">4dp</dimen>
@@ -335,6 +347,7 @@
     <item format="float" name="disabled_alpha_material_light" type="dimen">0.26</item>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/dimens.xml -->
     <eat-comment/>
+    <dimen name="event_line_height">2dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.0/res/values/values.xml -->
     <eat-comment/>
@@ -1428,7 +1441,34 @@
         <item name="tabTextAppearance">@style/TextAppearance.Design.Tab</item>
         <item name="tabSelectedTextColor">?android:textColorPrimary</item>
     </style>
-    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.2.1/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="CaldroidCustomized" parent="CaldroidDefault">
+        <item name="styleCaldroidViewLayout">@style/CaldroidCustomizedCalendarViewLayout</item>
+        <item name="styleCaldroidMonthName">@style/CaldroidCustomizedMonthName</item>
+        <item name="styleCaldroidNormalCell">@style/CaldroidCustomizedNormalCell</item>
+        <item name="styleCaldroidSquareCell">@style/CaldroidCustomizedSquareCell</item>
+        <item name="styleCaldroidGridView">@style/CaldroidDefaultGridView</item>
+    </style>
+    <style name="CaldroidCustomizedCalendarViewLayout">
+        <item name="android:background">@color/calendar_default</item>
+    </style>
+    <style name="CaldroidCustomizedCell" parent="CaldroidDefaultCell">
+        <item name="android:textColor">@color/caldroid_white</item>
+        <item name="android:background">@color/calendar_default</item>
+    </style>
+    <style name="CaldroidCustomizedMonthName" parent="CaldroidDefaultMonthName">
+        <item name="android:textColor">@color/caldroid_white</item>
+    </style>
+    <style name="CaldroidCustomizedNormalCell" parent="CaldroidDefaultDarkCell">
+        <item name="android:padding">15dp</item>
+        <item name="android:background">@color/calendar_default</item>
+    </style>
+    <style name="CaldroidCustomizedSquareCell" parent="CaldroidCustomizedCell"/>
+    <style name="CaldroidCustomizedView" parent="CaldroidDefaultGridView">
+        <item name="android:background">@color/caldroid_white</item>
+    </style>
+    <!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.3.1/res/values/values.xml -->
     <eat-comment/>
     <style name="CaldroidDefault">
         <item name="styleCaldroidViewLayout">@style/CaldroidDefaultCalendarViewLayout</item>

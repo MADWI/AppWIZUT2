@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 /**
  * Klasa definiujaca stale uzyte w aplikacji
  *
+ *
  * @author Sebastian Swierczek, Dawid Glinski
  */
 public class Constans {
@@ -20,6 +21,17 @@ public class Constans {
 
     /** Stala definiujaca nazwe ostatniej zmiany planu */
     public static final String PLAN_LAST_MODIFIED = "plan_modified";
+
+
+    /** Stala definiujaca sciezke do folderu przechowywania planow */
+    public static final String PLAN_FOLDER = "/Plany";
+
+    /** Stala definiujaca maksymalna dlugosc tytulu zmiany w planie */
+    public static final int MAX_TITLE_LENGTH = 30;
+
+
+    /** Stała definiująca ostatnią datę pobrania dni dla danych offline w SharedPreferences */
+    public static final String LAST_DAY_PARITY_UPDATE = "last_date_update";
 
     /** Stala definiujaca nazwe parzystosci tygodnia */
     public static final String WEEK_PARITY = "week_parity";
@@ -39,10 +51,7 @@ public class Constans {
     /** Stala definiujaca nazwe akcji dla zmian w planie */
     public static final String ACTION_WIDGET_GET_PLAN_CHANGES = "PlanChangesAction";
 
-    /** Stala definiujaca sciezke do folderu przechowywania planow */
-    public static final String PLAN_FOLDER = "/MAD_Plan_ZUT";
-
-    /** Stala definiujaca maksymalna dlugosc tytulu zmiany w planie */
-    public static final int MAX_TITLE_LENGTH = 30;
+    /** offline data */
+    public static final String OFFLINE_DATA_FOLDER = "/Data";
 
 }
