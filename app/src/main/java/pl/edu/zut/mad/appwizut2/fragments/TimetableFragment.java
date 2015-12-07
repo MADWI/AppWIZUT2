@@ -124,7 +124,7 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             return true;
         }
         if (item.getItemId() == R.id.view_pdf) {
-            Toast.makeText(getActivity(), "TODO: Show pdf", Toast.LENGTH_SHORT).show();
+            new OpenSchedulePdfDialogFragment().show(getFragmentManager(), "OpenSchedulePdf");
             return true;
         }
         return super.onOptionsItemSelected(item);

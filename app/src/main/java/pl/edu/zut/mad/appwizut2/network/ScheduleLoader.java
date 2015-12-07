@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.models.Timetable;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
  * Helper class for loading schedule
@@ -26,9 +27,6 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
 
     /** Log tag */
     private static final String TAG = "ScheduleLoader";
-
-    private static final String PARSED_SCHEDULE_URL = "http://bm29640.zut.edu.pl/parsed-schedules/PlanGrup/%s.json";
-    private static final String PDF_SCHEDULE_URL = "http://wi.zut.edu.pl/Wydruki/PlanGrup/%s.pdf";
 
     /**
      * Group for which we're loading data
@@ -67,7 +65,7 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
 
     @Override
     protected boolean doDownload(boolean skipCache) {
-        HttpConnect conn = new HttpConnect(String.format(PARSED_SCHEDULE_URL, mGroup));
+        HttpConnect conn = new HttpConnect(String.format(Constants.PARSED_SCHEDULE_URL, mGroup));
         if (!skipCache) {
             conn.ifModifiedSince(mLastModified);
         }
@@ -136,6 +134,9 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
 
     @Override
     protected Timetable getData() {
+        if (mJsonScheduleAsString == null) {
+            return null;
+        }
         try {
             return parseSchedule(new JSONObject(mJsonScheduleAsString));
         } catch (JSONException e) {

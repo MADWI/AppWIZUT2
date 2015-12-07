@@ -6,9 +6,12 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * One liner usage
@@ -28,6 +31,14 @@ public class HttpConnect {
      * Zmienna do debuggowania.
      */
     private static final String TAG = "HttpConnect";
+
+    /**
+     * Content-range response header pattern
+     *
+     * eg:
+     * Content-Range: bytes 10-15/2000
+     */
+    public static final Pattern CONTENT_RANGE_PATTERN = Pattern.compile("bytes (\\d+)\\-(\\d+)/(\\d+)");
 
 
     private HttpURLConnection mUrlConnection;
@@ -78,6 +89,52 @@ public class HttpConnect {
     public boolean isNotModified() throws IOException {
         connectIfNeeded();
         return mUrlConnection.getResponseCode() == 304;
+    }
+
+
+    /**
+     * Request only part of document
+     */
+    public void requestRange(int fromByte, int length) {
+        mUrlConnection.setRequestProperty("Range", String.format("bytes=%d-%d", fromByte, fromByte + length));
+    }
+
+    /**
+     * Get length of full content even if this is range request
+     *
+     * Note: this result will be only available if provided by server in headers
+     */
+    public int getFullContentLength() throws IOException {
+        connectIfNeeded();
+        int responseCode = mUrlConnection.getResponseCode();
+        if (responseCode == 206) {
+            String contentRange = mUrlConnection.getHeaderField("Content-Range");
+            if (contentRange != null) {
+                Matcher matcher = CONTENT_RANGE_PATTERN.matcher(contentRange);
+                if (matcher.matches()) {
+                    return Integer.parseInt(matcher.group(3));
+                }
+            }
+            return -1;
+        } else {
+            return mUrlConnection.getContentLength();
+        }
+    }
+
+    /**
+     * Returns true if response is part of file as requested using {@link #requestRange(int, int)}
+     */
+    public boolean serverReturnedRangeResponse() throws IOException {
+        connectIfNeeded();
+        return mUrlConnection.getResponseCode() == HttpURLConnection.HTTP_PARTIAL;
+    }
+
+    /**
+     * Returns true if server responded that range request refers past end of file
+     */
+    public boolean serverReturnedRangeIsPastEOFResponse() throws IOException {
+        connectIfNeeded();
+        return mUrlConnection.getResponseCode() == 416 /* Range not acceptable */;
     }
 
     /**
@@ -140,6 +197,16 @@ public class HttpConnect {
     public void close() {
         mUrlConnection.disconnect();
         mUrlConnection = null;
+    }
+
+    /**
+     * Get InputStream for reading data from this connection
+     *
+     * If you use this, don't call {@link #readAllAndClose()}
+     * and call {@link #close()} on HttpConnect when you're done
+     */
+    public InputStream getInputStream() throws IOException {
+        return mUrlConnection.getInputStream();
     }
 
     /**

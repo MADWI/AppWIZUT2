@@ -16,7 +16,10 @@
     <string name="action_settings">Settings</string>
 
     <string name="no_Internet">Brak połączenia z Internetem</string>
+
     <string name="show_pdf">Pokaż PDF</string>
+    <string name="cannot_download_pdf">Cannot download schedule PDF</string>
+    <string name="cannot_open_pdf">Cannot open schedule PDF</string>
 
     <string-array name="week_days_short">
         <item>PON</item>

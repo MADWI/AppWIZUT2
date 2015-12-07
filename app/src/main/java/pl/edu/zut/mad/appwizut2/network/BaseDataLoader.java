@@ -164,7 +164,7 @@ public abstract class BaseDataLoader<Data> {
         /**
          * Called when new data arrived
          */
-        void onDataLoaded(Data timetable);
+        void onDataLoaded(Data data);
     }
 
 }
