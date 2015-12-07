@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/calendar_gridview"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:numColumns="7"
-    android:stretchMode="columnWidth"
-    style="?styleCaldroidGridView" />
-<!-- From: file:/Users/thomasdao/Documents/workspace/Caldroid/caldroid/src/main/res/layout/date_grid_fragment.xml --><!-- From: file:/C:/Users/Waldemar/Desktop/Correct_WIApp2015/AppWIZUT2/app/build/intermediates/exploded-aar/com.roomorama/caldroid/2.3.1/res/layout/date_grid_fragment.xml -->
