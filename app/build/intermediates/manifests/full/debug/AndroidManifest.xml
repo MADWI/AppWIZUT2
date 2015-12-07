@@ -31,13 +31,11 @@
         </activity>
         <activity
             android:name="pl.edu.zut.mad.appwizut2.activities.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait" >
+            android:label="@string/title_activity_settings" >
         </activity>
         <activity
             android:name="pl.edu.zut.mad.appwizut2.activities.MyGroups"
-            android:label="@string/group_settings_title"
-            android:screenOrientation="portrait" >
+            android:label="@string/group_settings_title" >
         </activity>
 
         <!-- <service android:name=".UpdateWidgetService" -->
