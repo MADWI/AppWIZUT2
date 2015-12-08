@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.GregorianCalendar;
 
 /**
- * 
+ *
  * @author Sebastian Swierczek
  * @version 1.0.0
  */
@@ -15,6 +15,7 @@ public class DayParity implements Serializable {
 	private String date;
 	private String parity;
 	private String dayName;
+	private int mEventsCount;
 	private GregorianCalendar gregorianCal;
 
 	public DayParity() {
@@ -22,16 +23,27 @@ public class DayParity implements Serializable {
 		setDate("");
 		setParity("");
 		setDayName("");
+        setEventsCount(0);
 		setGregorianCal(null);
 	}
 
 	public DayParity(String date, String parity, String dayName,
-					 GregorianCalendar gregorianCal) {
+					 int eventsCount, GregorianCalendar gregorianCal) {
 
 		this.setDate(date);
 		this.setParity(parity);
 		this.setDayName(dayName);
+        this.setEventsCount(eventsCount);
 		this.setGregorianCal(gregorianCal);
+	}
+
+
+	public int getEventsCount() {
+		return mEventsCount;
+	}
+
+	public void setEventsCount(int eventsCount) {
+		mEventsCount = eventsCount;
 	}
 
 	public String getParity() {

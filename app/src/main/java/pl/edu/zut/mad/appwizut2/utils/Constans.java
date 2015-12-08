@@ -1,5 +1,6 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
+
 import android.appwidget.AppWidgetManager;
 
 /**

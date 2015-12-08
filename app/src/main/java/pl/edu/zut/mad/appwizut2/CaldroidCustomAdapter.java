@@ -2,6 +2,7 @@ package pl.edu.zut.mad.appwizut2;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import hirondelle.date4j.DateTime;
+import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 
 /**
  * Created by Marcin on 2015-11-16.
@@ -29,6 +31,8 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View cellView = convertView;
 
+        HashMap events = (HashMap) extraData.get("EVENTS");
+
         // For reuse
         if (convertView == null) {
             cellView = inflater.inflate(R.layout.custom_cell, null);
@@ -43,8 +47,8 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
         TextView tv1 = (TextView) cellView.findViewById(R.id.tv1);
 
         // Example of setting event count
-        eventsIndicator.setLineCount(new Random().nextInt(7));
-        //eventsIndicator.setLineCount(2);
+        //eventsIndicator.setLineCount(new Random().nextInt(7));
+
 
         // Get dateTime of this cell
         DateTime dateTime = this.datetimeList.get(position);
@@ -65,10 +69,20 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
             cellView.setBackgroundResource(com.caldroid.R.drawable.red_border_gray_bg);
         }
 
+        int day = dateTime.getDay();
+        int month = dateTime.getMonth();
+        int year = dateTime.getYear();
 
+        String strDate = year + ".";
+        strDate += (month < 10) ? "0" + month + "." : month + ".";
+        strDate += (day < 10) ? "0" + day : day;
+
+        if(events.containsKey(strDate)) {
+            int count = (int )events.get(strDate);
+            eventsIndicator.setLineCount(count);
+        }
         tv1.setText("" + dateTime.getDay());
 
-        //TODO set dynamically width of date and events_container doesn't work...
 
         // Somehow after setBackgroundResource, the padding collapse.
         // This is to recover the padding

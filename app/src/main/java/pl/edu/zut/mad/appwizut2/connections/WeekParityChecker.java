@@ -1,13 +1,7 @@
 package pl.edu.zut.mad.appwizut2.connections;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -33,6 +27,7 @@ import java.util.GregorianCalendar;
 
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.utils.Constans;
+import pl.edu.zut.mad.appwizut2.utils.OfflineHandler;
 import pl.edu.zut.mad.appwizut2.utils.SharedPrefUtils;
 
 
@@ -43,9 +38,7 @@ import pl.edu.zut.mad.appwizut2.utils.SharedPrefUtils;
  * 
  */
 public class WeekParityChecker {
-
-	/** Obiekt klasy HttpConnect, sluzacy do polaczenia ze strona */
-	private static HttpConnect strona = null;
+	
 
 	/**
 	 * Zmienna zawierajaca adres strony z danymi o parzystosci tygodnia w formacie
@@ -68,42 +61,8 @@ public class WeekParityChecker {
 		this.context = context;
 	}
 
-	/**
-	 *Metoda tworząca podstawowe foldery niezbędne do obsługi zarówno parzystości jak i zmian w planie w trybie offline
-	 *
-	 *@author Damian Malarczyk
-	 */
-	public static void folderSetup(Context context){
-
-		File documents = context.getFilesDir();
 
 
-		boolean offlineFolder = new File(documents,Constans.OFFLINE_DATA_FOLDER).mkdirs();
-		File offlineMessagesFile = new File(documents,Constans.OFFLINE_DATA_FOLDER + "/Messages");
-		File daysParityFile = new File(documents, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
-		if (!offlineMessagesFile.exists()){
-			try {
-				offlineMessagesFile.createNewFile();
-				daysParityFile.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		//DM
-
-		return;// folder istnieje
-	}
-
-	public static void checkMPermission(Activity activity){
-		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-					!= PackageManager.PERMISSION_GRANTED){
-				ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_WRITE_EXTERNAL);
-			};
-
-		}
-	}
 	/**
 	 * Metoda zwraca tablice stringow, ktora mowi czy dzien obecny i nastepny jest
 	 * nieparzysty/parzysty.
@@ -174,7 +133,7 @@ public class WeekParityChecker {
 	private ArrayList<DayParity> getAllParity() {
 
 		String pageSource = getURLSource(ZUT_WI_JSON);
-		ArrayList<DayParity> daysParityList = new ArrayList<DayParity>();
+		ArrayList<DayParity> daysParityList = new ArrayList<>();
 
 		Calendar c = Calendar.getInstance();
 		int year = c.get(Calendar.YEAR);
@@ -232,7 +191,7 @@ public class WeekParityChecker {
 
 						String dayOfTheWeek = weekdays[dateJSON.get(Calendar.DAY_OF_WEEK)];
 						daysParityList.add(new DayParity(date, dayType, dayOfTheWeek,
-								dateJSON));
+								0, dateJSON));
 					}
 
 				}
@@ -300,13 +259,11 @@ public class WeekParityChecker {
 	 */
 	private void  saveIfChangesMade(){
         if (changesMade) {
-            folderSetup(context);
+            OfflineHandler.folderSetup(context);
             File dataFile = context.getFilesDir();
 
             try {
                 File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
-                if (!daysParityFile.exists())
-                    daysParityFile.createNewFile();
                 FileOutputStream daysOutput = new FileOutputStream(daysParityFile);
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(daysOutput);
                 objectOutputStream.writeObject(currentData);
@@ -330,16 +287,16 @@ public class WeekParityChecker {
 		try {
 			File daysParityFile = new File(dataFile, Constans.OFFLINE_DATA_FOLDER + "/DaysParity");
 			FileInputStream daysOutput = new FileInputStream(daysParityFile);
-			if (daysOutput != null) {
-				ObjectInputStream objectOutputStream = new ObjectInputStream(daysOutput);
 
-				ArrayList<DayParity> daysParityList = (ArrayList<DayParity>) objectOutputStream.readObject();
-				objectOutputStream.close();
-				daysOutput.close();
+			ObjectInputStream objectOutputStream = new ObjectInputStream(daysOutput);
 
-                return(trimDataTillToday(daysParityList));
+			ArrayList<DayParity> daysParityList = (ArrayList<DayParity>) objectOutputStream.readObject();
+			objectOutputStream.close();
+			daysOutput.close();
 
-			}
+            return(trimDataTillToday(daysParityList));
+
+
 
 		}catch (Exception e){
 			e.printStackTrace();
@@ -433,8 +390,8 @@ public class WeekParityChecker {
 	}
 
 	/**
-	 * Zwraca '-', kiedy nie ma danych o dwoch nastepnych dniach, tzn. weekend lub wolne
-	 *
+	 * Informacja odnośnie parzystości dnia obecnego i kolejnego
+	 * zwraca '-' gdy nie ma danych o danym dniu
 	 * Zwraca NULL gdy w danych offline nie ma odpowiedniej ilości danych
 	 * w tym przypadku niezbędne jest ponowne pobranie danych online (metoda @getParity)
 	 * @return parzystość dwóch następnych dni
@@ -517,7 +474,7 @@ public class WeekParityChecker {
 	private static String getURLSource(String url) {
 		String do_obrobki = "";
 
-		strona = new HttpConnect(url);
+		HttpConnect strona = new HttpConnect(url);
 		do_obrobki = strona.getPage();
 
 		return do_obrobki;

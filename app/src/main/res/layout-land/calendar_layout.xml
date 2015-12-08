@@ -29,12 +29,13 @@
             android:textStyle="normal"
             android:translationZ="3dp"/>
 
-        <ListView
-            android:id="@+id/calendarEvents"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <include
+            layout="@layout/item_list"
             android:background="@color/calendar_default"
-            android:layout_below="@+id/dateTextView" />
+            android:layout_below="@+id/dateTextView"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
     </RelativeLayout>
 
 </LinearLayout>

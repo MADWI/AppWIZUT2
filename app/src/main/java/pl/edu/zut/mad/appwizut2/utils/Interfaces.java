@@ -7,4 +7,9 @@ public class Interfaces {
     public interface Equatable<T> {
         boolean compares(T another);
     }
+    public interface CompletitionCallback {
+        void finished(Boolean success);
+    }
 }
+
+

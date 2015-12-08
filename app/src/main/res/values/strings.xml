@@ -20,6 +20,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="no_Internet">Brak połączenia z Internetem</string>
+    <string name="card_see_more">... Zobacz więcej</string>
 
     <!--Settings Strings -->
     <string name="title_activity_settings">Ustawienia</string>
