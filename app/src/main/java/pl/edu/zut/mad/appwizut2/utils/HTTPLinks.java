@@ -1,4 +1,4 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.utils;
 
 /**
  * Created by macko on 04.11.2015.

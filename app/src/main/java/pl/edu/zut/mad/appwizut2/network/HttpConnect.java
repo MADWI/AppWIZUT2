@@ -1,4 +1,4 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -14,7 +14,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import pl.edu.zut.mad.appwizut2.R;
+
+
 public class HttpConnect {
+
     /***
      * Zmienna do debuggowania.
      */
@@ -25,6 +29,7 @@ public class HttpConnect {
 
     private HttpURLConnection urlConnection;
     private URL url;
+
 
     /**
      * Konstruktor sluzacy do polaczenia ze strona WWW.
@@ -114,6 +119,7 @@ public class HttpConnect {
         ConnectivityManager cm = (ConnectivityManager) ctx
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
+
         if (ni != null && ni.isAvailable() && ni.isConnected()) {
             return true;
         } else {
@@ -122,4 +128,5 @@ public class HttpConnect {
             return false;
         }
     }
+
 }

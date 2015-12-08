@@ -1,13 +1,15 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.fragments;
 
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import pl.edu.zut.mad.appwizut2.R;
 
 
 /**
@@ -17,6 +19,7 @@ public class PlaceholderFragment extends Fragment {
     // Text at top of placeholder fragment
     private static final String ARG_PLACEHOLDER_TITLE = "placeholder_title";
     private String mPlaceholderTitle;
+
 
     private static final String FILLER_TEXT = new String(new byte[100]).replace("\0", "\nABCD");
 
@@ -37,6 +40,8 @@ public class PlaceholderFragment extends Fragment {
         if (getArguments() != null) {
             mPlaceholderTitle = getArguments().getString(ARG_PLACEHOLDER_TITLE);
         }
+
+        //caldroidFragment = new CaldroidFragment();
     }
 
     @Override

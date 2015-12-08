@@ -68,7 +68,7 @@ android:layout_margin="5dp">
 
     </RelativeLayout>
 
-    <pl.edu.zut.mad.appwizut2.FoldableTextView
+    <pl.edu.zut.mad.appwizut2.utils.FoldableTextView
         android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
