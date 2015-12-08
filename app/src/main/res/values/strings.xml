@@ -9,8 +9,13 @@
     <string name="nav_announcements">Ogłoszenia</string>
     <string name="nav_about_us">O nas</string>
     <string name="nav_settings">Ustawienia</string>
-    <string name="public_transport">Rozkład jazdy</string>
+    <string name="nav_public_transport">Rozkład jazdy</string>
     <string name="nav_plan_changes">Zmiany w planie</string>
+
+    <string name="mad_name">SKN Mobile Applications Developers</string>
+    <string name="authors">Autorzy:</string>
+    <string name="mentor">Opiekun koła naukowego:</string>
+    <string name="contact">Kontakt: </string>
 
     <string name="action_settings">Settings</string>
 

@@ -78,7 +78,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         }
 
         //setting toolbar title
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Kalendarz");
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_calendar);
 
         // Wrap calendarView into out fragment
         ViewGroup wrapper = (ViewGroup) inflater.inflate(R.layout.calendar_layout, container, false);
