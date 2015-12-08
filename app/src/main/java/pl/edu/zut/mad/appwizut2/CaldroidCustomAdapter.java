@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import hirondelle.date4j.DateTime;
+import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 
 /**
  * Created by Marcin on 2015-11-16.

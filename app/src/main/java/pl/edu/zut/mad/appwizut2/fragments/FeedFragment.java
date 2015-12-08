@@ -42,8 +42,8 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     private static final String TAG_BODY = "text";
     private static final String TAG_ENTRY = "entry";
     private static final String TAG_ID = "id";
-    private static final String INSTANCE_CURRENT_KEY = "current_data";
-    private static final String INSTANCE_CURRENT_SIZE = "current_size";
+    public static final String INSTANCE_CURRENT_KEY = "current_data";
+    public static final String INSTANCE_CURRENT_SIZE = "current_size";
 
 
 
@@ -129,7 +129,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
 
     }
 
-    private List<ListItemContainer> createItemList(String pageContent) {
+    public static List<ListItemContainer> createItemList(String pageContent) {
         List<ListItemContainer> itemList = new ArrayList<>();
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
