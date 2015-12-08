@@ -4,6 +4,7 @@ package pl.edu.zut.mad.appwizut2.utils;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +27,15 @@ import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
 /**
  * Created by Bartosz Kozajda on 23/11/2015.
  */
-public class BusTimetable extends ListFragment {
+public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
     private ProgressDialog pDialog;
     private static HttpConnect site = null;
     private String lineInfo ="";
     private String lineNo = "";
+    private SwipeRefreshLayout swipeRefreshLayout;
+    LayoutInflater inflater;
+    ViewGroup container;
+
 
     // JSON Node names
     private static final String TAG_DEPARTURES = "departures";
@@ -45,8 +50,6 @@ public class BusTimetable extends ListFragment {
 
     private String hour2;
     private int hour;
-
-    private int minute= Calendar.getInstance().get(Calendar.MINUTE);
     String str[], str2[];
 
     JSONArray departures = null;
@@ -54,7 +57,19 @@ public class BusTimetable extends ListFragment {
 
     protected View initView(LayoutInflater inflater, ViewGroup container) {
         View rootView = inflater.inflate(R.layout.bus_list_layout, container, false);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+        swipeRefreshLayout.setOnRefreshListener(this);
         return rootView;
+    }
+
+    public void onRefresh(){
+        swipeRefreshLayout.setRefreshing(true);
+        refreshList(inflater, container);
+    }
+
+    private void refreshList(LayoutInflater inflater, ViewGroup container) {
+        initUI();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void initUI() {
@@ -62,7 +77,7 @@ public class BusTimetable extends ListFragment {
         hour2 = Integer.toString(hour);
 
         TAG_HOUR = hour2;
-        TAG_HOUR2 = Integer.toString(hour+1);
+        TAG_HOUR2 = Integer.toString(hour + 1);
 
         departuresList = new ArrayList<HashMap<String, String>>();
 
@@ -71,7 +86,7 @@ public class BusTimetable extends ListFragment {
     }
 
     private class GetTimetables extends AsyncTask<Void, Void, Void> {
-
+        private int minute= Calendar.getInstance().get(Calendar.MINUTE);
         private int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         private String dep="";
         private String dep_next_hour="";

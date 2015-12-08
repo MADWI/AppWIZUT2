@@ -12,11 +12,11 @@ import pl.edu.zut.mad.appwizut2.utils.BusTimetable;
 /**
  * Created by barto on 23/11/2015.
  */
-public class BusTimetableFragment extends BusTimetable {
+public class BusTimetableFragment extends BusTimetable{
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         super.initUI();
         View rootView = super.initView(inflater, container);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_public_transport);
