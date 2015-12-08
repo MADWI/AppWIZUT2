@@ -1,7 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +19,7 @@ public class BusTimetableFragment extends BusTimetable{
         super.onCreate(savedInstanceState);
         super.initUI();
         View rootView = super.initView(inflater, container);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_public_transport);
         return rootView;
     }
 }

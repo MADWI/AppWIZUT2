@@ -36,14 +36,11 @@ public class HttpConnect {
 
 	/**
 	 * Konstruktor sluzacy do polaczenia ze strona WWW.
-	 *  @param timeout
-	 *            maksymalny czas oczekiwania na odpowiedz serwera w
-	 *            milisekundach
 	 * @param adres
 	 */
-	public HttpConnect(int timeout, String adres) {
+	public HttpConnect(String adres) {
 		strona = "";
-		TIMEOUT=timeout;
+		TIMEOUT=5000;
 
 		try {
 			url = new URL(adres);

@@ -254,7 +254,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
     private static String getURLSource(String url) {
         String for_json = "";
 
-        site = new HttpConnect(100000, url);
+        site = new HttpConnect(url);
         for_json = site.getPage();
 
         return for_json;
