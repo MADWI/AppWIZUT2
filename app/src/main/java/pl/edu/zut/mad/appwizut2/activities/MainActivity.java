@@ -22,6 +22,7 @@ import pl.edu.zut.mad.appwizut2.fragments.AnnouncementFragment;
 import pl.edu.zut.mad.appwizut2.fragments.BusTimetableFragment;
 import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlanChangesFragment;
+import pl.edu.zut.mad.appwizut2.fragments.TimetableFragment;
 
 
 public class MainActivity extends AppCompatActivity
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     private static final DrawerFragmentItem[] DRAWER_FRAGMENTS = new DrawerFragmentItem[]{
             new DrawerFragmentItem(R.id.plan_changes,   "chg", PlanChangesFragment.class),
             new DrawerFragmentItem(R.id.event_calendar, "cal", CaldroidCustomFragment.class),
+            new DrawerFragmentItem(R.id.timetable,      "tim", TimetableFragment.class),
             new DrawerFragmentItem(R.id.about_us,       "abo", AboutUsFragment.class),
             new DrawerFragmentItem(R.id.announcements,  "ann", AnnouncementFragment.class),
             new DrawerFragmentItem(R.id.public_transport, "tra", BusTimetableFragment.class)

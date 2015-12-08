@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings" >
@@ -29,6 +30,16 @@
             android:name=".activities.MyGroups"
             android:label="@string/group_settings_title" >
         </activity>
+
+        <provider
+            android:authorities="pl.edu.zut.mad.appwizut2.files"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
 
         <!--<service android:name=".UpdateWidgetService"-->
             <!--android:exported="true" >-->

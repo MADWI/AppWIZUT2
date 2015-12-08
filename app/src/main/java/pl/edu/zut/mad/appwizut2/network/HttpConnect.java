@@ -4,19 +4,27 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import pl.edu.zut.mad.appwizut2.R;
-
-
+/**
+ * One liner usage
+ *     page = new HttpConnect(address).readAllAndClose()
+ *
+ * Usage with cache (TODO: probably need cleanup)
+ *     HttpConnect conn = new HttpConnect(address)
+ *     conn.ifModifiedSince(lastModified)
+ *     if (!conn.isNotModified()) {
+ *         lastModified = conn.getLastModified()
+ *         page = conn.readAllAndClose()
+ *     }
+ */
 public class HttpConnect {
 
     /***
@@ -24,89 +32,188 @@ public class HttpConnect {
      */
     private static final String TAG = "HttpConnect";
 
-    /** Zmienna przechowujaca zrodlo strony jako String */
-    private String strona;
+    /**
+     * Content-range response header pattern
+     *
+     * eg:
+     * Content-Range: bytes 10-15/2000
+     */
+    public static final Pattern CONTENT_RANGE_PATTERN = Pattern.compile("bytes (\\d+)\\-(\\d+)/(\\d+)");
 
-    private HttpURLConnection urlConnection;
-    private URL url;
+
+    private HttpURLConnection mUrlConnection;
+
+    private boolean mDidConnect = false;
 
 
     /**
      * Konstruktor sluzacy do polaczenia ze strona WWW.
-     * @param adres
+     * @param address Address of page to load
      */
-    public HttpConnect(String adres) {
-        strona = "";
-
+    public HttpConnect(String address) {
         try {
-            url = new URL(adres);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            URL url = new URL(address);
+            mUrlConnection = (HttpURLConnection) url.openConnection();
+            mUrlConnection.setConnectTimeout(5000);
+            mUrlConnection.setReadTimeout(5000);
+        } catch (Exception e) {
+            // Can only fail with invalid argument, not due to network problem
+            throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * @deprecated Don't provide timeout (this constructor ignores it anyway)
+     */
+    public HttpConnect(int timeout, String address) {
+        this(address);
+    }
+
+    /**
+     * Only get resource if it's newer than provided date
+     */
+    public void ifModifiedSince(long lastModified) {
+        mUrlConnection.setIfModifiedSince(lastModified);
+    }
+
+    long getLastModified() throws IOException {
+        connectIfNeeded();
+        return mUrlConnection.getLastModified();
+    }
+
+    /**
+     * True if server returned "Not modified" response
+     *
+     * @see #ifModifiedSince(long)
+     */
+    public boolean isNotModified() throws IOException {
+        connectIfNeeded();
+        return mUrlConnection.getResponseCode() == 304;
+    }
+
+
+    /**
+     * Request only part of document
+     */
+    public void requestRange(int fromByte, int length) {
+        mUrlConnection.setRequestProperty("Range", String.format("bytes=%d-%d", fromByte, fromByte + length));
+    }
+
+    /**
+     * Get length of full content even if this is range request
+     *
+     * Note: this result will be only available if provided by server in headers
+     */
+    public int getFullContentLength() throws IOException {
+        connectIfNeeded();
+        int responseCode = mUrlConnection.getResponseCode();
+        if (responseCode == 206) {
+            String contentRange = mUrlConnection.getHeaderField("Content-Range");
+            if (contentRange != null) {
+                Matcher matcher = CONTENT_RANGE_PATTERN.matcher(contentRange);
+                if (matcher.matches()) {
+                    return Integer.parseInt(matcher.group(3));
+                }
+            }
+            return -1;
+        } else {
+            return mUrlConnection.getContentLength();
+        }
+    }
+
+    /**
+     * Returns true if response is part of file as requested using {@link #requestRange(int, int)}
+     */
+    public boolean serverReturnedRangeResponse() throws IOException {
+        connectIfNeeded();
+        return mUrlConnection.getResponseCode() == HttpURLConnection.HTTP_PARTIAL;
+    }
+
+    /**
+     * Returns true if server responded that range request refers past end of file
+     */
+    public boolean serverReturnedRangeIsPastEOFResponse() throws IOException {
+        connectIfNeeded();
+        return mUrlConnection.getResponseCode() == 416 /* Range not acceptable */;
     }
 
     /**
      * Metoda do pobrania zrodla strony jako String.
      *
+     * In case of error returns empty String
+     *
      * @return zadana strona jako String.
+     * @deprecated Use {@link #readAllAndClose()} and catch exception
      */
     public String getPage() {
         Log.i(TAG, "getPage");
-        if (executeHttpGet() == false) {
-            return "";
+        try {
+            return readAllAndClose();
+        } catch (IOException e) {
+            Log.e(TAG, "Exception during load through non throwing api", e);
+            return ""; // Legacy...
         }
-        return strona;
     }
 
-    /**
-     * Metoda realizujaca pobieranie strony
-     *
-     * @return true, jezeli sie powiodlo.
-     */
-    private boolean executeHttpGet() {
-        Log.i(TAG, "executeHttpGet");
-        InputStream is = null;
-        BufferedReader reader = null;
+
+
+    public String readAllAndClose() throws IOException {
+        InputStreamReader reader = null;
         try {
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.connect();
-            if(urlConnection == null)
-                return false;
 
-            is = urlConnection.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"),8);
+            connectIfNeeded();
 
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
-            String NL = System.getProperty("line.separator");
+            reader = new InputStreamReader(mUrlConnection.getInputStream(), "iso-8859-1");
 
-            while ((line = reader.readLine()) != null) {
-                sb.append(line + NL);
+            StringBuilder sb = new StringBuilder();
+            char[] buf = new char[1024];
+            int charsRead;
+
+            while ((charsRead = reader.read(buf)) != -1) {
+                sb.append(buf, 0, charsRead);
             }
-            strona = sb.toString();
 
-        } catch (IOException e) {
-            Log.e(TAG, "Exception (executeHttpGet) " + e.toString());
-            e.printStackTrace();
-            return false;
+            return sb.toString();
+
         } finally {
-            urlConnection.disconnect();
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e2) {
-                    Log.e(TAG, "Exception 2 (executeHttpGet) " + e2.toString());
-                    e2.printStackTrace();
-                    return false;
+                    Log.e(TAG, "Failed to close reader", e2);
                 }
             }
+            close();
         }
-        return true;
+    }
+
+    private void connectIfNeeded() throws IOException {
+        if (!mDidConnect) {
+            mDidConnect = true;
+            mUrlConnection.connect();
+        }
+    }
+
+    public void close() {
+        mUrlConnection.disconnect();
+        mUrlConnection = null;
+    }
+
+    /**
+     * Get InputStream for reading data from this connection
+     *
+     * If you use this, don't call {@link #readAllAndClose()}
+     * and call {@link #close()} on HttpConnect when you're done
+     */
+    public InputStream getInputStream() throws IOException {
+        return mUrlConnection.getInputStream();
     }
 
     /**
      * Metoda sprawdzajaca polaczenie z Internetem
+     *
+     * Note: if this returns true, it doesn't mean that connection will succeed
+     *       (through if it's false, there's no point in trying to connect)
      *
      * @param ctx
      *            kontekst aplikacji
@@ -119,14 +226,7 @@ public class HttpConnect {
         ConnectivityManager cm = (ConnectivityManager) ctx
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
-
-        if (ni != null && ni.isAvailable() && ni.isConnected()) {
-            return true;
-        } else {
-            Toast.makeText(ctx, ctx.getString(R.string.no_Internet),
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        }
+        return ni != null && ni.isAvailable() && ni.isConnected();
     }
 
 }

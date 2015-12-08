@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    android:id="@+id/card_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginBottom="10dp"
+    android:background="@color/backgroundGray"
+    app:cardCornerRadius="@dimen/schedule_card_corner_radius">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/schedule_card_left_margin"
+            android:layout_marginStart="@dimen/schedule_card_left_margin"
+            android:background="@color/colorPrimary"
+            android:gravity="center_vertical|center_horizontal"
+            android:paddingLeft="@dimen/schedule_card_highlighted_padding"
+            android:paddingRight="@dimen/schedule_card_highlighted_padding"
+            android:text="AA:AA"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/white"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/name_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Name type"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/textGray"/>
+
+            <TextView
+                android:id="@+id/room_lecturer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingTop="5dp"
+                android:text="Room Lecturer"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/textGray"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
+

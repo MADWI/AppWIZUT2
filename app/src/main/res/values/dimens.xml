@@ -6,6 +6,12 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <!-- Cards in schedules (on Android 4 where we can't clip card) -->
+    <dimen name="schedule_card_corner_radius">10dp</dimen>
+    <dimen name="schedule_card_left_margin">10dp</dimen>
+    <dimen name="schedule_card_highlighted_padding">7dp</dimen>
+
     <dimen name="event_line_height">2dp</dimen>
     <dimen name="body_of_card_min_height">40dp</dimen>
 </resources>
