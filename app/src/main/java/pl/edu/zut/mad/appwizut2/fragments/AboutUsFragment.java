@@ -24,11 +24,6 @@ public class AboutUsFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.about_us_layout, container, false);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_about_us);
-        ImageView mad_photo = (ImageView) v.findViewById(R.id.mad_team_photo);
-
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mad_team);
-        mad_photo.setAdjustViewBounds(true);
-        mad_photo.setImageBitmap(bitmap);
 
         return v;
     }
