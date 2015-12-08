@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 

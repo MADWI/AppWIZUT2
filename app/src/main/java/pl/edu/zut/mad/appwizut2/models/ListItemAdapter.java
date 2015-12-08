@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.utils.FoldableTextView;
