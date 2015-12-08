@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorAccent">#FF4081</color>
-    <color name="even">#ffdb00</color>
+    <color name="even">#E57373</color>
+    <color name="calendar_default">#64B5F6</color>
     <color name="colorPrimary">#2196F3</color>
-    <color name="uneven">#73dfdf</color>
+    <color name="uneven">#448AFF</color>
     <color name="colorPrimaryDark">#1976D2</color>
-    <color name="green">#8FCC85</color>
-    <color name="colorPrimaryBright">#BBDEFB</color>
-    <color name="white">#ffffff</color>
-    <color name="days_off">#817b7b</color>
     <color name="textGray">#424242</color>
     <color name="backgroundGray">#EEEEEE</color>
+    <color name="colorPrimaryBright">#BBDEFB</color>
+    <color name="item_date">#42A5F5</color>
+    <color name="white">#ffffff</color>
+    <color name="days_off">#9E9E9E</color>
+    <color name="caldroid_middle_gray">#ffffff</color>
 </resources>

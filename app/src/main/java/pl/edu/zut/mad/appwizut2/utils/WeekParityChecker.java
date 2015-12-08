@@ -13,14 +13,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 
+import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
-import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 
 /**
  * Klasa sprawdzajaca nieparzystosc/parzystosc dni tygodnia
  *
  */
 public class WeekParityChecker {
+
+    EventsManager mEventsManager = new EventsManager();
 
     /** Obiekt klasy HttpConnect, sluzacy do polaczenia ze strona */
     private static HttpConnect strona = null;
@@ -106,6 +108,7 @@ public class WeekParityChecker {
      *
      * @return HashMap z informacjami o wszystkich dniach (ich
      *         nieparzystosci/parzystosci)
+     *         + ilość wydarzeń w danym dniu
      */
     public ArrayList<DayParity> getAllParity() {
 
@@ -114,7 +117,7 @@ public class WeekParityChecker {
 
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH) + 1;
+        int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
         GregorianCalendar today = new GregorianCalendar(year, month - 1, day);
         String[] weekdays = new DateFormatSymbols().getWeekdays();
@@ -156,6 +159,9 @@ public class WeekParityChecker {
                         String date = Integer.toString(yearJSON) + "." + monthString + "."
                                 + dayString;
 
+                        //ilość wydarzeń w danym dniu
+                        int eventsCount = mEventsManager.getEventsCountOnDay(date);
+
                         String dayType = pageSrcObject.getString(tempDate);
                         if (dayType.equals("x"))
                             dayType = "---";
@@ -168,7 +174,7 @@ public class WeekParityChecker {
 
                         String dayOfTheWeek = weekdays[dateJSON.get(Calendar.DAY_OF_WEEK)];
                         daysParityList.add(new DayParity(date, dayType, dayOfTheWeek,
-                                dateJSON));
+                                eventsCount, dateJSON));
                     }
 
                 }
@@ -198,7 +204,7 @@ public class WeekParityChecker {
     private static String getURLSource(String url) {
         String do_obrobki = "";
 
-        strona = new HttpConnect(100000, url);
+        strona = new HttpConnect(url);
         do_obrobki = strona.getPage();
 
         return do_obrobki;

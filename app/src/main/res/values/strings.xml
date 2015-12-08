@@ -13,6 +13,11 @@
     <string name="nav_plan_changes">Zmiany w planie</string>
     <string name="nav_timetable">Plan zajęć</string>
 
+    <string name="mad_name">SKN Mobile Applications Developers</string>
+    <string name="authors">Autorzy:</string>
+    <string name="mentor">Opiekun koła naukowego:</string>
+    <string name="contact">Kontakt: </string>
+
     <string name="action_settings">Settings</string>
 
     <string name="no_Internet">Brak połączenia z Internetem</string>
@@ -28,4 +33,30 @@
         <item>CZW</item>
         <item>PT</item>
     </string-array>
+    <string name="card_see_more">... Zobacz więcej</string>
+
+    <!--Settings Strings -->
+    <string name="title_activity_settings">Ustawienia</string>
+    <string name="group_settings_title">Ustawienia grupy</string>
+    <string name="download_groups_title">Pobieranie grup</string>
+    <string name="refreshing_body">Proszę czekać &#8230;</string>
+
+    <string name="pref_default_tab">Domyślna karta</string>
+    <string name="pref_default_language">Język</string>
+
+    <string name="studies_type">Rodzaj studiów:</string>
+    <string name="studies_degree">Kierunek_studiów:</string>
+    <string name="studies_level">Stopień studiów:</string>
+    <string name="studies_year">Rok studiów:</string>
+    <string name="studies_group">Grupa:</string>
+
+    <string name="ok_button">Dalej</string>
+    <string name="cancel_button">Anuluj</string>
+
+    <string name="about_title">O nas</string>
+    <string name="empty_group">brak</string>
+    <string name="cannot_download_groups">Brak grup lub nie można ich pobrać</string>
+    <string name="application_settings">Ustawienia aplikacji</string>
+    <string name="timetable_settings">Plan</string>
+
 </resources>

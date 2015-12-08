@@ -8,6 +8,38 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CaldroidCustomized" parent="CaldroidDefault">
+        <item name="styleCaldroidViewLayout">@style/CaldroidCustomizedCalendarViewLayout</item>
+        <item name="styleCaldroidMonthName">@style/CaldroidCustomizedMonthName</item>
+        <item name="styleCaldroidNormalCell">@style/CaldroidCustomizedNormalCell</item>
+        <item name="styleCaldroidSquareCell">@style/CaldroidCustomizedSquareCell</item>
+        <item name="styleCaldroidGridView">@style/CaldroidDefaultGridView</item>
+    </style>
+
+    <style name="CaldroidCustomizedCalendarViewLayout">
+        <item name="android:background">@color/calendar_default</item>
+    </style>
+
+    <style name="CaldroidCustomizedMonthName" parent="CaldroidDefaultMonthName">
+        <item name="android:textColor">@color/caldroid_white</item>
+    </style>
+
+    <style name="CaldroidCustomizedView" parent="CaldroidDefaultGridView">
+        <item name="android:background">@color/caldroid_white</item>
+    </style>
+
+    <style name="CaldroidCustomizedCell" parent="CaldroidDefaultCell">
+        <item name="android:textColor">@color/caldroid_white</item>
+        <item name="android:background">@color/calendar_default</item>
+    </style>
+
+    <style name="CaldroidCustomizedNormalCell" parent="CaldroidDefaultDarkCell">
+        <item name="android:padding">15dp</item>
+        <item name="android:background">@color/calendar_default</item>
+    </style>
+
+    <style name="CaldroidCustomizedSquareCell" parent="CaldroidCustomizedCell" />
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

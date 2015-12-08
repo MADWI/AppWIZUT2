@@ -3,6 +3,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -21,6 +22,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".activities.MyGroups"
+            android:label="@string/group_settings_title" >
+        </activity>
+
         <provider
             android:authorities="pl.edu.zut.mad.appwizut2.files"
             android:name="android.support.v4.content.FileProvider"
@@ -30,6 +40,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_provider_paths" />
         </provider>
+
+        <!--<service android:name=".UpdateWidgetService"-->
+            <!--android:exported="true" >-->
+        <!--</service>-->
+
     </application>
 
 </manifest>

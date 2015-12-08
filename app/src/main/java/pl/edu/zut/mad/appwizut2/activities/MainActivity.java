@@ -1,6 +1,8 @@
 package pl.edu.zut.mad.appwizut2.activities;
 
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -14,10 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-
-import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
-import pl.edu.zut.mad.appwizut2.fragments.PlaceholderFragment;
 import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.fragments.AboutUsFragment;
+import pl.edu.zut.mad.appwizut2.fragments.AnnouncementFragment;
+import pl.edu.zut.mad.appwizut2.fragments.BusTimetableFragment;
+import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
+import pl.edu.zut.mad.appwizut2.fragments.PlanChangesFragment;
 import pl.edu.zut.mad.appwizut2.fragments.TimetableFragment;
 
 
@@ -39,12 +43,12 @@ public class MainActivity extends AppCompatActivity
      *       and should specify android:checkable="false" in xml
      */
     private static final DrawerFragmentItem[] DRAWER_FRAGMENTS = new DrawerFragmentItem[]{
-            new DrawerFragmentItem(R.id.plan_changes,   "chg", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Changes]")),
+            new DrawerFragmentItem(R.id.plan_changes,   "chg", PlanChangesFragment.class),
             new DrawerFragmentItem(R.id.event_calendar, "cal", CaldroidCustomFragment.class),
-            new DrawerFragmentItem(R.id.about_us,       "abo", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[About]")),
-            new DrawerFragmentItem(R.id.announcements,  "ann", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Announcements]")),
-            new DrawerFragmentItem(R.id.public_transport, "tra", PlaceholderFragment.class, PlaceholderFragment.makeArguments("[Public Transport]")),
-            new DrawerFragmentItem(R.id.timetable, "tim", TimetableFragment.class)
+            new DrawerFragmentItem(R.id.timetable,      "tim", TimetableFragment.class),
+            new DrawerFragmentItem(R.id.about_us,       "abo", AboutUsFragment.class),
+            new DrawerFragmentItem(R.id.announcements,  "ann", AnnouncementFragment.class),
+            new DrawerFragmentItem(R.id.public_transport, "tra", BusTimetableFragment.class)
     };
 
     private static final String PREF_LAST_DRAWER_FRAGMENT = "last_selected_drawer_fragment";
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -68,8 +73,14 @@ public class MainActivity extends AppCompatActivity
 
         // Open recently used fragment
         if (savedInstanceState == null) {
-            String lastItemName = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_LAST_DRAWER_FRAGMENT, null);
-            DrawerFragmentItem item = findDrawerItemFragmentWithName(lastItemName);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            DrawerFragmentItem item = findDrawerItemFragmentWithName(prefs.getString("default_tab", null));
+            if (item == null) {
+                item = findDrawerItemFragmentWithName(prefs.getString(PREF_LAST_DRAWER_FRAGMENT, null));
+                if (item == null) {
+                    item = DRAWER_FRAGMENTS[0];
+                }
+            }
             openFragment(item);
             navigationView.setCheckedItem(item.id);
         }
@@ -116,6 +127,11 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.event_calendar) {
+            DrawerFragmentItem drawerFragmentItem = findDrawerItemFragmentWithId(id);
+            if (drawerFragmentItem != null) {
+                openFragment(drawerFragmentItem);
+                rememberSelectedItem(drawerFragmentItem);
+            }
             return true;
         }
 
@@ -131,8 +147,8 @@ public class MainActivity extends AppCompatActivity
         // Only actions that don't open fragment go here
         // See note at DRAWER_FRAGMENTS above
         if (id == R.id.settings) {
-            // TODO: open settings
-            Toast.makeText(this, "TODO: open settings", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, SettingsActivity.class));
+            Toast.makeText(this, "Ustawienia", Toast.LENGTH_SHORT).show();
         }else {
             DrawerFragmentItem drawerFragmentItem = findDrawerItemFragmentWithId(id);
             if (drawerFragmentItem != null) {
@@ -164,8 +180,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        // If we didn't found fragment that was recently selected return default one
-        return DRAWER_FRAGMENTS[0];
+        // If we didn't found fragment that was recently selected return null
+        return null;
     }
 
     /**
