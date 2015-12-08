@@ -1,6 +1,8 @@
 package pl.edu.zut.mad.appwizut2.activities;
 
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -112,8 +114,14 @@ public class MainActivity extends AppCompatActivity
 
         // Open recently used fragment
         if (savedInstanceState == null) {
-            String lastItemName = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_LAST_DRAWER_FRAGMENT, null);
-            DrawerFragmentItem item = findDrawerItemFragmentWithName(lastItemName);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            DrawerFragmentItem item = findDrawerItemFragmentWithName(prefs.getString("default_tab", null));
+            if (item == null) {
+                item = findDrawerItemFragmentWithName(prefs.getString(PREF_LAST_DRAWER_FRAGMENT, null));
+                if (item == null) {
+                    item = DRAWER_FRAGMENTS[0];
+                }
+            }
             openFragment(item);
             navigationView.setCheckedItem(item.id);
         }
@@ -175,8 +183,8 @@ public class MainActivity extends AppCompatActivity
         // Only actions that don't open fragment go here
         // See note at DRAWER_FRAGMENTS above
         if (id == R.id.settings) {
-            // TODO: open settings
-            Toast.makeText(this, "TODO: open settings", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, SettingsActivity.class));
+            Toast.makeText(this, "Ustawienia", Toast.LENGTH_SHORT).show();
         }else {
             DrawerFragmentItem drawerFragmentItem = findDrawerItemFragmentWithId(id);
             if (drawerFragmentItem != null) {
@@ -208,8 +216,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        // If we didn't found fragment that was recently selected return default one
-        return DRAWER_FRAGMENTS[0];
+        // If we didn't found fragment that was recently selected return null
+        return null;
     }
 
     /**
