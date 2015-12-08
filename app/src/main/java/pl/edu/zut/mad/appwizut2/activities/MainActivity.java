@@ -2,6 +2,7 @@ package pl.edu.zut.mad.appwizut2.activities;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -112,12 +113,14 @@ public class MainActivity extends AppCompatActivity
 
         // Open recently used fragment
         if (savedInstanceState == null) {
-//            String lastItemName = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_LAST_DRAWER_FRAGMENT, null);
-//            DrawerFragmentItem item = findDrawerItemFragmentWithName(lastItemName);
-//            openFragment(item);
-//            navigationView.setCheckedItem(item.id);
-            String lastItemName = PreferenceManager.getDefaultSharedPreferences(this).getString("default_tab", null);
-            DrawerFragmentItem item = findDrawerItemFragmentWithName(lastItemName);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            DrawerFragmentItem item = findDrawerItemFragmentWithName(prefs.getString("default_tab", null));
+            if (item == null) {
+                item = findDrawerItemFragmentWithName(prefs.getString(PREF_LAST_DRAWER_FRAGMENT, null));
+                if (item == null) {
+                    item = DRAWER_FRAGMENTS[0];
+                }
+            }
             openFragment(item);
             navigationView.setCheckedItem(item.id);
         }
@@ -131,12 +134,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void rememberSelectedItem(DrawerFragmentItem item) {
-//        PreferenceManager
-//                .getDefaultSharedPreferences(this)
-//                .edit()
-//                .putString(PREF_LAST_DRAWER_FRAGMENT, item.name)
-//                .apply();
-        PreferenceManager.getDefaultSharedPreferences(this).getString("default_tab", null);
+        PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .edit()
+                .putString(PREF_LAST_DRAWER_FRAGMENT, item.name)
+                .apply();
     }
 
     @Override
@@ -213,8 +215,8 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        // If we didn't found fragment that was recently selected return default one
-        return DRAWER_FRAGMENTS[0];
+        // If we didn't found fragment that was recently selected return null
+        return null;
     }
 
     /**
