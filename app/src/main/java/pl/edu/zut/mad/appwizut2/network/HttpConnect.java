@@ -119,6 +119,7 @@ public class HttpConnect {
         ConnectivityManager cm = (ConnectivityManager) ctx
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
+
         if (ni != null && ni.isAvailable() && ni.isConnected()) {
             return true;
         } else {

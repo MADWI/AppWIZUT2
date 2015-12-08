@@ -21,6 +21,19 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".activities.MyGroups"
+            android:label="@string/group_settings_title" >
+        </activity>
+
+        <!--<service android:name=".UpdateWidgetService"-->
+            <!--android:exported="true" >-->
+        <!--</service>-->
+
     </application>
 
 </manifest>
