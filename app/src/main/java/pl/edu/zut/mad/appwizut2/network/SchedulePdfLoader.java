@@ -101,6 +101,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
         }
 
         String pdfAddress = String.format(Constants.PDF_SCHEDULE_URL, group);
+        File localPdfFile = getSchedulePdfFile();
 
         try {
             // Check if schedule is up to date
@@ -108,7 +109,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
                     skipCache || // Requested by user
                     mCachedFileSize == 0 || // Don't have cached version
                     !group.equals(mForGroup) || // Cached version is for different group
-                    !getSchedulePdfFile().exists(); // Cached file doesn't exist
+                    !localPdfFile.exists(); // Cached file doesn't exist
             if (!shouldSkipCacheCheck) {
                 if (!checkIfShouldDownloadFullPdf(pdfAddress)) {
                     return false;
@@ -117,8 +118,9 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
 
             // Download new schedule
             HttpConnect conn = new HttpConnect(pdfAddress);
+            int fileSize = conn.getFullContentLength();
             try {
-                AtomicFile af = new AtomicFile(getSchedulePdfFile());
+                AtomicFile af = new AtomicFile(localPdfFile);
                 FileOutputStream fileOutputStream = af.startWrite();
                 try {
                     // Do download
@@ -128,6 +130,14 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
                     af.failWrite(fileOutputStream);
                     throw e;
                 }
+
+                // Prepare data for cache so we can just check if file has been changed
+                DataInputStream justWrittenPdf = new DataInputStream(new FileInputStream(localPdfFile));
+                justWrittenPdf.skip(getCheckedRangeStart(fileSize));
+                justWrittenPdf.readFully(mCachedRangeData);
+                justWrittenPdf.close();
+                mCachedFileSize = fileSize;
+                mForGroup = group;
             } finally {
                 conn.close();
             }
@@ -136,7 +146,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
             e.printStackTrace();
             return false;
         }
-        return false;
+        return true;
     }
 
     @Override

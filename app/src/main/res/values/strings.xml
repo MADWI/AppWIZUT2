@@ -23,6 +23,7 @@
     <string name="no_Internet">Brak połączenia z Internetem</string>
 
     <string name="show_pdf">Pokaż PDF</string>
+    <string name="downloading_pdf_schedule">Checking if PDF is up to date</string>
     <string name="cannot_download_pdf">Cannot download schedule PDF</string>
     <string name="cannot_open_pdf">Cannot open schedule PDF</string>
 
