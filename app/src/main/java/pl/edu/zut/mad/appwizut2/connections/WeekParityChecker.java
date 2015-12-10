@@ -51,10 +51,10 @@ public class WeekParityChecker {
 	 */
 	private static final String TAG = "WeekParityChecker";
 
-	private Context context;
-	public static final int MY_PERMISSIONS_WRITE_EXTERNAL = 0;
-    private boolean changesMade = false;
-    private ArrayList<DayParity> currentData;
+    private Context context;
+    public static final int MY_PERMISSIONS_WRITE_EXTERNAL = 0;
+	private boolean changesMade = false;
+	private ArrayList<DayParity> currentData;
 
 	/** Domyslny konstruktor klasy. */
 	public WeekParityChecker(Context context) {
@@ -296,8 +296,6 @@ public class WeekParityChecker {
 
             return(trimDataTillToday(daysParityList));
 
-
-
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -318,8 +316,6 @@ public class WeekParityChecker {
             boolean foundEqualOrAfter = false;
             while (nextParity != null && !foundEqualOrAfter) {
                 if (laterOrEqualThanDate(now, nextParity.getDate())) {
-
-
                     return data;
                 } else {
                     if (data.size() > 1) {
