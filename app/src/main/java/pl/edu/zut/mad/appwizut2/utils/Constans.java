@@ -11,9 +11,6 @@ import android.appwidget.AppWidgetManager;
  */
 public class Constans {
 
-    /** Stala definiujaca nazwe pliku ustawien */
-    public static final String PREFERENCES_NAME = "MAD_Widget_Preferences";
-
     /**
      * Name of preference for studies type
      *
