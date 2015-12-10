@@ -185,10 +185,6 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.refresh) {
-            mScheduleLoader.requestRefresh();
-            return true;
-        }
         if (item.getItemId() == R.id.view_pdf) {
             openPdf();
             return true;
