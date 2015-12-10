@@ -245,4 +245,8 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
         return type + "/" + group;
     }
 
+    public boolean isConfigured() {
+        return mGroup != null;
+    }
+
 }

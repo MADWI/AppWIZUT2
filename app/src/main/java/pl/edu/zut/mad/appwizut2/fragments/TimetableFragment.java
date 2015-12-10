@@ -1,5 +1,6 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -13,12 +14,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.activities.MyGroups;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
@@ -29,16 +33,17 @@ import pl.edu.zut.mad.appwizut2.network.ScheduleLoader;
  */
 public class TimetableFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable> {
 
-    private ViewPager mPager;
-
-    private TabLayout mTabLayout;
-
     private String[] mDayNames;
 
     private Timetable mTimetable;
 
     private List<TimetableDayFragment> mActiveDayFragments = new ArrayList<>();
     private ScheduleLoader mScheduleLoader;
+    private View mTimetableUnavailableWrapper;
+    private TextView mTimetableUnavailableMessage;
+    private Button mOpenPdfButton;
+    private ProgressBar mLoadingIndicator;
+    private View mTimetableWrapper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,13 +64,71 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mDayNames = getActivity().getResources().getStringArray(R.array.week_days_short);
 
+        // Inflate layout
         View view = inflater.inflate(R.layout.timetable_layout, container, false);
-        mTabLayout = (TabLayout) view.findViewById(R.id.tabs);
-        mPager = (ViewPager) view.findViewById(R.id.pager);
-        mPager.setAdapter(new TimetableAdapter(getChildFragmentManager()));
-        mTabLayout.setupWithViewPager(mPager);
+
+        // Find views
+        mTimetableWrapper = view.findViewById(R.id.timetable_main);
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        ViewPager pager = (ViewPager) view.findViewById(R.id.pager);
+
+        mTimetableUnavailableWrapper = view.findViewById(R.id.timetable_unavailable);
+        mTimetableUnavailableMessage = (TextView) view.findViewById(R.id.message);
+        mOpenPdfButton = (Button) view.findViewById(R.id.view_pdf);
+        Button chooseGroupButton = (Button) view.findViewById(R.id.choose_group);
+
+        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.loading_indicator);
+
+        // Setup tabs
+        pager.setAdapter(new TimetableAdapter(getChildFragmentManager()));
+        tabLayout.setupWithViewPager(pager);
+
+        // Setup button listeners
+        mOpenPdfButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openPdf();
+            }
+        });
+        chooseGroupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), MyGroups.class));
+            }
+        });
 
         return view;
+    }
+
+    /**
+     * Hide loading indicator and show the timetable
+     */
+    private void showTimetable() {
+        // Switch view to actual timetable
+        mTimetableWrapper.setVisibility(View.VISIBLE);
+        mTimetableUnavailableWrapper.setVisibility(View.GONE);
+        mLoadingIndicator.setVisibility(View.GONE);
+    }
+
+    /**
+     * Switch view to timetable not available state
+     * where we have buttons for opening pdf and choosing group
+     *
+     * @param isConfigured Whether the user have selected any group in settings
+     */
+    private void showTimetableUnavailable(boolean isConfigured) {
+        if (isConfigured) {
+            mTimetableUnavailableMessage.setText(R.string.timetable_unavailable);
+            mOpenPdfButton.setVisibility(View.VISIBLE);
+        } else {
+            mTimetableUnavailableMessage.setText(R.string.timetable_not_configured);
+            mOpenPdfButton.setVisibility(View.GONE);
+        }
+
+        // Switch view to message
+        mTimetableWrapper.setVisibility(View.GONE);
+        mTimetableUnavailableWrapper.setVisibility(View.VISIBLE);
+        mLoadingIndicator.setVisibility(View.GONE);
     }
 
     void registerDayFragment(TimetableDayFragment dayFragment) {
@@ -86,6 +149,9 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             for (TimetableDayFragment dayFragment : mActiveDayFragments) {
                 dayFragment.onScheduleAvailable(timetable);
             }
+            showTimetable();
+        } else {
+            showTimetableUnavailable(mScheduleLoader.isConfigured());
         }
     }
 
@@ -124,9 +190,13 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             return true;
         }
         if (item.getItemId() == R.id.view_pdf) {
-            new OpenSchedulePdfDialogFragment().show(getFragmentManager(), "OpenSchedulePdf");
+            openPdf();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openPdf() {
+        new OpenSchedulePdfDialogFragment().show(getFragmentManager(), "OpenSchedulePdf");
     }
 }

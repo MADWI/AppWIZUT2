@@ -22,6 +22,7 @@
 
     <string name="no_Internet">Brak połączenia z Internetem</string>
 
+    <!-- Timetable -->
     <string name="show_pdf">Pokaż PDF</string>
     <string name="downloading_pdf_schedule">Checking if PDF is up to date</string>
     <string name="cannot_download_pdf">Cannot download schedule PDF</string>
@@ -34,6 +35,10 @@
         <item>CZW</item>
         <item>PT</item>
     </string-array>
+    <string name="timetable_unavailable">Nie możemy pokazać tego planu w aplikacji</string>
+    <string name="timetable_not_configured">Nie wybrałeś żadnej grupy</string>
+
+
     <string name="card_see_more">... Zobacz więcej</string>
 
     <!--Settings Strings -->
