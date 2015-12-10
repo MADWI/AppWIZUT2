@@ -1,6 +1,9 @@
 package pl.edu.zut.mad.appwizut2.network;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.models.Timetable;
+import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
@@ -29,10 +33,23 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
     private static final String TAG = "ScheduleLoader";
 
     /**
+     * Value saved at beginning of cache file
+     * to avoid loading cache meant for different app version
+     */
+    private static final int CACHE_VERSION = 1;
+
+    /**
      * Group for which we're loading data
      * in format used in paths on server e.g. "Stacjonarne/I1-110"
      */
     private String mGroup;
+
+    /**
+     * Group for which we have data cached
+     *
+     * @see {@link #cachedVersionMatchesSettings()}
+     */
+    private String mHaveCachedForGroup;
 
     /**
      * Date the schedule was last modified
@@ -52,8 +69,8 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
     @Override
     protected void onSettingsChanged() {
         String newGroup = getGroupFromSettings(getContext());
-        if (!newGroup.equals(mGroup)) {
-            mLastModified = 0;
+        if (newGroup != null && !newGroup.equals(mHaveCachedForGroup)) {
+            mGroup = newGroup;
             requestRefresh();
         }
     }
@@ -63,16 +80,25 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
         return "Schedule";
     }
 
+    /**
+     * True if the version we have currently cached matches current settings
+     */
+    private boolean cachedVersionMatchesSettings() {
+        return mHaveCachedForGroup != null && mHaveCachedForGroup.equals(mGroup);
+    }
+
     @Override
     protected boolean doDownload(boolean skipCache) {
-        HttpConnect conn = new HttpConnect(String.format(Constants.PARSED_SCHEDULE_URL, mGroup));
-        if (!skipCache) {
+        String group = mGroup;
+        HttpConnect conn = new HttpConnect(String.format(Constants.PARSED_SCHEDULE_URL, group));
+        if (cachedVersionMatchesSettings() && !skipCache) {
             conn.ifModifiedSince(mLastModified);
         }
         try {
             if (!conn.isNotModified()) {
                 mLastModified = conn.getLastModified();
                 mJsonScheduleAsString = conn.readAllAndClose();
+                mHaveCachedForGroup = group;
             }
         } catch (IOException e) {
             Log.w(TAG, "Unable to download data", e);
@@ -87,21 +113,24 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
         try {
             cacheInput = new DataInputStream(new FileInputStream(cacheFile));
 
-            // 1: String indicating group for which the schedule is for
-            boolean isCached = mGroup.equals(cacheInput.readUTF());
-            if (!isCached) {
-                throw new Exception(); // Skip cache load
+            // 1: Cache file version
+            if (cacheInput.readInt() != CACHE_VERSION) {
+                mHaveCachedForGroup = null;
+                return false;
             }
 
-            // 2: Last modified
+            // 2: String indicating group for which the schedule is for
+            mHaveCachedForGroup = cacheInput.readUTF();
+
+            // 3: Last modified
             mLastModified = cacheInput.readLong();
 
-            // 3: Actual cached data
+            // 4: Actual cached data
             mJsonScheduleAsString = cacheInput.readUTF();
 
         } catch (Exception e) {
             // No cache, force load
-            mLastModified = 0;
+            mHaveCachedForGroup = null;
             return false;
         } finally {
             IoUtils.closeQuietly(cacheInput);
@@ -115,13 +144,20 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
         try {
             cacheOutput = new DataOutputStream(new FileOutputStream(cacheFile));
 
-            // 1: String indicating group for which the schedule is for
-            cacheOutput.writeUTF(mGroup);
+            // 1: Cache version
+            if (mHaveCachedForGroup == null || mJsonScheduleAsString == null) {
+                cacheOutput.writeInt(0);
+                return true;
+            }
+            cacheOutput.writeInt(CACHE_VERSION);
 
-            // 2: Last modified
+            // 2: String indicating group for which the schedule is for
+            cacheOutput.writeUTF(mHaveCachedForGroup);
+
+            // 3: Last modified
             cacheOutput.writeLong(mLastModified);
 
-            // 3: Actual cached data
+            // 4: Actual cached data
             cacheOutput.writeUTF(mJsonScheduleAsString);
         } catch (IOException e) {
             Log.e(TAG, "Failed to write cache", e);
@@ -134,7 +170,7 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
 
     @Override
     protected Timetable getData() {
-        if (mJsonScheduleAsString == null) {
+        if (mJsonScheduleAsString == null || !cachedVersionMatchesSettings()) {
             return null;
         }
         try {
@@ -196,8 +232,17 @@ public class ScheduleLoader extends BaseDataLoader<Timetable> {
         }
     }
 
+    @Nullable
     static String getGroupFromSettings(Context context) {
-        return  "Stacjonarne/I1-110"; // TODO: really load from settings
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String type = prefs.getString(Constans.PREF_STUDIES_TYPE, null);
+        String group = prefs.getString(Constans.PREF_GROUP, null);
+
+        if (type == null || group == null) {
+            return null;
+        }
+
+        return type + "/" + group;
     }
 
 }
