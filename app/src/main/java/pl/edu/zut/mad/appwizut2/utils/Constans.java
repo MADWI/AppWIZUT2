@@ -1,12 +1,13 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
 
+
 import android.appwidget.AppWidgetManager;
+import java.text.SimpleDateFormat;
 
 /**
  * Klasa definiujaca stale uzyte w aplikacji
- *
- *
+ * 
  * @author Sebastian Swierczek, Dawid Glinski
  */
 public class Constans {
@@ -14,6 +15,10 @@ public class Constans {
     /** Stala definiujaca nazwe pliku ustawien */
     public static final String PREFERENCES_NAME = "MAD_Widget_Preferences";
 
+    /** Do pobierania contentu w aktualnościach */
+    public static final String TAG_DATE = "created";
+    public static final String TAG_ENTRY = "entry";
+    
     /** Stala definiujaca nazwe grupy */
     public static final String GROUP = "group";
 
@@ -22,8 +27,7 @@ public class Constans {
 
     /** Stala definiujaca nazwe ostatniej zmiany planu */
     public static final String PLAN_LAST_MODIFIED = "plan_modified";
-
-
+    
     /** Stala definiujaca sciezke do folderu przechowywania planow */
     public static final String PLAN_FOLDER = "/Plany";
 
@@ -40,6 +44,11 @@ public class Constans {
     /** Stala definiujaca nazwe parzystosci tygodnia nastepnego */
     public static final String WEEK_PARITY_NEXT = "week_parity_next";
 
+    /**
+     * Zmienna do debuggowania.
+     */
+    public static final String PARITY_TAG = "WeekParityChecker";
+
     /** Stala definiujaca nazwe naglowka zmian w planie */
     public static final String TITLE_PLAN_CHANGES = "title_plan_changes";
 
@@ -54,5 +63,16 @@ public class Constans {
 
     /** offline data */
     public static final String OFFLINE_DATA_FOLDER = "/Data";
+
+    /** calendar - for format dates */
+    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
+    public static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy");
+    public static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+
+    /** for onSavedInstace */
+    public static final String INSTANCE_COMPRESSED_KEY = "compressed_data";
+    public static final String INSTANCE_COMPRESSED_SIZE = "compressed_size";
+    public static final String INSTANCE_CURRENT_KEY = "current_data";
+    public static final String INSTANCE_CURRENT_SIZE = "current_size";
 
 }

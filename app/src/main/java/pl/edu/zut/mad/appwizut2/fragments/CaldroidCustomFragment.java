@@ -21,12 +21,10 @@ import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
@@ -34,6 +32,7 @@ import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
+import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
 import pl.edu.zut.mad.appwizut2.utils.Interfaces;
 import pl.edu.zut.mad.appwizut2.utils.OfflineHandler;
@@ -41,21 +40,17 @@ import pl.edu.zut.mad.appwizut2.utils.WeekParityChecker;
 
 public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private final WeekParityChecker checker = new WeekParityChecker();
-    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
-    private static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy");
-    private static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
-    public static final String INSTANCE_COMPRESSED_KEY = "compressed_data";
-    public static final String INSTANCE_COMPRESSED_SIZE = "compressed_size";
+    private WeekParityChecker checker;
     private static ArrayList<DayParity> parityList;
-    private List<ListItemContainer> currentData;
-    private List<ListItemContainer> compresedData;
+    private List<ListItemContainer> currentData = new ArrayList<>();
+    private List<ListItemContainer> compresedData = new ArrayList<>();
 
     private TextView clickedDate;
     private RecyclerView itemListView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
 
+    Bundle setBundle;
     OfflineHandler offlineHandler;
     String strDate="";
 
@@ -88,14 +83,9 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         // Call super
         super.onCreate(savedInstanceState);
 
+        checker = new WeekParityChecker(getActivity().getApplicationContext());
 
-        if (parityList == null) {
-            try {
-                parityList = new AsyncTaskGetParityList().execute().get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
+
         initModel(getContext());
         // TODO: We completely disabled Caldroid's state saving (since it's only causing problems)
         // Now we have to implement retaining currently selected month/year outselves
@@ -118,7 +108,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
 
         //setting toolbar title
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_calendar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Kalendarz");
 
         // Wrap calendarView into out fragment
         ViewGroup wrapper = (ViewGroup) inflater.inflate(R.layout.calendar_layout, container, false);
@@ -137,7 +127,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         itemListView.setLayoutManager(layoutManager);
 
         //inicjalizacja pustego adaptera w celu uniknięcia błędu nieokreślonego layoutu
-        itemListView.setAdapter(new ListItemAdapter(new ArrayList<ListItemContainer>()));
+        initialAdapter();
         ////////////////////////////////////////////////////////////////////////////////
 
         ((ViewGroup) wrapper.findViewById(R.id.calendar_goes_here)).addView(calendarView, 0);
@@ -145,43 +135,54 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         return wrapper;
     }
 
+    private void initialAdapter(){
+        ListItemAdapter listItemAdapter = new ListItemAdapter(compresedData);
+        itemListView.setAdapter(listItemAdapter);
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (parityList == null) {
+            new AsyncTaskGetParityList().execute();
+        }
         if (savedInstanceState != null){
-            Integer size = savedInstanceState.getInt(FeedFragment.INSTANCE_CURRENT_SIZE);
-            currentData = new ArrayList<>();
-            for (int i = 0; i < size;i++){
-                currentData.add((ListItemContainer)savedInstanceState.getSerializable(FeedFragment.INSTANCE_CURRENT_KEY + i));
-            }
-            size = savedInstanceState.getInt(INSTANCE_COMPRESSED_SIZE);
-            compresedData = new ArrayList<>();
-            for (int i = 0; i < size;i++){
-                compresedData.add((ListItemContainer)savedInstanceState.getSerializable(INSTANCE_COMPRESSED_KEY + i));
-            }
-            ListItemAdapter listItemAdapter = new ListItemAdapter(compresedData);
-            itemListView.setAdapter(listItemAdapter);
+
+            currentData = getStates(Constans.INSTANCE_CURRENT_SIZE, Constans.INSTANCE_CURRENT_KEY, savedInstanceState);
+            compresedData = getStates(Constans.INSTANCE_COMPRESSED_SIZE, Constans.INSTANCE_COMPRESSED_KEY, savedInstanceState);
+            initialAdapter();
             if(currentData.size() != 0) {
                 clearProgressBar();
             }
         }
     }
 
+    private List<ListItemContainer> getStates(final String sizeKey, final String key, Bundle state){
+        Integer size = state.getInt(sizeKey);
+        List<ListItemContainer> tmp = new ArrayList<>();
+        for (int i = 0; i < size;i++){
+            tmp.add((ListItemContainer) state.getSerializable(key + i));
+        }
+        return tmp;
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if(currentData != null && compresedData != null) {
-            for (int i = 0; i < currentData.size(); i++) {
-                outState.putSerializable(FeedFragment.INSTANCE_CURRENT_KEY + i, currentData.get(i));
-
-            }
-            outState.putInt(FeedFragment.INSTANCE_CURRENT_SIZE, currentData.size());
-            for (int i = 0; i < compresedData.size(); i++) {
-                outState.putSerializable(INSTANCE_COMPRESSED_KEY + i, compresedData.get(i));
-
-            }
-            outState.putInt(INSTANCE_COMPRESSED_SIZE, compresedData.size());
+            setBundle = new Bundle();
+            setStates(Constans.INSTANCE_CURRENT_SIZE,Constans.INSTANCE_CURRENT_KEY, true);
+            setStates(Constans.INSTANCE_COMPRESSED_SIZE, Constans.INSTANCE_COMPRESSED_KEY, false);
+            outState.putAll(setBundle);
         }
+    }
+
+    private void setStates(final String sizeKey, final String key, boolean b){
+        List<ListItemContainer> tmp = b ? currentData : compresedData;
+        for (int i = 0; i < tmp.size(); i++) {
+            setBundle.putSerializable(key + i, tmp.get(i));
+        }
+        setBundle.putInt(sizeKey, tmp.size());
     }
 
     private void initUI() {
@@ -228,10 +229,10 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         @Override
         public void onSelectDate(Date date, View view) {
 
-            strDate = FOR_EVENTS_FORMATTER.format(date);
+            strDate = Constans.FOR_EVENTS_FORMATTER.format(date);
             if (currentData.size() != 0){
-                compresedData = new ArrayList<>();
                 int i = 0;
+                compresedData = new ArrayList<>();
                 for(ListItemContainer item : currentData){
                     String tmp = item.getDate().substring(0,10);
                     if(i < 6 && tmp.equals(strDate)){
@@ -241,15 +242,14 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
                     if(i >= 5)
                         break;
                 }
-                ListItemAdapter listItemAdapter = new ListItemAdapter(compresedData);
-                itemListView.setAdapter(listItemAdapter);
+                initialAdapter();
                 clearProgressBar();
             }else {
                 progressBar.animate();
                 progressBar.setVisibility(View.VISIBLE);
                 refresh();
             }
-            clickedDate.setText("Wydarzenia " + REVERSED_FORMATTER.format(date));
+            clickedDate.setText("Wydarzenia " + Constans.REVERSED_FORMATTER.format(date));
         }
     };
 
@@ -258,7 +258,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     public Date ParseDate(String date_str) {
         Date dateStr = null;
         try {
-            dateStr = FORMATTER.parse(date_str);
+            dateStr = Constans.FORMATTER.parse(date_str);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -277,31 +277,18 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
 
     private class AsyncTaskGetParityList extends
-            AsyncTask<Void, Void, ArrayList<DayParity>> {
-
-        ArrayList<DayParity> tempArray = null;
+            AsyncTask<Void, Void, Void> {
 
         @Override
-        protected ArrayList<DayParity> doInBackground(Void... params) {
-
-            tempArray = checker.getAllParity();
-            if (tempArray != null) {
-                return tempArray;
-            } else {
-                Log.i(TAG, "Nie mozna pobrac");
-
+        protected Void doInBackground(Void... params) {
+            if (HttpConnect.isOnline(getContext())) {
+                parityList = checker.getAllParity();
             }
             return null;
         }
 
         @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "onPreExecute");
-
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<DayParity> result) {
+        protected void onPostExecute(Void aVoid) {
             Log.i(TAG, "onPostExecute");
             initUI();
         }
@@ -320,7 +307,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         @Override
         protected Void doInBackground(String... params) {
             if (HttpConnect.isOnline(getContext())) {
-                HttpConnect connection = new HttpConnect(HTTPLinks.ANNOUNCEMENTS);
+                HttpConnect connection = new HttpConnect(params[0]);
                 String pageContent = connection.getPage();
                 currentData = FeedFragment.createItemList(pageContent);
                 offlineHandler.setCurrentOfflineData(currentData);
@@ -334,7 +321,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             }else {
                 currentData = offlineHandler.getCurrentData(true);
             }
-
             return null;
         }
 
@@ -354,15 +340,10 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
                     if(i >= 5)
                         break;
                 }
-                ListItemAdapter listItemAdapter = new ListItemAdapter(compresedData);
-                itemListView.setAdapter(listItemAdapter);
+                initialAdapter();
             }
             clearProgressBar();
             swipeRefreshLayout.setRefreshing(false);
         }
-
-
-
-
     }
 }

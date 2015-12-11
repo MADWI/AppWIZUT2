@@ -1,5 +1,6 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -21,8 +22,7 @@ import pl.edu.zut.mad.appwizut2.models.DayParity;
  *
  */
 public class WeekParityChecker {
-
-    EventsManager mEventsManager = new EventsManager();
+    EventsManager mEventsManager;
 
     /** Obiekt klasy HttpConnect, sluzacy do polaczenia ze strona */
     private static HttpConnect strona = null;
@@ -33,13 +33,15 @@ public class WeekParityChecker {
      */
     private static String ZUT_WI_JSON = "http://wi.zut.edu.pl/components/com_kalendarztygodni/zapis.json";
 
-    /**
-     * Zmienna do debuggowania.
-     */
-    private static final String TAG = "WeekParityChecker";
 
     /** Domyslny konstruktor klasy. */
     public WeekParityChecker() {
+
+    }
+
+    public WeekParityChecker(Context ctx) {
+        if(ctx == null){Log.i("WeekParityChecker", "ctx to null");}
+         mEventsManager = new EventsManager(ctx);
     }
 
     /**
@@ -68,7 +70,7 @@ public class WeekParityChecker {
         String tomorrow = "_" + Integer.toString(year) + "_"
                 + Integer.toString(month) + "_" + Integer.toString(dayNext);
 
-        Log.d(TAG, today + " " + tomorrow);
+        Log.d(Constans.PARITY_TAG, today + " " + tomorrow);
 
         try {
             JSONObject pageSrcObject = new JSONObject(pageSource);
@@ -89,7 +91,7 @@ public class WeekParityChecker {
 
         for (int i = 0; i < 2; i++) {
             if (currentWeek[i].equals("x")) {
-                Log.e(TAG, currentWeek[i]);
+                Log.e(Constans.PARITY_TAG, currentWeek[i]);
                 currentWeek[i] = "---";
             } else if (currentWeek[i].equals("p"))
                 currentWeek[i] = "parzysty";
