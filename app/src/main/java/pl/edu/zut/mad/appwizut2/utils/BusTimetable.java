@@ -208,6 +208,8 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
             if (dayInfo == null){
                 if (dayType1 == BusModelDayType.WEEK_DAY){
                     dayInfo = model.getInfo().get(BusModelDayType.WEEK_DAY_STUDENTS_YEAR.toString());
+                }else if (dayType1 == BusModelDayType.SATURDAY || dayType1 == BusModelDayType.SUNDAY){
+                    dayInfo = model.getInfo().get(BusModelDayType.WEEKEND.toString());
                 }
             }
             ArrayList<Integer> hourOne = null;
@@ -221,6 +223,8 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
                 if (dayInfo2 == null){
                     if (dayType2 == BusModelDayType.WEEK_DAY){
                         dayInfo2 = model.getInfo().get(BusModelDayType.WEEK_DAY_STUDENTS_YEAR.toString());
+                    }else if (dayType2 == BusModelDayType.SUNDAY || dayType2 == BusModelDayType.SATURDAY){
+                        dayInfo2 = model.getInfo().get(BusModelDayType.WEEKEND.toString());
                     }
                 }
                 if (dayInfo2 != null){
