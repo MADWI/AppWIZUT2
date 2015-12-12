@@ -46,6 +46,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
     // JSON Node names
     private static final String TAG_DEPARTURES = "departures";
     private static final String TAG_TYPE = "type";
+    private static final String TAG_D_LINE = "line";
     private static final String TAG_DEPARTURES2 = "departures";
     private static final String TAG_HOUR_INFO = "hour_info";
     public static final String CURRENT_DATA_KEY = "current_data";
@@ -88,7 +89,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
         TAG_HOUR = hour2;
         TAG_HOUR2 = Integer.toString(hour + 1);
 
-        departuresList = new ArrayList<>();
+        //departuresList = new ArrayList<>();
 
         // Calling async task to get json
         //new GetTimetables().execute();
@@ -107,11 +108,17 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
 
     }
 
+
     @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null){
             departuresList = (ArrayList<HashMap<String,String>>)savedInstanceState.getSerializable(CURRENT_DATA_KEY);
+            ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
+                    R.layout.bus_timetable_layout, new String[]{TAG_D_LINE, TAG_TYPE,
+                    TAG_HOUR_INFO}, new int[]{R.id.line, R.id.type, R.id.hour});
+            clearProgressBar();
+            setListAdapter(adapter);
         }
     }
 
@@ -122,6 +129,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
     }
 
     private void parseDataFromLoader(ArrayList<BusTimetableModel> data){
+        departuresList = new ArrayList<>();
         SharedPreferences preferences = SharedPrefUtils.getSharedPreferences(getContext());
         String easterYear = preferences.getString(Constants.EASTER_YEAR_KEY,"");
 
@@ -200,7 +208,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
 
             // tmp hashmap for single departure
             HashMap<String, String> departure = new HashMap<>();
-            departure.put(TAG_LINE,model.getLineNumber());
+            departure.put(TAG_D_LINE,model.getLineNumber());
             departure.put(TAG_TYPE,model.getLineInfo());
 
 
@@ -270,7 +278,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
             public void run() {
                 if (isFragmentUIActive()) {
                     ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
-                            R.layout.bus_timetable_layout, new String[]{TAG_LINE, TAG_TYPE,
+                            R.layout.bus_timetable_layout, new String[]{TAG_D_LINE, TAG_TYPE,
                             TAG_HOUR_INFO}, new int[]{R.id.line, R.id.type, R.id.hour});
 
                     setListAdapter(adapter);
@@ -465,7 +473,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
              * */
             if (isFragmentUIActive()) {
                 ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
-                        R.layout.bus_timetable_layout, new String[]{TAG_LINE, TAG_TYPE,
+                        R.layout.bus_timetable_layout, new String[]{TAG_D_LINE, TAG_TYPE,
                         TAG_HOUR}, new int[]{R.id.line, R.id.type, R.id.hour});
 
                 clearProgressBar();
