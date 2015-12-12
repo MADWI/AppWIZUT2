@@ -23,4 +23,9 @@ public class Constants {
      * Path where pdf schedules are downloaded from
      */
     public static final String PDF_SCHEDULE_URL = "http://wi.zut.edu.pl/plan/Wydruki/PlanGrup/%s.pdf";
+
+    public static final String BUS_TIMETABLE_LASTUPDATE = "bus_last_update_key";
+
+    public static final String EASTER_DATE_KEY = "easter_day_key";
+    public static final String EASTER_YEAR_KEY = "easter_year_key";
 }

@@ -1,8 +1,9 @@
 package pl.edu.zut.mad.appwizut2.utils;
-
-
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -10,8 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,17 +23,22 @@ import java.util.HashMap;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
+import pl.edu.zut.mad.appwizut2.models.BusTimetableModel;
+import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
+import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader.BusModelDayType;
 
 /**
  * Created by Bartosz Kozajda on 23/11/2015.
  */
 public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
-    private ProgressDialog pDialog;
     private static HttpConnect site = null;
     private String lineInfo ="";
     private String lineNo = "";
+
+
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
     LayoutInflater inflater;
     ViewGroup container;
 
@@ -41,6 +47,8 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
     private static final String TAG_DEPARTURES = "departures";
     private static final String TAG_TYPE = "type";
     private static final String TAG_DEPARTURES2 = "departures";
+    private static final String TAG_HOUR_INFO = "hour_info";
+    public static final String CURRENT_DATA_KEY = "current_data";
     // JSON editable node names
     private static String TAG_HOUR = "";
     private static String TAG_HOUR2 = "";
@@ -59,6 +67,8 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
         View rootView = inflater.inflate(R.layout.bus_list_layout, container, false);
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
         swipeRefreshLayout.setOnRefreshListener(this);
+        progressBar = (ProgressBar)rootView.findViewById(R.id.item_list_progress_bar);
+
         return rootView;
     }
 
@@ -69,7 +79,6 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
 
     private void refreshList(LayoutInflater inflater, ViewGroup container) {
         initUI();
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void initUI() {
@@ -79,10 +88,234 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
         TAG_HOUR = hour2;
         TAG_HOUR2 = Integer.toString(hour + 1);
 
-        departuresList = new ArrayList<HashMap<String, String>>();
+        departuresList = new ArrayList<>();
 
         // Calling async task to get json
-        new GetTimetables().execute();
+        //new GetTimetables().execute();
+        ArrayList<BusTimetableModel> buses = getBaseModel();
+        BusTimetableLoader loader = new BusTimetableLoader(buses,getContext());
+        loader.getData(false, new BusTimetableLoader.BusTimetableLoaderCallback() {
+            @Override
+            public void foundData(ArrayList<BusTimetableModel> data) {
+                if (isFragmentUIActive() && data != null) {
+
+                    parseDataFromLoader(data);
+                }
+
+            }
+        });
+
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null){
+            departuresList = (ArrayList<HashMap<String,String>>)savedInstanceState.getSerializable(CURRENT_DATA_KEY);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(CURRENT_DATA_KEY,departuresList);
+    }
+
+    private void parseDataFromLoader(ArrayList<BusTimetableModel> data){
+        SharedPreferences preferences = SharedPrefUtils.getSharedPreferences(getContext());
+        String easterYear = preferences.getString(Constants.EASTER_YEAR_KEY,"");
+
+        Calendar cal = Calendar.getInstance();
+
+        if (easterYear.equals("") || !easterYear.equals(String.valueOf(cal.get(Calendar.YEAR)))){
+            String easterDate = BusTimetableLoader.getEasterSundayDate(cal.get(Calendar.YEAR));
+            preferences.edit().putString(Constants.EASTER_DATE_KEY,easterDate).commit();
+        }
+        int hour1 = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+        int day1 = cal.get(Calendar.DAY_OF_WEEK);
+        int dayOfMonth1 = cal.get(Calendar.DAY_OF_MONTH);
+
+        cal.add(Calendar.HOUR_OF_DAY,1);
+        int hour2 = cal.get(Calendar.HOUR_OF_DAY);
+        cal.add(Calendar.DAY_OF_WEEK,1);
+
+        int day2 = cal.get(Calendar.DAY_OF_WEEK);
+        int dayOfMonth2 = cal.get(Calendar.DAY_OF_MONTH);
+
+
+        String[] easterDate = preferences.getString(Constants.EASTER_DATE_KEY,"").split(" ");
+        int easterMonth = Integer.valueOf(easterDate[0]);
+        int easterDay = Integer.valueOf(easterDate[1]);
+        BusModelDayType dayType1 = BusModelDayType.WEEK_DAY;
+        BusModelDayType dayType2 = BusModelDayType.WEEK_DAY;
+
+        if (day1 == Calendar.SATURDAY){
+            dayType1 = BusModelDayType.SATURDAY;
+        }else if (day1 == Calendar.SUNDAY){
+            dayType1 = BusModelDayType.SUNDAY;
+        }
+
+        if (day2 == Calendar.SATURDAY){
+            dayType2 = BusModelDayType.SATURDAY;
+        }else if (day2 == Calendar.SUNDAY){
+            dayType2 = BusModelDayType.SUNDAY;
+        }
+
+        int month = cal.get(Calendar.MONTH);
+
+        if (month == Calendar.DECEMBER){
+            if (dayOfMonth1 == 25){
+                dayType1 = BusModelDayType.HOLIDAYS;
+            }else if (dayOfMonth1 == 24 || dayOfMonth1 == 31){
+                dayType2 = BusModelDayType.HOLIDAYS;
+            }
+
+        }else if (month == Calendar.JANUARY){
+            if (dayOfMonth1 == 1){
+                dayType1 = BusModelDayType.HOLIDAYS;
+            }
+
+        }else if (month == easterMonth){
+            if (dayOfMonth1 == easterDay){
+                dayType1 = BusModelDayType.HOLIDAYS;
+            }else if (dayOfMonth2 == easterDay){
+                dayType2 = BusModelDayType.HOLIDAYS;
+            }
+
+        }else if (month >= Calendar.JULY && month <= Calendar.SEPTEMBER){
+            if (day1 != Calendar.SATURDAY && day1 != Calendar.SUNDAY){
+                dayType1 = BusModelDayType.WEEK_DAY_STUDENTS_HOLIDAY;
+            }
+
+            if (day2 != Calendar.SATURDAY && day1 != Calendar.SUNDAY){
+                dayType2 = BusModelDayType.WEEK_DAY_STUDENTS_HOLIDAY;
+            }
+        }
+
+
+
+
+        for (BusTimetableModel model : data){
+
+            // tmp hashmap for single departure
+            HashMap<String, String> departure = new HashMap<>();
+            departure.put(TAG_LINE,model.getLineNumber());
+            departure.put(TAG_TYPE,model.getLineInfo());
+
+
+            HashMap<Integer,ArrayList<Integer>> dayInfo = model.getInfo().get(dayType1.toString());
+            if (dayInfo == null){
+                if (dayType1 == BusModelDayType.WEEK_DAY){
+                    dayInfo = model.getInfo().get(BusModelDayType.WEEK_DAY_STUDENTS_YEAR.toString());
+                }
+            }
+            ArrayList<Integer> hourOne = null;
+            ArrayList<Integer> hourTwo = null;
+            if (dayInfo != null){
+                hourOne = dayInfo.get(hour1);
+                hourTwo = dayInfo.get(hour2);
+            }
+            if (hour1 == 23){
+                HashMap<Integer,ArrayList<Integer>> dayInfo2 = model.getInfo().get(dayType2.toString());
+                if (dayInfo2 == null){
+                    if (dayType2 == BusModelDayType.WEEK_DAY){
+                        dayInfo2 = model.getInfo().get(BusModelDayType.WEEK_DAY_STUDENTS_YEAR.toString());
+                    }
+                }
+                if (dayInfo2 != null){
+                    hourTwo = dayInfo2.get(hour2);
+                }else {
+                    hourTwo = null;
+                }
+            }
+
+            String dep1 = "";
+            if (hourOne != null){
+                for (Integer thatMin : hourOne){
+                    if (minute <= thatMin){
+                        String thatMinS = String.valueOf(thatMin);
+                        if (thatMin < 10)
+                            thatMinS = "0" + thatMinS;
+
+                        dep1 = dep1 + hour1 + ":" + thatMinS + " ";
+                    }
+                }
+
+            }
+
+            String dep2 = "";
+            if (hourTwo != null){
+                for (Integer thatMin : hourTwo){
+                    String thatMinS = String.valueOf(thatMin);
+                    if (thatMin < 10)
+                        thatMinS = "0" + thatMinS;
+                    dep2 = dep2 + hour2 + ":" + thatMinS + " ";
+
+                }
+
+            }
+            if (!dep1.equals("") || !dep2.equals("")) {
+                departure.put(TAG_HOUR_INFO, dep1 + dep2);
+                departuresList.add(departure);
+            }
+
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (isFragmentUIActive()) {
+                    ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
+                            R.layout.bus_timetable_layout, new String[]{TAG_LINE, TAG_TYPE,
+                            TAG_HOUR_INFO}, new int[]{R.id.line, R.id.type, R.id.hour});
+
+                    setListAdapter(adapter);
+                    clearProgressBar();
+                    swipeRefreshLayout.setRefreshing(false);
+
+                }
+            }
+        });
+
+
+    }
+
+    private ArrayList<BusTimetableModel> getBaseModel(){
+        BusTimetableModel bus4 = new BusTimetableModel("4"," Żołnierska -> Pomorzany",HTTPLinks.line4);
+        BusTimetableModel bus5 = new BusTimetableModel("5"," Żołnierska -> Stocznia Szczecińska",HTTPLinks.line5);
+        BusTimetableModel bus7 = new BusTimetableModel("7"," Żołnierska -> Basen Górniczy",HTTPLinks.line7);
+        BusTimetableModel bus53 = new BusTimetableModel("53"," Klonowica Zajezdnia -> Stocznia Szczecińska",HTTPLinks.line53);
+        BusTimetableModel bus53_2 = new BusTimetableModel("53"," Klonowica Zajezdnia -> Pomorzany Dobrzyńska",HTTPLinks.line53_2);
+        BusTimetableModel bus60 = new BusTimetableModel("60"," Żołnierska -> Cukrowa",HTTPLinks.line60);
+        BusTimetableModel bus60_2 = new BusTimetableModel("60"," Klonowica Zajezdnia -> Stocznia Szczecińska",HTTPLinks.line60_2);
+        BusTimetableModel bus75 = new BusTimetableModel("75"," Klonowica Zajezdnia -> Dworzec Główny",HTTPLinks.line75);
+        BusTimetableModel bus75_2 = new BusTimetableModel("75"," Klonowica Zajezdnia -> Krzekowo",HTTPLinks.line75_2);
+        BusTimetableModel bus80 = new BusTimetableModel("80"," Klonowica Zajezdnia -> Rugiańska",HTTPLinks.line80);
+        ArrayList<BusTimetableModel> buses = new ArrayList<>();
+        buses.add(bus4);
+        buses.add(bus5);
+        buses.add(bus7);
+        buses.add(bus53);
+        buses.add(bus53_2);
+        buses.add(bus60);
+        buses.add(bus60_2);
+        buses.add(bus75);
+        buses.add(bus75_2);
+        buses.add(bus80);
+        return buses;
+    }
+
+    private void clearProgressBar(){
+        if (progressBar != null) {
+            progressBar.clearAnimation();
+            progressBar.setVisibility(View.GONE);
+            progressBar = null;
+        }
+    }
+
+
+    private boolean isFragmentUIActive() {
+        return isAdded() && !isDetached() && !isRemoving();
     }
 
     private class GetTimetables extends AsyncTask<Void, Void, Void> {
@@ -181,7 +414,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
                             str2 = extractArray(depart2);
 
                             // tmp hashmap for single departure
-                            HashMap<String, String> departure = new HashMap<String, String>();
+                            HashMap<String, String> departure = new HashMap<>();
 
                             // adding each child node to HashMap key => value
                             departure.put(TAG_LINE, lineNo);
@@ -226,11 +459,15 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
             /**
              * Updating parsed JSON data into ListView
              * */
-            ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
-                    R.layout.bus_timetable_layout, new String[] { TAG_LINE, TAG_TYPE,
-                    TAG_HOUR }, new int[] {R.id.line, R.id.type, R.id.hour });
+            if (isFragmentUIActive()) {
+                ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
+                        R.layout.bus_timetable_layout, new String[]{TAG_LINE, TAG_TYPE,
+                        TAG_HOUR}, new int[]{R.id.line, R.id.type, R.id.hour});
 
-            setListAdapter(adapter);
+                clearProgressBar();
+                setListAdapter(adapter);
+
+            }
     }
 }
     /**
@@ -252,7 +489,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
     }
 
     private static String getURLSource(String url) {
-        String for_json = "";
+        String for_json;
 
         site = new HttpConnect(url);
         for_json = site.getPage();

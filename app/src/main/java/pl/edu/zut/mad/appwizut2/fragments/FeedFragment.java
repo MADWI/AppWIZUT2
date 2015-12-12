@@ -33,8 +33,15 @@ import pl.edu.zut.mad.appwizut2.utils.OfflineHandler;
 
 /**
  * Created by macko on 07.11.2015.
+ * modified for OfflineData by Damian Malarczyk
  */
 public abstract class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
+
+    //leaving those for those commits even though this class is not using them, as in current state CaldroidFragment is doing so
+    //shall be dropped with next commit of the Caldroid
+    public static final String INSTANCE_CURRENT_SIZE = "current_size";
+    public static final String INSTANCE_CURRENT_KEY = "current_key";
+
 
     private static final String TAG_TITLE = "title";
     private static final String TAG_DATE = "created";
@@ -42,9 +49,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     private static final String TAG_BODY = "text";
     private static final String TAG_ENTRY = "entry";
     private static final String TAG_ID = "id";
-    public static final String INSTANCE_CURRENT_KEY = "current_data";
-    public static final String INSTANCE_CURRENT_SIZE = "current_size";
-
+    private static final String CURRENT_DATA_KEY = "current_data";
 
 
     private RecyclerView itemListView;
@@ -54,8 +59,8 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
 
     private String addressUrl;
     private Context context;
-    private List<ListItemContainer> currentData;
-    OfflineHandler offlineHandler;
+    private ArrayList<ListItemContainer> currentData;
+    OfflineHandler<ListItemContainer> offlineHandler;
 
 
     private static final Pattern patternQuot = Pattern.compile("(&quot;)");
@@ -63,7 +68,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     protected void setFeedUrl(String addressUrl) {this.addressUrl = addressUrl;}
 
     /**
-     * ustawienie modelu danych offline dla fragmentu
+     * initializing offline data model
      * @param context
      */
     protected void initModel(Context context){
@@ -90,7 +95,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         itemListView.setLayoutManager(layoutManager);
 
-        //inicjalizacja pustego adaptera w celu uniknięcia błędu nieokreślonego layoutu
+        //set empty adapter, not to get the "layout not set" warning
         itemListView.setAdapter(new ListItemAdapter(new ArrayList<ListItemContainer>()));
 
         return rootView;
@@ -100,11 +105,8 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null){
-            Integer size = savedInstanceState.getInt(INSTANCE_CURRENT_SIZE);
-            currentData = new ArrayList<>();
-            for (int i = 0; i < size;i++){
-                currentData.add((ListItemContainer)savedInstanceState.getSerializable(INSTANCE_CURRENT_KEY + i));
-            }
+            currentData = (ArrayList<ListItemContainer>)savedInstanceState.getSerializable(CURRENT_DATA_KEY);
+
 
         }
         if (currentData != null){
@@ -117,20 +119,18 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     }
 
 
-
-    public void refresh(){
+    private void refresh() {
         DownloadContentTask task = new DownloadContentTask();
         task.execute(addressUrl);
-
     }
+
     @Override
     public void onRefresh() {
         refresh();
-
     }
 
-    public static List<ListItemContainer> createItemList(String pageContent) {
-        List<ListItemContainer> itemList = new ArrayList<>();
+    public static ArrayList<ListItemContainer> createItemList(String pageContent) {
+        ArrayList<ListItemContainer> itemList = new ArrayList<>();
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
             JSONArray arrayContent = jsonPageContent.getJSONArray(TAG_ENTRY);
@@ -161,11 +161,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        for (int i = 0; i < currentData.size();i++){
-            outState.putSerializable(INSTANCE_CURRENT_KEY + i,currentData.get(i) );
-
-        }
-        outState.putInt(INSTANCE_CURRENT_SIZE,currentData.size());
+        outState.putSerializable(CURRENT_DATA_KEY,currentData);
     }
 
     private void clearProgressBar(){
@@ -175,6 +171,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
             progressBar = null;
         }
     }
+
     private class DownloadContentTask extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -184,12 +181,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
                 String pageContent = connection.getPage();
                 currentData = createItemList(pageContent);
                 offlineHandler.setCurrentOfflineData(currentData);
-                offlineHandler.saveCurrentData(new Interfaces.CompletitionCallback() {
-                    @Override
-                    public void finished(Boolean success) {
-                        Log.i("offline data save","result: " + (success ? "success" : "error"));
-                    }
-                });
+                offlineHandler.saveCurrentData();
 
             }else {
                 currentData = offlineHandler.getCurrentData(true);
@@ -209,9 +201,6 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
             }
             swipeRefreshLayout.setRefreshing(false);
         }
-
-
-
 
     }
 }

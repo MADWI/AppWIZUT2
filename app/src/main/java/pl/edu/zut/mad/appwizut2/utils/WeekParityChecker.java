@@ -68,7 +68,7 @@ public class WeekParityChecker {
         String tomorrow = "_" + Integer.toString(year) + "_"
                 + Integer.toString(month) + "_" + Integer.toString(dayNext);
 
-        Log.d(TAG, today + " " + tomorrow);
+        //Log.d(TAG, today + " " + tomorrow);
 
         try {
             JSONObject pageSrcObject = new JSONObject(pageSource);
@@ -89,7 +89,7 @@ public class WeekParityChecker {
 
         for (int i = 0; i < 2; i++) {
             if (currentWeek[i].equals("x")) {
-                Log.e(TAG, currentWeek[i]);
+                //Log.e(TAG, currentWeek[i]);
                 currentWeek[i] = "---";
             } else if (currentWeek[i].equals("p"))
                 currentWeek[i] = "parzysty";
