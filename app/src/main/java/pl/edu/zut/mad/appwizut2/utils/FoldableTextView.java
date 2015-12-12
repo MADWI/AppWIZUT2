@@ -21,7 +21,7 @@ public class FoldableTextView extends AppCompatTextView {
     private int mWidth;
     private int mExpandedHeight;
     private final int mFoldedHeight;
-    private View vSeeMore;
+    private View mViewSeeMore;
 
     private float mExpandness; // 0 - folded, 1 - expanded,
 
@@ -54,10 +54,10 @@ public class FoldableTextView extends AppCompatTextView {
         if (mExpandedHeight < mFoldedHeight) {
             // If folding would make this view bigger, always be expanded
             heightToSet = mExpandedHeight;
-            vSeeMore.setEnabled(false);
+            mViewSeeMore.setEnabled(false);
         } else {
             heightToSet = (int) (mExpandedHeight * mExpandness + mFoldedHeight * (1 - mExpandness));
-            vSeeMore.setEnabled(true);
+            mViewSeeMore.setEnabled(true);
         }
         setMeasuredDimension(mWidth, heightToSet);
     }
@@ -97,20 +97,20 @@ public class FoldableTextView extends AppCompatTextView {
     }
 
     public void setSeeMoreView(View vSeeMore) {
-        this.vSeeMore = vSeeMore;
+        this.mViewSeeMore = vSeeMore;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (vSeeMore.isEnabled()) {
+        if (mViewSeeMore.isEnabled()) {
             if (getHeight() > mFoldedHeight) {
-                vSeeMore.setVisibility(View.GONE);
+                mViewSeeMore.setVisibility(View.GONE);
             } else {
-                vSeeMore.setVisibility(View.VISIBLE);
+                mViewSeeMore.setVisibility(View.VISIBLE);
             }
         } else {
-            vSeeMore.setVisibility(View.GONE);
+            mViewSeeMore.setVisibility(View.GONE);
         }
     }
 }

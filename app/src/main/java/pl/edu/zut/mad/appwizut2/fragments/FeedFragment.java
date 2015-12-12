@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
-import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
+import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
 import pl.edu.zut.mad.appwizut2.R;
@@ -45,8 +45,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     public static final String INSTANCE_CURRENT_KEY = "current_data";
     public static final String INSTANCE_CURRENT_SIZE = "current_size";
 
-
-
+    
     private RecyclerView itemListView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
@@ -152,7 +151,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
             }
 
         } catch (JSONException e) {
-            Log.i("FeedFragment: ","JSONException:" + e.getMessage());
+            Log.e("FeedFragment: ","JSONException:" + e.getMessage());
             return null;
         }
         return itemList;
