@@ -43,13 +43,11 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         holder.vId = Integer.valueOf(item.getId());
 
         if (ListItemViewHolder.expandedViews.contains(holder.vId)){
-            holder.vBody.setExpanded(true, false, holder.vSeeMore);
+            holder.vBody.setExpanded(true, false);
             holder.mExpanded = true;
-            holder.vSeeMore.setVisibility(View.GONE);
         } else {
-            holder.vBody.setExpanded(false, false, holder.vSeeMore);
+            holder.vBody.setExpanded(false, false);
             holder.mExpanded = false;
-            holder.vSeeMore.setVisibility(View.VISIBLE);
         }
     }
 
@@ -77,6 +75,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
             vAuthor = (TextView) v.findViewById(R.id.author);
             vSeeMore = (TextView) v.findViewById(R.id.seeMore);
             vBody = (FoldableTextView) v.findViewById(R.id.body);
+            vBody.setSeeMoreView(vSeeMore);
             vBody.setOnClickListener(this);
             vBody.setLinksClickable(true);
             vBody.setAutoLinkMask(Linkify.WEB_URLS);
@@ -88,7 +87,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         @Override
         public void onClick(View v) {
             mExpanded = !mExpanded;
-            vBody.setExpanded(mExpanded, true, vSeeMore);
+            vBody.setExpanded(mExpanded, true);
 
             if (mExpanded) {
                 expandedViews.add(vId);
