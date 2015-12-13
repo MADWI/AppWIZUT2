@@ -81,94 +81,98 @@ public class BusTimetableLoader  {
             SharedPreferences preferences = SharedPrefUtils.getSharedPreferences(context);
 
             String source = getURLSource(HTTPLinks.lineUpdate);
-            String newUpdateDate;
+            if (source != null && !source.equals("")) {
+                String newUpdateDate;
 
 
-            try {
-                JSONObject jsonObj = new JSONObject(source);
-                String lastOnlineUpdate = jsonObj.getString(TAG_LAST_UPDATE);
-                if (lastOnlineUpdate.equals(preferences.getString(Constants.BUS_TIMETABLE_LASTUPDATE, ""))) {
+                try {
+                    JSONObject jsonObj = new JSONObject(source);
+                    String lastOnlineUpdate = jsonObj.getString(TAG_LAST_UPDATE);
+                    if (lastOnlineUpdate.equals(preferences.getString(Constants.BUS_TIMETABLE_LASTUPDATE, ""))) {
 
-                    ArrayList<BusTimetableModel> currentData = offlineHandler.getCurrentData(false);
-                    params[0].foundData(currentData);
-                    return currentData;
+                        ArrayList<BusTimetableModel> currentData = offlineHandler.getCurrentData(false);
+                        params[0].foundData(currentData);
+                        return currentData;
 
-                } else {
-                    newUpdateDate = lastOnlineUpdate;
-                }
-            } catch (JSONException e) {
-
-                Log.e(TAG_DEV_LOG,"couldn't load bus timetable last update date");
-                params[0].foundData(null);
-                return null;
-
-            }
-
-            ArrayList<BusTimetableModel> newModels = new ArrayList<>();
-            for (BusTimetableModel model : lineModels) {
-                String jsonStr = BusTimetableLoader.getURLSource(model.getLineLink());
-                if (jsonStr != null) {
-                    try {
-                        JSONObject jsonObj = new JSONObject(jsonStr);
-
-                        JSONArray departures = jsonObj.getJSONArray(TAG_DEPARTURES);
-
-
-                        HashMap<String, HashMap<Integer, ArrayList<Integer>>> dayInfo = new HashMap<>();
-
-                        for (int i = 0; i < departures.length(); i++) {
-                            try {
-                                JSONObject departureObject = departures.getJSONObject(i);
-                                JSONObject departuresTime = departureObject.getJSONObject(TAG_DEPARTURES);
-                                HashMap<Integer, ArrayList<Integer>> hourInfo = new HashMap<>();
-                                for (int j = 0; j < 24; j++) {
-                                    try {
-                                        JSONArray depart = departuresTime.getJSONArray(Integer.toString(j));
-
-                                        ArrayList<Integer> minutes = new ArrayList<>();
-                                        for (int k = 0; k < depart.length(); k++) {
-
-                                            minutes.add(Integer.parseInt(depart.getString(k).replaceAll("[a-zA-Z]+", "")));
-
-
-                                        }
-                                        hourInfo.put(j, minutes);
-
-                                    } catch (JSONException e) {
-                                        //Log.e(TAG_DEV_LOG,"no value for hour = " + j);
-                                        //e.printStackTrace();
-                                    }
-
-
-                                }
-                                dayInfo.put(departureObject.getString(TAG_DAY), hourInfo);
-                            } catch (JSONException e) {
-                                //not really an issue in most cases, throws error because sometimes departures for given type of day are empty
-                                //in this case departure isn't of type JSONObject but empty JSONArray so the exception is thrown
-                                //Log.e(TAG_DEV_LOG,"json inner parse error");
-                                //e.printStackTrace();
-                            }
-
-                        }
-                        BusTimetableModel newModel = model;
-                        newModel.setInfo(dayInfo);
-                        newModels.add(newModel);
-                    } catch (JSONException e) {
-                        Log.e(TAG_DEV_LOG,"json main parse error");
-                        e.printStackTrace();
-                        return null;
+                    } else {
+                        newUpdateDate = lastOnlineUpdate;
                     }
-                    offlineHandler.setCurrentOfflineData(newModels);
-                    offlineHandler.saveCurrentData();
-                    preferences.edit().putString(Constants.BUS_TIMETABLE_LASTUPDATE, newUpdateDate).commit();
-                } else {
-                    Log.e(TAG_DEV_LOG, "Couldn't get any data from the url");
+                } catch (JSONException e) {
+
+                    Log.e(TAG_DEV_LOG, "couldn't load bus timetable last update date");
+                    params[0].foundData(null);
+                    return null;
+
                 }
+
+                ArrayList<BusTimetableModel> newModels = new ArrayList<>();
+                for (BusTimetableModel model : lineModels) {
+                    String jsonStr = BusTimetableLoader.getURLSource(model.getLineLink());
+                    if (jsonStr != null && !jsonStr.equals("")) {
+                        try {
+                            JSONObject jsonObj = new JSONObject(jsonStr);
+
+                            JSONArray departures = jsonObj.getJSONArray(TAG_DEPARTURES);
+
+
+                            HashMap<String, HashMap<Integer, ArrayList<Integer>>> dayInfo = new HashMap<>();
+
+                            for (int i = 0; i < departures.length(); i++) {
+                                try {
+                                    JSONObject departureObject = departures.getJSONObject(i);
+                                    JSONObject departuresTime = departureObject.getJSONObject(TAG_DEPARTURES);
+                                    HashMap<Integer, ArrayList<Integer>> hourInfo = new HashMap<>();
+                                    for (int j = 0; j < 24; j++) {
+                                        try {
+                                            JSONArray depart = departuresTime.getJSONArray(Integer.toString(j));
+
+                                            ArrayList<Integer> minutes = new ArrayList<>();
+                                            for (int k = 0; k < depart.length(); k++) {
+
+                                                minutes.add(Integer.parseInt(depart.getString(k).replaceAll("[a-zA-Z]+", "")));
+
+
+                                            }
+                                            hourInfo.put(j, minutes);
+
+                                        } catch (JSONException e) {
+                                            //Log.e(TAG_DEV_LOG,"no value for hour = " + j);
+                                            //e.printStackTrace();
+                                        }
+
+
+                                    }
+                                    dayInfo.put(departureObject.getString(TAG_DAY), hourInfo);
+                                } catch (JSONException e) {
+                                    //not really an issue in most cases, throws error because sometimes departures for given type of day are empty
+                                    //in this case departure isn't of type JSONObject but empty JSONArray so the exception is thrown
+                                    //Log.e(TAG_DEV_LOG,"json inner parse error");
+                                    //e.printStackTrace();
+                                }
+
+                            }
+                            BusTimetableModel newModel = model;
+                            newModel.setInfo(dayInfo);
+                            newModels.add(newModel);
+                        } catch (JSONException e) {
+                            Log.e(TAG_DEV_LOG, "json main parse error");
+                            e.printStackTrace();
+                            return null;
+                        }
+                        offlineHandler.setCurrentOfflineData(newModels);
+                        offlineHandler.saveCurrentData();
+                        preferences.edit().putString(Constants.BUS_TIMETABLE_LASTUPDATE, newUpdateDate).commit();
+                    } else {
+                        Log.e(TAG_DEV_LOG, "Couldn't get any data from the url");
+                    }
+                }
+
+
+                params[0].foundData(newModels);
+                return newModels;
             }
-
-
-            params[0].foundData(newModels);
-            return newModels;
+            params[0].foundData(null);
+            return null;
 
         }
 
@@ -186,13 +190,7 @@ public class BusTimetableLoader  {
         String for_json;
 
         HttpConnect site = new HttpConnect(url);
-
-        try {
-            for_json = site.readAllAndClose();
-        } catch (IOException e) {
-            Log.e(TAG_DEV_LOG,"couldn't load site content");
-            return null;
-        }
+        for_json = site.getPage();
 
         return for_json;
     }
@@ -253,10 +251,10 @@ public class BusTimetableLoader  {
                 return BusModelDayType.NOT_HANDLED;
         }
     }
+
     //usage of algorithm to find Easter Sunday date found by Carl Friedrich Gauss
     //usage example from http://stackoverflow.com/questions/26022233/calculate-the-date-of-easter-sunday
-    public static String getEasterSundayDate(int year)
-    {
+    public static String getEasterSundayDate(int year) {
         int a = year % 19,
                 b = year / 100,
                 c = year % 100,

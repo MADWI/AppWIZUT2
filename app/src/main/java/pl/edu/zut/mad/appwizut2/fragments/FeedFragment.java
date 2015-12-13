@@ -106,8 +106,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null){
             currentData = (ArrayList<ListItemContainer>)savedInstanceState.getSerializable(CURRENT_DATA_KEY);
-
-
+            
         }
         if (currentData != null){
             ListItemAdapter listItemAdapter = new ListItemAdapter(currentData);

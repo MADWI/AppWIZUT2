@@ -61,8 +61,11 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
     private int hour;
     String str[], str2[];
 
+
     JSONArray departures = null;
     ArrayList<HashMap<String,String>> departuresList;
+    BusTimetableLoader loader;
+
 
     protected View initView(LayoutInflater inflater, ViewGroup container) {
         View rootView = inflater.inflate(R.layout.bus_list_layout, container, false);
@@ -70,12 +73,36 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
         swipeRefreshLayout.setOnRefreshListener(this);
         progressBar = (ProgressBar)rootView.findViewById(R.id.item_list_progress_bar);
 
+
+        loader = new BusTimetableLoader(getBaseModel(),getContext());
+        loader.getData(false, new BusTimetableLoader.BusTimetableLoaderCallback() {
+            @Override
+            public void foundData(ArrayList<BusTimetableModel> data) {
+                if (isFragmentUIActive() && data != null) {
+
+                    parseDataFromLoader(data);
+                }
+
+            }
+        });
+
+
         return rootView;
     }
 
     public void onRefresh(){
         swipeRefreshLayout.setRefreshing(true);
-        refreshList(inflater, container);
+        //refreshList(inflater, container);
+        refresh();
+    }
+
+    private void refresh(){
+        loader.getData(false, new BusTimetableLoader.BusTimetableLoaderCallback() {
+            @Override
+            public void foundData(ArrayList<BusTimetableModel> data) {
+                parseDataFromLoader(data);
+            }
+        });
     }
 
     private void refreshList(LayoutInflater inflater, ViewGroup container) {
@@ -93,18 +120,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
 
         // Calling async task to get json
         //new GetTimetables().execute();
-        ArrayList<BusTimetableModel> buses = getBaseModel();
-        BusTimetableLoader loader = new BusTimetableLoader(buses,getContext());
-        loader.getData(false, new BusTimetableLoader.BusTimetableLoaderCallback() {
-            @Override
-            public void foundData(ArrayList<BusTimetableModel> data) {
-                if (isFragmentUIActive() && data != null) {
 
-                    parseDataFromLoader(data);
-                }
-
-            }
-        });
 
     }
 
@@ -113,12 +129,19 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null){
+
             departuresList = (ArrayList<HashMap<String,String>>)savedInstanceState.getSerializable(CURRENT_DATA_KEY);
-            ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
-                    R.layout.bus_timetable_layout, new String[]{TAG_D_LINE, TAG_TYPE,
-                    TAG_HOUR_INFO}, new int[]{R.id.line, R.id.type, R.id.hour});
-            clearProgressBar();
-            setListAdapter(adapter);
+            if (departuresList != null) {
+                ListAdapter adapter = new SimpleAdapter(getActivity(), departuresList,
+                        R.layout.bus_timetable_layout, new String[]{TAG_D_LINE, TAG_TYPE,
+                        TAG_HOUR_INFO}, new int[]{R.id.line, R.id.type, R.id.hour});
+                clearProgressBar();
+                setListAdapter(adapter);
+            }else {
+
+                refresh();
+            }
+
         }
     }
 
