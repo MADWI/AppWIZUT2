@@ -253,7 +253,8 @@ public class BusTimetableLoader  {
                 return BusModelDayType.NOT_HANDLED;
         }
     }
-
+    //usage of algorithm to find Easter Sunday date found by Carl Friedrich Gauss
+    //usage example from http://stackoverflow.com/questions/26022233/calculate-the-date-of-easter-sunday
     public static String getEasterSundayDate(int year)
     {
         int a = year % 19,
