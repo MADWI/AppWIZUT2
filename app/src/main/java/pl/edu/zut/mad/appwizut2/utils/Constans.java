@@ -44,11 +44,6 @@ public class Constans {
     /** Stala definiujaca nazwe parzystosci tygodnia nastepnego */
     public static final String WEEK_PARITY_NEXT = "week_parity_next";
 
-    /**
-     * Zmienna do debuggowania.
-     */
-    public static final String PARITY_TAG = "WeekParityChecker";
-
     /** Stala definiujaca nazwe naglowka zmian w planie */
     public static final String TITLE_PLAN_CHANGES = "title_plan_changes";
 
@@ -65,13 +60,12 @@ public class Constans {
     public static final String OFFLINE_DATA_FOLDER = "/Data";
 
     /** calendar - for format dates */
-    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
-    public static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy");
-    public static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault());
+    public static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault());
+    public static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
 
     /** for onSavedInstace */
-    public static final String INSTANCE_COMPRESSED_KEY = "compressed_data";
-    public static final String INSTANCE_COMPRESSED_SIZE = "compressed_size";
+    public static final String INSTANCE_EVENTS_KEY = "events_in_day_data";
     public static final String INSTANCE_CURRENT_KEY = "current_data";
     public static final String INSTANCE_CURRENT_SIZE = "current_size";
 

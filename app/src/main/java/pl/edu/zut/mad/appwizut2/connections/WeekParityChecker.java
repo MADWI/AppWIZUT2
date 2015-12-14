@@ -349,7 +349,7 @@ public class WeekParityChecker {
             @Override
             public void foundData(ArrayList<DayParity> data) {
                 String[] weekParity = new String[2];
-                DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+                DateFormat format = Constans.FORMATTER;
 
                 Calendar calendar = Calendar.getInstance();
                 String today = format.format(calendar.getTime());
@@ -403,7 +403,7 @@ public class WeekParityChecker {
 
 		Date today = new Date();
 
-		DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		DateFormat format = Constans.FORMATTER;
 		final String todayString = format.format(today);
 
 
@@ -444,7 +444,7 @@ public class WeekParityChecker {
 	 *@author Damian Malarczyk
 	 */
 	private static boolean laterOrEqualThanDate(Date date,String parity){
-		DateFormat format = new SimpleDateFormat("yyyy.MM.dd");
+		DateFormat format = Constans.FORMATTER;
 
 		try {
 			Date theDate = format.parse(format.format(date));

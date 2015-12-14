@@ -24,6 +24,11 @@ import pl.edu.zut.mad.appwizut2.models.DayParity;
 public class WeekParityChecker {
     EventsManager mEventsManager;
 
+    /**
+     * Zmienna do debuggowania.
+     */
+    public static final String PARITY_TAG = "WeekParityChecker";
+
     /** Obiekt klasy HttpConnect, sluzacy do polaczenia ze strona */
     private static HttpConnect strona = null;
 
@@ -70,7 +75,7 @@ public class WeekParityChecker {
         String tomorrow = "_" + Integer.toString(year) + "_"
                 + Integer.toString(month) + "_" + Integer.toString(dayNext);
 
-        Log.d(Constans.PARITY_TAG, today + " " + tomorrow);
+        Log.d(PARITY_TAG, today + " " + tomorrow);
 
         try {
             JSONObject pageSrcObject = new JSONObject(pageSource);
@@ -91,7 +96,7 @@ public class WeekParityChecker {
 
         for (int i = 0; i < 2; i++) {
             if (currentWeek[i].equals("x")) {
-                Log.e(Constans.PARITY_TAG, currentWeek[i]);
+                Log.e(PARITY_TAG, currentWeek[i]);
                 currentWeek[i] = "---";
             } else if (currentWeek[i].equals("p"))
                 currentWeek[i] = "parzysty";

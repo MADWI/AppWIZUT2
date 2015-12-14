@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.utils.Interfaces.CompletitionCallback;
@@ -44,14 +45,14 @@ public class OfflineHandler<T extends Serializable> {
      * {@link #getCurrentData(OfflineDataCallback, boolean)}
      *
      */
-    private List<T> currentData;
+    private ArrayList<T> currentData;
 
     /**
      * interfejs do odczytu asynchronicznie odczytanych danych
      *
      */
     public interface OfflineDataCallback<T> {
-        void foundData(List<T> data);
+        void foundData(ArrayList<T> data);
     }
 
 
@@ -72,7 +73,7 @@ public class OfflineHandler<T extends Serializable> {
 
     }
 
-    public void setCurrentOfflineData(List<T> changes){
+    public void setCurrentOfflineData(ArrayList<T> changes){
         this.currentData = changes;
 
     }
@@ -83,7 +84,7 @@ public class OfflineHandler<T extends Serializable> {
      * w celu synchronicznego odczytania danych
      * @return
      */
-    public List<T> getCurrentData(boolean reload){
+    public ArrayList<T> getCurrentData(boolean reload){
         if (!reload && currentData != null){
             return currentData;
         }
@@ -95,7 +96,7 @@ public class OfflineHandler<T extends Serializable> {
      * metoda pomocnicza do odczytu danych z plików
      * @return
      */
-    private List<T> readCurrentData(){
+    private ArrayList<T> readCurrentData(){
         File documents = ctx.getFilesDir();
 
         File offlineMessagesFile = new File(documents, OfflineDataHandlerToPath(value));
@@ -104,7 +105,7 @@ public class OfflineHandler<T extends Serializable> {
             FileInputStream fileInputStream = new FileInputStream(offlineMessagesFile);
 
             ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
-            currentData = (List<T>)inputStream.readObject();
+            currentData = (ArrayList<T>)inputStream.readObject();
             inputStream.close();
             fileInputStream.close();
             return currentData;

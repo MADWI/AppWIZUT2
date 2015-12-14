@@ -29,7 +29,6 @@ public class EventsManager {
     public int getEventsCountOnDay(String date){
         int count = 0;
         if(currentData!=null) {
-            Log.i("EventsManager", "cos sie dzieja");
             for (ListItemContainer item : currentData) {
                 if (item.getDate().equals(date)) {
                     count++;
@@ -49,7 +48,6 @@ public class EventsManager {
         protected Void doInBackground(String... params) {
 
             try {
-                if(ctx == null){Log.i("EventsManager", "cos sie dzieja");}
                 if (HttpConnect.isOnline(ctx)) {
                     HttpConnect connection = new HttpConnect(params[0]);
                     String pageContent = connection.getPage();

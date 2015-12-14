@@ -19,7 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +49,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
 
     private String addressUrl;
     private Context context;
-    private List<ListItemContainer> currentData;
+    private ArrayList<ListItemContainer> currentData;
     OfflineHandler offlineHandler;
 
 
@@ -125,8 +124,8 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
 
     }
 
-    public static List<ListItemContainer> createItemList(String pageContent) {
-        List<ListItemContainer> itemList = new ArrayList<>();
+    public static ArrayList<ListItemContainer> createItemList(String pageContent) {
+        ArrayList<ListItemContainer> itemList = new ArrayList<>();
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
             JSONArray arrayContent = jsonPageContent.getJSONArray(Constans.TAG_ENTRY);
