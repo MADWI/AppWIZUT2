@@ -40,7 +40,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         holder.vTitle.setText(item.getTitle());
         holder.vDate.setText(item.getDate());
         holder.vAuthor.setText(item.getAuthor());
-        holder.vBody.setText(Html.fromHtml(item.getBody()));
+        holder.vBody.setText(trim(Html.fromHtml(item.getBody())));
         holder.vBody.setMovementMethod(LinkMovementMethod.getInstance());
         holder.vId = Integer.valueOf(item.getId());
 
@@ -56,6 +56,19 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
     @Override
     public int getItemCount() {
         return listItem.size();
+    }
+
+    // function to trim whitespaces from result of Html.fromHtml
+    private static CharSequence trim(CharSequence source) {
+        if (source.equals(0)) {
+            return "";
+        }
+
+        int i = source.length();
+
+        while(--i >= 0 && Character.isWhitespace(source.charAt(i)));
+
+        return source.subSequence(0, i+1);
     }
 
     public static class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
