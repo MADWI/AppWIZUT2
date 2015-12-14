@@ -51,8 +51,6 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
             holder.vBody.setExpanded(false, false);
             holder.mExpanded = false;
         }
-
-        trim(null);
     }
 
     @Override
