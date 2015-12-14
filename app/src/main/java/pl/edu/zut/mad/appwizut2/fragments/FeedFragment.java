@@ -8,8 +8,6 @@ import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +20,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
 import pl.edu.zut.mad.appwizut2.network.HttpConnect;
@@ -140,13 +136,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
                 listItemContainer.setDate(item.getString(TAG_DATE));
                 listItemContainer.setAuthor(item.getString(TAG_AUTHOR));
                 listItemContainer.setId(item.getString(TAG_ID));
-
-                String body = item.getString(TAG_BODY);
-
-                body = body.replaceAll("<img.+/(img)*>", "");
-                Spanned sp = Html.fromHtml(body);
-
-                listItemContainer.setBody(sp.toString().trim());
+                listItemContainer.setBody(item.getString(TAG_BODY));
                 itemList.add(listItemContainer);
             }
 

@@ -39,7 +39,8 @@ public class ListItemContainer implements Serializable {
     public String getAuthor() {return author; }
 
     public String getBody() {
-        return body;
+        String bodyNoImg = body.replaceAll("<img.+?>", "");
+        return bodyNoImg;
     }
 
     public String getId() {

@@ -1,7 +1,8 @@
 package pl.edu.zut.mad.appwizut2.models;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.util.Linkify;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,8 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         holder.vTitle.setText(item.getTitle());
         holder.vDate.setText(item.getDate());
         holder.vAuthor.setText(item.getAuthor());
-        holder.vBody.setText(item.getBody());
+        holder.vBody.setText(Html.fromHtml(item.getBody()));
+        holder.vBody.setMovementMethod(LinkMovementMethod.getInstance());
         holder.vId = Integer.valueOf(item.getId());
 
         if (ListItemViewHolder.expandedViews.contains(holder.vId)){
@@ -77,8 +79,6 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
             vBody = (FoldableTextView) v.findViewById(R.id.body);
             vBody.setSeeMoreView(vSeeMore);
             vBody.setOnClickListener(this);
-            vBody.setLinksClickable(true);
-            vBody.setAutoLinkMask(Linkify.WEB_URLS);
 
             if (expandedViews == null)
                 expandedViews = new HashSet();
