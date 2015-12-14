@@ -51,6 +51,8 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
             holder.vBody.setExpanded(false, false);
             holder.mExpanded = false;
         }
+
+        trim(null);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
 
     // function to trim whitespaces from result of Html.fromHtml
     private static CharSequence trim(CharSequence source) {
-        if (source.equals(0)) {
+        if (source == null) {
             return "";
         }
 
