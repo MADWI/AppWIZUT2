@@ -3,6 +3,7 @@ package pl.edu.zut.mad.appwizut2.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
  * Klasa wspomagajaca prace z SharedPreferences
@@ -23,8 +24,7 @@ public class SharedPrefUtils {
      * @return wskazany obiekt SharedPreferences
      */
     public static SharedPreferences getSharedPreferences(Context ctx) {
-        return ctx.getSharedPreferences(Constans.PREFERENCES_NAME,
-                Activity.MODE_PRIVATE);
+        return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
     /**
@@ -35,8 +35,7 @@ public class SharedPrefUtils {
      *            kontekst aplikacji
      */
     public static void clearPreferences(Context ctx) {
-        SharedPreferences preferences = ctx.getSharedPreferences(
-                Constans.PREFERENCES_NAME, Activity.MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.commit();

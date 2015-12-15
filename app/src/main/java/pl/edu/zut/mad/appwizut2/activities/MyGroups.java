@@ -1,21 +1,16 @@
 package pl.edu.zut.mad.appwizut2.activities;
 
 import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.HttpConnect;
-import pl.edu.zut.mad.appwizut2.utils.Intents;
-import pl.edu.zut.mad.appwizut2.utils.SharedPrefUtils;
 import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.network.PlanDownloader;
 
 import android.app.Activity;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -39,9 +34,6 @@ public class MyGroups extends Activity implements OnClickListener {
      * savedInstanceState entry name used storing contents of page 2 during group selection
      */
     private static final String STATE_AVAILABLE_GROUPS = "avGroups";
-
-    /** Obiekt klasy SharedPreferences (plik ustawien) */
-    private SharedPreferences preferences;
 
     /**
      * Obiekt klasy Resources, odwolujacy sie stringow w pliku
@@ -129,11 +121,6 @@ public class MyGroups extends Activity implements OnClickListener {
         pic_group = (RelativeLayout) findViewById(R.id.pic_group_layout);
 
 		/*
-		 * get SharedPreferences
-		 */
-        preferences = SharedPrefUtils
-                .getSharedPreferences(getApplicationContext());
-		/*
 		 * get Resources
 		 */
         res = getApplicationContext().getResources();
@@ -177,15 +164,17 @@ public class MyGroups extends Activity implements OnClickListener {
                 } else {
                     // second click , save group/type and refresh layout
 
-                    SharedPrefUtils.saveString(preferences, Constans.GROUP,
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+
+                    editor.putString(Constans.PREF_GROUP,
                             spinGroup.getSelectedItem().toString());
 
-                    SharedPrefUtils.saveString(preferences, Constans.TYPE, spinType
-                            .getSelectedItem().toString());
+                    editor.putString(Constans.PREF_STUDIES_TYPE,
+                            spinType.getSelectedItem().toString());
 
-                    Intent refresh = Intents.actionRefresh(this);
-                    startService(refresh);
-                    Toast.makeText(this, "TODO: Maybe refresh schedule now", Toast.LENGTH_SHORT).show();
+                    editor.apply();
+
+                    DataLoadingManager.getInstance(this).dispatchSettingsChanged();
 
                     finish();
                 }

@@ -12,9 +12,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.fragments.AboutUsFragment;
@@ -23,6 +27,9 @@ import pl.edu.zut.mad.appwizut2.fragments.BusTimetableFragment;
 import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlanChangesFragment;
 import pl.edu.zut.mad.appwizut2.fragments.TimetableFragment;
+import pl.edu.zut.mad.appwizut2.models.BusTimetableModel;
+import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
+import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
 
 
 public class MainActivity extends AppCompatActivity
@@ -59,7 +66,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

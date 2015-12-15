@@ -48,8 +48,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     public static final String INSTANCE_COMPRESSED_KEY = "compressed_data";
     public static final String INSTANCE_COMPRESSED_SIZE = "compressed_size";
     private static ArrayList<DayParity> parityList;
-    private List<ListItemContainer> currentData;
-    private List<ListItemContainer> compresedData;
+    private ArrayList<ListItemContainer> currentData;
+    private ArrayList<ListItemContainer> compresedData;
 
     private TextView clickedDate;
     private RecyclerView itemListView;
@@ -324,12 +324,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
                 String pageContent = connection.getPage();
                 currentData = FeedFragment.createItemList(pageContent);
                 offlineHandler.setCurrentOfflineData(currentData);
-                offlineHandler.saveCurrentData(new Interfaces.CompletitionCallback() {
-                    @Override
-                    public void finished(Boolean success) {
-                        Log.i("offline data save","result: " + (success ? "success" : "error"));
-                    }
-                });
+                offlineHandler.saveCurrentData();
 
             }else {
                 currentData = offlineHandler.getCurrentData(true);

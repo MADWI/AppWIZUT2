@@ -49,7 +49,9 @@ public class OpenSchedulePdfDialogFragment extends DialogFragment implements Bas
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new ProgressDialog(getActivity());
+        ProgressDialog dialog = new ProgressDialog(getActivity());
+        dialog.setMessage(getString(R.string.downloading_pdf_schedule));
+        return dialog;
     }
 
     @SuppressLint("InlinedApi")

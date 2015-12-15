@@ -10,8 +10,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
 import pl.edu.zut.mad.appwizut2.utils.Interfaces.CompletitionCallback;
 
 /**
@@ -22,7 +24,7 @@ public class OfflineHandler<T extends Serializable> {
     private Context ctx;
 
     /**
-     * Klucz danych offline
+     * offline data key
      */
     private final OfflineDataHandlerKeys value;
 
@@ -39,19 +41,24 @@ public class OfflineHandler<T extends Serializable> {
     }
 
     /**
-     * obecnie posiadane dane
-     * uaktalniane wraz wywołaniem metod
-     * {@link #getCurrentData(OfflineDataCallback, boolean)}
+     * current data stored by the handler
+     * updated with call of
+     * {@link #getCurrentData(OfflineDataCallback, boolean)} method
      *
      */
-    private List<T> currentData;
+    private ArrayList<T> currentData;
 
     /**
-     * interfejs do odczytu asynchronicznie odczytanych danych
+     * interface to provide access for asynchronously loaded data
      *
      */
     public interface OfflineDataCallback<T> {
         void foundData(List<T> data);
+    }
+
+    public void setCurrentOfflineData(ArrayList<T> changes){
+        this.currentData = changes;
+
     }
 
 
@@ -72,18 +79,15 @@ public class OfflineHandler<T extends Serializable> {
 
     }
 
-    public void setCurrentOfflineData(List<T> changes){
-        this.currentData = changes;
 
-    }
 
     /**
      *
-     * Przeładowana metoda {@link #getCurrentData(OfflineDataCallback, boolean)}
-     * w celu synchronicznego odczytania danych
+     * overloaded method {@link #getCurrentData(OfflineDataCallback, boolean)}
+     *
      * @return
      */
-    public List<T> getCurrentData(boolean reload){
+    public ArrayList<T> getCurrentData(boolean reload){
         if (!reload && currentData != null){
             return currentData;
         }
@@ -92,10 +96,10 @@ public class OfflineHandler<T extends Serializable> {
     }
 
     /**
-     * metoda pomocnicza do odczytu danych z plików
+     * helper method to read current offline data
      * @return
      */
-    private List<T> readCurrentData(){
+    private ArrayList<T> readCurrentData(){
         File documents = ctx.getFilesDir();
 
         File offlineMessagesFile = new File(documents, OfflineDataHandlerToPath(value));
@@ -104,7 +108,7 @@ public class OfflineHandler<T extends Serializable> {
             FileInputStream fileInputStream = new FileInputStream(offlineMessagesFile);
 
             ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
-            currentData = (List<T>)inputStream.readObject();
+            currentData = (ArrayList<T>)inputStream.readObject();
             inputStream.close();
             fileInputStream.close();
             return currentData;
@@ -120,43 +124,55 @@ public class OfflineHandler<T extends Serializable> {
 
 
     /**
-     * metoda służąca do zapisania posiadanych danych do pliku
-     * @param completition
+     * asynchronous use of {@link #saveCurrentData()} method
+     * @param completitionCallback
      */
-    public  void saveCurrentData(final CompletitionCallback completition){
-        final List<T> toSave = currentData;
+    public void saveCurrentDataAsynchronously(final CompletitionCallback completitionCallback){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (toSave != null) {
-                    File documents = ctx.getFilesDir();
-
-                    File offlineMessagesFile = new File(documents,  OfflineDataHandlerToPath(value));
-                    FileOutputStream fileOutputStream;
-                    ObjectOutputStream objectOutputStream;
-                    try {
-                        fileOutputStream = new FileOutputStream(offlineMessagesFile);
-                        objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                        objectOutputStream.writeObject(toSave);
-                        objectOutputStream.close();
-                        fileOutputStream.close();
-                        if (completition != null)
-                            completition.finished(true);
-
-
-                    } catch (Exception e) {
-                        if (completition != null)
-                            completition.finished(false);
-                    }
+                List<T> result = saveCurrentData();
+                if (result != null){
+                    completitionCallback.finished(true);
                 }else {
-                    completition.finished(true);
+                    completitionCallback.finished(false);
                 }
             }
         }).start();
     }
+    /**
+     * saving current data
+     * (it has to be earlier set if not created earlier {@link #setCurrentOfflineData(ArrayList)}
+     */
+    public  List<T> saveCurrentData(){
+        List<T> toSave = currentData;
+
+        if (toSave != null) {
+            File documents = ctx.getFilesDir();
+
+            File offlineMessagesFile = new File(documents,  OfflineDataHandlerToPath(value));
+            FileOutputStream fileOutputStream;
+            ObjectOutputStream objectOutputStream;
+            try {
+                fileOutputStream = new FileOutputStream(offlineMessagesFile);
+                objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                objectOutputStream.writeObject(toSave);
+                objectOutputStream.close();
+                fileOutputStream.close();
+                return toSave;
+
+
+            } catch (Exception e) {
+                 e.printStackTrace();
+            }
+        }
+
+        return null;
+
+    }
 
     /**
-     * ścieżki do danych z plikami na podstawie kluczy
+     * returns path to data files given sepcific data key
      * @param value
      * @return
      */
@@ -167,7 +183,8 @@ public class OfflineHandler<T extends Serializable> {
 
             case ANNOUNCEMENTS:
                 return Constans.OFFLINE_DATA_FOLDER + "/ogloszenia";
-
+            case BUS_TIMETABLE:
+                return Constans.OFFLINE_DATA_FOLDER + "/bus_info";
             default:
                 return "no_path";
 
@@ -175,8 +192,7 @@ public class OfflineHandler<T extends Serializable> {
 
     }
     /**
-     *Metoda tworząca podstawowe foldery niezbędne do obsługi zarówno parzystości jak i zmian w planie w trybie offline
-     *
+     *Function that sets up folders for offline data
      *
      */
     public static void folderSetup(Context context){
@@ -186,9 +202,9 @@ public class OfflineHandler<T extends Serializable> {
     }
 
     /**
-     * klucze danych offline
+     * offline data key values
      */
     public enum OfflineDataHandlerKeys{
-        PLAN_CHANGES,ANNOUNCEMENTS
+        PLAN_CHANGES,ANNOUNCEMENTS,BUS_TIMETABLE
     }
 }

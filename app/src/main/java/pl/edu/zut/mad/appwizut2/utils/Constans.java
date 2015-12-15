@@ -11,21 +11,19 @@ import android.appwidget.AppWidgetManager;
  */
 public class Constans {
 
-    /** Stala definiujaca nazwe pliku ustawien */
-    public static final String PREFERENCES_NAME = "MAD_Widget_Preferences";
+    /**
+     * Name of preference for studies type
+     *
+     * "Stacjonarne" or "Niestacjonarne"
+     */
+    public static final String PREF_STUDIES_TYPE = "type";
 
-    /** Stala definiujaca nazwe grupy */
-    public static final String GROUP = "group";
-
-    /** Stala definiujaca nazwe rodzaju studiow */
-    public static final String TYPE = "type";
-
-    /** Stala definiujaca nazwe ostatniej zmiany planu */
-    public static final String PLAN_LAST_MODIFIED = "plan_modified";
-
-
-    /** Stala definiujaca sciezke do folderu przechowywania planow */
-    public static final String PLAN_FOLDER = "/Plany";
+    /**
+     * Name of preference for group name
+     *
+     * eg. "I1-110"
+     */
+    public static final String PREF_GROUP = "group";
 
     /** Stala definiujaca maksymalna dlugosc tytulu zmiany w planie */
     public static final int MAX_TITLE_LENGTH = 30;
@@ -54,5 +52,7 @@ public class Constans {
 
     /** offline data */
     public static final String OFFLINE_DATA_FOLDER = "/Data";
+
+
 
 }

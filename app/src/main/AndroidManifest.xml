@@ -41,10 +41,6 @@
                 android:resource="@xml/file_provider_paths" />
         </provider>
 
-        <!--<service android:name=".UpdateWidgetService"-->
-            <!--android:exported="true" >-->
-        <!--</service>-->
-
     </application>
 
 </manifest>
