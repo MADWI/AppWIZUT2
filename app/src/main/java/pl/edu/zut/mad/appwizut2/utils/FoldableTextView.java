@@ -109,4 +109,10 @@ public class FoldableTextView extends AppCompatTextView {
     public void setSeeMoreView(View vSeeMore) {
         this.mViewSeeMore = vSeeMore;
     }
+
+    // Disable scrolling
+    @Override
+    public void scrollTo(int x, int y) {
+        // No-op
+    }
 }
