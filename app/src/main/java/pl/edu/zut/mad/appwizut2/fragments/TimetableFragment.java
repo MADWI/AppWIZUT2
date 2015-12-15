@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +64,8 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mDayNames = getActivity().getResources().getStringArray(R.array.week_days_short);
+
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_timetable);
 
         // Inflate layout
         View view = inflater.inflate(R.layout.timetable_layout, container, false);
