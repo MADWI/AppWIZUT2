@@ -1,5 +1,6 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -21,8 +22,12 @@ import pl.edu.zut.mad.appwizut2.models.DayParity;
  *
  */
 public class WeekParityChecker {
+    EventsManager mEventsManager;
 
-    EventsManager mEventsManager = new EventsManager();
+    /**
+     * Zmienna do debuggowania.
+     */
+    public static final String PARITY_TAG = "WeekParityChecker";
 
     /** Obiekt klasy HttpConnect, sluzacy do polaczenia ze strona */
     private static HttpConnect strona = null;
@@ -40,6 +45,12 @@ public class WeekParityChecker {
 
     /** Domyslny konstruktor klasy. */
     public WeekParityChecker() {
+
+    }
+
+    public WeekParityChecker(Context ctx) {
+        if(ctx == null){Log.i("WeekParityChecker", "ctx to null");}
+         mEventsManager = new EventsManager(ctx);
     }
 
     /**

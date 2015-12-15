@@ -20,7 +20,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
 import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
@@ -42,7 +45,6 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
 
 
     private static final String TAG_TITLE = "title";
-    private static final String TAG_DATE = "created";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_BODY = "content";
     private static final String TAG_ENTRY = "entry";
@@ -99,8 +101,11 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null){
-            currentData = (ArrayList<ListItemContainer>)savedInstanceState.getSerializable(CURRENT_DATA_KEY);
-            
+            Integer size = savedInstanceState.getInt(Constans.INSTANCE_CURRENT_SIZE);
+            currentData = new ArrayList<>();
+            for (int i = 0; i < size;i++){
+                currentData.add((ListItemContainer)savedInstanceState.getSerializable(Constans.INSTANCE_CURRENT_KEY + i));
+            }
         }
         if (currentData != null){
             ListItemAdapter listItemAdapter = new ListItemAdapter(currentData);
@@ -126,13 +131,13 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         ArrayList<ListItemContainer> itemList = new ArrayList<>();
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
-            JSONArray arrayContent = jsonPageContent.getJSONArray(TAG_ENTRY);
+            JSONArray arrayContent = jsonPageContent.getJSONArray(Constans.TAG_ENTRY);
 
             for (int i = 0; i < arrayContent.length(); i++) {
                 ListItemContainer listItemContainer = new ListItemContainer();
                 JSONObject item = arrayContent.getJSONObject(i);
                 listItemContainer.setTitle(item.getString(TAG_TITLE));
-                listItemContainer.setDate(item.getString(TAG_DATE));
+                listItemContainer.setDate(item.getString(Constans.TAG_DATE));
                 listItemContainer.setAuthor(item.getString(TAG_AUTHOR));
                 listItemContainer.setId(item.getString(TAG_ID));
                 listItemContainer.setBody(item.getString(TAG_BODY));
@@ -150,6 +155,11 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(CURRENT_DATA_KEY,currentData);
+        for (int i = 0; i < currentData.size();i++){
+            outState.putSerializable(Constans.INSTANCE_CURRENT_KEY + i,currentData.get(i) );
+
+        }
+        outState.putInt(Constans.INSTANCE_CURRENT_SIZE,currentData.size());
     }
 
     private void clearProgressBar(){

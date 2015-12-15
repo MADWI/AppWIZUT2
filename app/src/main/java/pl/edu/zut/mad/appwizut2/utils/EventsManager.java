@@ -1,5 +1,6 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -16,11 +17,12 @@ import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
  * Created by Marcin on 2015-12-04.
  */
 public class EventsManager {
-    private static final String TAG_DATE = "created";
-    private static final String TAG_ENTRY = "entry";
-    private static List<ListItemContainer> currentData;
 
-    EventsManager(){
+    private static List<ListItemContainer> currentData;
+    Context ctx;
+
+    EventsManager(Context ctx){
+        this.ctx = ctx;
         fetchEventData();
     }
 
@@ -37,7 +39,7 @@ public class EventsManager {
     }
 
     public void fetchEventData(){
-        new DownloadContentTask().execute();
+        new DownloadContentTask().execute(HTTPLinks.ANNOUNCEMENTS);
     }
 
     private class DownloadContentTask extends AsyncTask<String, Void, Void> {
@@ -45,26 +47,35 @@ public class EventsManager {
         @Override
         protected Void doInBackground(String... params) {
 
-                HttpConnect connection = new HttpConnect(HTTPLinks.ANNOUNCEMENTS);
-                String pageContent = connection.getPage();
-                currentData = createItemList(pageContent);
-
-
+            try {
+                if (HttpConnect.isOnline(ctx)) {
+                    HttpConnect connection = new HttpConnect(params[0]);
+                    String pageContent = connection.getPage();
+                    currentData = createItemList(pageContent);
+                }
+            }catch (Exception e){
+                Log.i("EventsManagerException", e.toString());
+            }
             return null;
         }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.i("EventsManager", "onPostExecute");
+        }
     }
 
     private static List<ListItemContainer> createItemList(String pageContent) {
         List<ListItemContainer> itemList = new ArrayList<>();
         try {
             JSONObject jsonPageContent = new JSONObject(pageContent);
-            JSONArray arrayContent = jsonPageContent.getJSONArray(TAG_ENTRY);
+            JSONArray arrayContent = jsonPageContent.getJSONArray(Constans.TAG_ENTRY);
 
             for (int i = 0; i < arrayContent.length(); i++) {
                 ListItemContainer listItemContainer = new ListItemContainer();
                 JSONObject item = arrayContent.getJSONObject(i);
-                String date = item.getString(TAG_DATE).substring(0,10);
+                String date = item.getString(Constans.TAG_DATE).substring(0,10);
                 date = date.replace("-", ".");
                 listItemContainer.setDate(date);
 

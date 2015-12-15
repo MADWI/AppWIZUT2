@@ -127,8 +127,9 @@ public class HttpConnect {
 		if (ni != null && ni.isAvailable() && ni.isConnected()) {
 			return true;
 		} else {
-			Toast.makeText(ctx, ctx.getString(R.string.no_Internet),
-					Toast.LENGTH_SHORT).show();
+			//TODO fix crash
+			/*Toast.makeText(ctx, ctx.getString(R.string.no_Internet),
+					Toast.LENGTH_SHORT).show();*/
 			return false;
 		}
 	}

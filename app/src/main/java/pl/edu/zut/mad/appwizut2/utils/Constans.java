@@ -1,12 +1,13 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
 
+
 import android.appwidget.AppWidgetManager;
+import java.text.SimpleDateFormat;
 
 /**
  * Klasa definiujaca stale uzyte w aplikacji
- *
- *
+ * 
  * @author Sebastian Swierczek, Dawid Glinski
  */
 public class Constans {
@@ -24,6 +25,22 @@ public class Constans {
      * eg. "I1-110"
      */
     public static final String PREF_GROUP = "group";
+
+    /** Do pobierania contentu w aktualnościach */
+    public static final String TAG_DATE = "created";
+    public static final String TAG_ENTRY = "entry";
+    
+    /** Stala definiujaca nazwe grupy */
+    public static final String GROUP = "group";
+
+    /** Stala definiujaca nazwe rodzaju studiow */
+    public static final String TYPE = "type";
+
+    /** Stala definiujaca nazwe ostatniej zmiany planu */
+    public static final String PLAN_LAST_MODIFIED = "plan_modified";
+    
+    /** Stala definiujaca sciezke do folderu przechowywania planow */
+    public static final String PLAN_FOLDER = "/Plany";
 
     /** Stala definiujaca maksymalna dlugosc tytulu zmiany w planie */
     public static final int MAX_TITLE_LENGTH = 30;
@@ -53,6 +70,14 @@ public class Constans {
     /** offline data */
     public static final String OFFLINE_DATA_FOLDER = "/Data";
 
+    /** calendar - for format dates */
+    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault());
+    public static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault());
+    public static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
 
+    /** for onSavedInstace */
+    public static final String INSTANCE_EVENTS_KEY = "events_in_day_data";
+    public static final String INSTANCE_CURRENT_KEY = "current_data";
+    public static final String INSTANCE_CURRENT_SIZE = "current_size";
 
 }

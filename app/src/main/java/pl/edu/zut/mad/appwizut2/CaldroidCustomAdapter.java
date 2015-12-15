@@ -2,7 +2,6 @@ package pl.edu.zut.mad.appwizut2;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +10,8 @@ import android.widget.TextView;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 
 import java.util.HashMap;
-import java.util.Random;
 
 import hirondelle.date4j.DateTime;
-import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 
 /**
  * Created by Marcin on 2015-11-16.
