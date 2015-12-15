@@ -1,9 +1,8 @@
 package pl.edu.zut.mad.appwizut2.utils;
-import android.app.ProgressDialog;
+
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -13,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,11 +22,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.BusTimetableModel;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
-import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader.BusModelDayType;
+import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
+import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 
 /**
  * Created by Bartosz Kozajda on 23/11/2015.

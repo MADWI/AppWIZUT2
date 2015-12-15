@@ -10,8 +10,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
+
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
+import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 
 /**
  * Created by Marcin on 2015-12-04.

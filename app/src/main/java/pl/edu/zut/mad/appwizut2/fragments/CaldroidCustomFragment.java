@@ -27,13 +27,12 @@ import java.util.HashMap;
 
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
+import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
-import pl.edu.zut.mad.appwizut2.utils.Interfaces;
 import pl.edu.zut.mad.appwizut2.utils.OfflineHandler;
 import pl.edu.zut.mad.appwizut2.utils.WeekParityChecker;
 
