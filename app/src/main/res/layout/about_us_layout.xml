@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingTop="5dp"
         android:paddingBottom="@dimen/activity_vertical_margin">
         <TextView
             android:layout_width="match_parent"
@@ -30,6 +30,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:id="@+id/mad_team_photo"
             android:layout_below="@+id/mad_name"
             android:layout_centerHorizontal="true"
@@ -46,12 +47,12 @@
             android:textColor="@color/textGray"
             android:layout_below="@+id/mad_team_photo"
             android:layout_alignParentLeft="true"
-            android:gravity="center_horizontal" />
+            android:gravity="left" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Sara Anku \n Michał Bednarski \n Dawid Heyman \n Marcin Jóźwiak \n Bartosz Kozajda \n Marek Macko \n Damian Malarczyk \n Waldemar Sambor"
+            android:text="Sara Anku \nMichał Bednarski \nDawid Heyman \nMarcin Jóźwiak \nBartosz Kozajda \nMarek Macko \nDamian Malarczyk \nWaldemar Sambor"
             android:id="@+id/authors_names"
             android:layout_below="@+id/authors"
             android:textSize="15dp"
@@ -68,12 +69,12 @@
             android:layout_below="@+id/authors_names"
             android:layout_marginTop="5dp"
             android:layout_alignParentLeft="true"
-            android:gravity="center_horizontal" />
+            android:gravity="left" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" dr. inż. Radosław Maciaszczyk"
+            android:text="dr. inż. Radosław Maciaszczyk"
             android:id="@+id/mentor_name"
             android:layout_below="@+id/mentor"
             android:textSize="15dp"
@@ -90,17 +91,35 @@
             android:layout_below="@+id/mentor_name"
             android:layout_marginTop="5dp"
             android:layout_alignParentLeft="true"
-            android:gravity="center_horizontal" />
+            android:gravity="left" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" www.mad.zut.edu.pl \n mad@zut.edu.pl"
-            android:id="@+id/contact_strings"
+            android:text="www.mad.zut.edu.pl"
+            android:id="@+id/website_string"
             android:layout_below="@+id/contact"
             android:textSize="15dp"
             android:layout_alignParentLeft="true"
-            android:textColor="@color/textGray" />
+            android:textColor="@color/textGray"
+            android:layout_marginTop="5dp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:autoLink="web"
+            android:linksClickable="true"/>
 
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="mad@zut.edu.pl"
+            android:id="@+id/mail_string"
+            android:layout_below="@+id/website_string"
+            android:layout_marginTop="10dp"
+            android:textSize="15dp"
+            android:layout_alignParentLeft="true"
+            android:textColor="@color/textGray"
+            android:textStyle="bold"
+            android:autoLink="email"
+            android:linksClickable="true"/>
+        
     </RelativeLayout>
 </ScrollView>
