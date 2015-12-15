@@ -20,11 +20,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
-import pl.edu.zut.mad.appwizut2.connections.HttpConnect;
+import pl.edu.zut.mad.appwizut2.network.HttpConnect;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
 import pl.edu.zut.mad.appwizut2.R;
@@ -46,11 +44,10 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     private static final String TAG_TITLE = "title";
     private static final String TAG_DATE = "created";
     private static final String TAG_AUTHOR = "author";
-    private static final String TAG_BODY = "text";
+    private static final String TAG_BODY = "content";
     private static final String TAG_ENTRY = "entry";
     private static final String TAG_ID = "id";
     private static final String CURRENT_DATA_KEY = "current_data";
-
 
     private RecyclerView itemListView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -61,9 +58,6 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     private Context context;
     private ArrayList<ListItemContainer> currentData;
     OfflineHandler<ListItemContainer> offlineHandler;
-
-
-    private static final Pattern patternQuot = Pattern.compile("(&quot;)");
 
     protected void setFeedUrl(String addressUrl) {this.addressUrl = addressUrl;}
 
@@ -141,17 +135,12 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
                 listItemContainer.setDate(item.getString(TAG_DATE));
                 listItemContainer.setAuthor(item.getString(TAG_AUTHOR));
                 listItemContainer.setId(item.getString(TAG_ID));
-
-                String body = item.getString(TAG_BODY);
-                Matcher matcher = patternQuot.matcher(body);
-                body = matcher.replaceAll("\"");
-
-                listItemContainer.setBody(body);
+                listItemContainer.setBody(item.getString(TAG_BODY));
                 itemList.add(listItemContainer);
             }
 
         } catch (JSONException e) {
-            Log.i("FeedFragment: ","JSONException:" + e.getMessage());
+            Log.e("FeedFragment: ", "JSONException:" + e.getMessage());
             return null;
         }
         return itemList;

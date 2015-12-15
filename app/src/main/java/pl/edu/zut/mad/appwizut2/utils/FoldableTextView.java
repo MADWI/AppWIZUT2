@@ -1,12 +1,11 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
 
 import pl.edu.zut.mad.appwizut2.R;
 
@@ -22,6 +21,7 @@ public class FoldableTextView extends AppCompatTextView {
     private int mWidth;
     private int mExpandedHeight;
     private final int mFoldedHeight;
+    private View mViewSeeMore;
 
     private float mExpandness; // 0 - folded, 1 - expanded,
 
@@ -54,8 +54,10 @@ public class FoldableTextView extends AppCompatTextView {
         if (mExpandedHeight < mFoldedHeight) {
             // If folding would make this view bigger, always be expanded
             heightToSet = mExpandedHeight;
+            mViewSeeMore.setEnabled(false);
         } else {
             heightToSet = (int) (mExpandedHeight * mExpandness + mFoldedHeight * (1 - mExpandness));
+            mViewSeeMore.setEnabled(true);
         }
         setMeasuredDimension(mWidth, heightToSet);
     }
@@ -66,7 +68,7 @@ public class FoldableTextView extends AppCompatTextView {
      * @param expanded true to expand, false to fold
      * @param animate true for animation, false for instant set
      */
-    public void setExpanded(final boolean expanded, boolean animate, final TextView vSeeMore) {
+    public void setExpanded(final boolean expanded, boolean animate) {
         // If animation is running, cancel it
         if (mAnim != null) {
             mAnim.cancel();
@@ -84,33 +86,9 @@ public class FoldableTextView extends AppCompatTextView {
                 }
 
             });
-            mAnim.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    if (expanded)
-                        vSeeMore.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (!expanded)
-                        vSeeMore.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
 
             mAnim.setDuration(500);
             mAnim.start();
-
         } else {
             mAnim = null;
             mExpandness = targetExpandness;
@@ -118,4 +96,21 @@ public class FoldableTextView extends AppCompatTextView {
         }
     }
 
+    public void setSeeMoreView(View vSeeMore) {
+        this.mViewSeeMore = vSeeMore;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (mViewSeeMore.isEnabled()) {
+            if (getHeight() > mFoldedHeight) {
+                mViewSeeMore.setVisibility(View.GONE);
+            } else {
+                mViewSeeMore.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mViewSeeMore.setVisibility(View.GONE);
+        }
+    }
 }

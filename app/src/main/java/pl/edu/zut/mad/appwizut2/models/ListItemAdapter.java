@@ -1,7 +1,8 @@
 package pl.edu.zut.mad.appwizut2.models;
 
 import android.support.v7.widget.RecyclerView;
-import android.text.util.Linkify;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,23 +40,35 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         holder.vTitle.setText(item.getTitle());
         holder.vDate.setText(item.getDate());
         holder.vAuthor.setText(item.getAuthor());
-        holder.vBody.setText(item.getBody());
+        holder.vBody.setText(trim(Html.fromHtml(item.getBody())));
+        holder.vBody.setMovementMethod(LinkMovementMethod.getInstance());
         holder.vId = Integer.valueOf(item.getId());
 
         if (ListItemViewHolder.expandedViews.contains(holder.vId)){
-            holder.vBody.setExpanded(true, false, holder.vSeeMore);
+            holder.vBody.setExpanded(true, false);
             holder.mExpanded = true;
-            holder.vSeeMore.setVisibility(View.GONE);
         } else {
-            holder.vBody.setExpanded(false, false, holder.vSeeMore);
+            holder.vBody.setExpanded(false, false);
             holder.mExpanded = false;
-            holder.vSeeMore.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public int getItemCount() {
         return listItem.size();
+    }
+
+    // function to trim whitespaces from result of Html.fromHtml
+    private static CharSequence trim(CharSequence source) {
+        if (source == null) {
+            return "";
+        }
+
+        int i = source.length();
+
+        while(--i >= 0 && Character.isWhitespace(source.charAt(i)));
+
+        return source.subSequence(0, i+1);
     }
 
     public static class ListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -77,9 +90,8 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
             vAuthor = (TextView) v.findViewById(R.id.author);
             vSeeMore = (TextView) v.findViewById(R.id.seeMore);
             vBody = (FoldableTextView) v.findViewById(R.id.body);
+            vBody.setSeeMoreView(vSeeMore);
             vBody.setOnClickListener(this);
-            vBody.setLinksClickable(true);
-            vBody.setAutoLinkMask(Linkify.WEB_URLS);
 
             if (expandedViews == null)
                 expandedViews = new HashSet();
@@ -88,7 +100,7 @@ public class ListItemAdapter extends RecyclerView.Adapter<ListItemAdapter.ListIt
         @Override
         public void onClick(View v) {
             mExpanded = !mExpanded;
-            vBody.setExpanded(mExpanded, true, vSeeMore);
+            vBody.setExpanded(mExpanded, true);
 
             if (mExpanded) {
                 expandedViews.add(vId);

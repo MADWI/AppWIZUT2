@@ -2,10 +2,12 @@ package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
 
 /**
@@ -26,6 +28,7 @@ public class AnnouncementFragment extends FeedFragment {
         super.onCreate(savedInstanceState);
 
         View rootView = super.initView(inflater, container, getContext());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_announcements);
         return rootView;
     }
 }
