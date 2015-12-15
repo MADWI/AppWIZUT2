@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity
         // See note at DRAWER_FRAGMENTS above
         if (id == R.id.settings) {
             startActivity(new Intent(this, SettingsActivity.class));
-            Toast.makeText(this, "Ustawienia", Toast.LENGTH_SHORT).show();
         }else {
             DrawerFragmentItem drawerFragmentItem = findDrawerItemFragmentWithId(id);
             if (drawerFragmentItem != null) {
