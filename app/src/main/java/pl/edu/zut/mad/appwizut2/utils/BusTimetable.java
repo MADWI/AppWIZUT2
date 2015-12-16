@@ -273,7 +273,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
                         if (thatMin < 10)
                             thatMinS = "0" + thatMinS;
 
-                        dep1 = dep1 + hour1 + ":" + thatMinS + " ";
+                        dep1 = dep1 + hour1 + ":" + thatMinS + "   ";
                     }
                 }
 
@@ -285,7 +285,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
                     String thatMinS = String.valueOf(thatMin);
                     if (thatMin < 10)
                         thatMinS = "0" + thatMinS;
-                    dep2 = dep2 + hour2 + ":" + thatMinS + " ";
+                    dep2 = dep2 + hour2 + ":" + thatMinS + "   ";
 
                 }
 
