@@ -2,7 +2,6 @@ package pl.edu.zut.mad.appwizut2.utils;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -47,6 +46,8 @@ public class FoldableTextView extends AppCompatTextView {
             mWidth = getMeasuredWidth();
             mExpandedHeight = getMeasuredHeight();
             mIsMeasuredForWidth = widthMeasureSpec;
+
+            showOrHideSeeMore();
         }
 
         // Set our size
@@ -54,10 +55,8 @@ public class FoldableTextView extends AppCompatTextView {
         if (mExpandedHeight < mFoldedHeight) {
             // If folding would make this view bigger, always be expanded
             heightToSet = mExpandedHeight;
-            mViewSeeMore.setEnabled(false);
         } else {
             heightToSet = (int) (mExpandedHeight * mExpandness + mFoldedHeight * (1 - mExpandness));
-            mViewSeeMore.setEnabled(true);
         }
         setMeasuredDimension(mWidth, heightToSet);
     }
@@ -81,8 +80,7 @@ public class FoldableTextView extends AppCompatTextView {
             mAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    mExpandness = (Float) valueAnimator.getAnimatedValue();
-                    requestLayout();
+                    setExpandness((Float) valueAnimator.getAnimatedValue());
                 }
 
             });
@@ -91,8 +89,20 @@ public class FoldableTextView extends AppCompatTextView {
             mAnim.start();
         } else {
             mAnim = null;
-            mExpandness = targetExpandness;
-            requestLayout();
+            setExpandness(targetExpandness);
+        }
+    }
+
+    private void setExpandness(float targetExpandness) {
+        mExpandness = targetExpandness;
+        showOrHideSeeMore();
+        requestLayout();
+    }
+
+    private void showOrHideSeeMore() {
+        boolean showSeeMore = mExpandness == 0 && mExpandedHeight > mFoldedHeight;
+        if (mViewSeeMore != null) {
+            mViewSeeMore.setVisibility(showSeeMore ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -100,17 +110,9 @@ public class FoldableTextView extends AppCompatTextView {
         this.mViewSeeMore = vSeeMore;
     }
 
+    // Disable scrolling
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (mViewSeeMore.isEnabled()) {
-            if (getHeight() > mFoldedHeight) {
-                mViewSeeMore.setVisibility(View.GONE);
-            } else {
-                mViewSeeMore.setVisibility(View.VISIBLE);
-            }
-        } else {
-            mViewSeeMore.setVisibility(View.GONE);
-        }
+    public void scrollTo(int x, int y) {
+        // No-op
     }
 }
