@@ -17,7 +17,7 @@ import pl.edu.zut.mad.appwizut2.utils.Constants;
 /**
  * Loader for downloading pdf with schedule
  */
-public class SchedulePdfLoader extends BaseDataLoader<Uri> {
+public class SchedulePdfLoader extends BaseDataLoader<Uri, SchedulePdfLoader.CacheInfo> {
 
 
     /**
@@ -34,9 +34,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
         super(loadingManager);
     }
 
-    private String mForGroup;
-    private int mCachedFileSize;
-    private byte[] mCachedRangeData = new byte[CHECKED_RANGE_LENGTH];
+
 
     private File getSchedulePdfFile() {
         // TODO: Move "provided" directory name and mkdir somewhere
@@ -53,12 +51,12 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
     /**
      * Download small fragment of schedule PDF and check if it matches our cached part
      */
-    private boolean checkIfShouldDownloadFullPdf(String pdfAddress) throws IOException {
+    private boolean checkIfShouldDownloadFullPdf(String pdfAddress, CacheInfo cachedData) throws IOException {
         // Download range that interests us
 
         HttpConnect conn = new HttpConnect(pdfAddress);
         try {
-            conn.requestRange(getCheckedRangeStart(mCachedFileSize), CHECKED_RANGE_LENGTH);
+            conn.requestRange(getCheckedRangeStart(cachedData.mCachedFileSize), CHECKED_RANGE_LENGTH);
 
             // If this isn't range response
             if (!conn.serverReturnedRangeResponse()) {
@@ -72,7 +70,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
             }
 
             // Verify size
-            if (conn.getFullContentLength() != mCachedFileSize) {
+            if (conn.getFullContentLength() != cachedData.mCachedFileSize) {
                 // Size changed, re-download
                 return true;
             }
@@ -87,113 +85,106 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
             }
 
             // Compare that part of file
-            return !Arrays.equals(checkedRangeData, mCachedRangeData);
+            return !Arrays.equals(checkedRangeData, cachedData.mCachedRangeData);
         } finally {
             conn.close();
         }
     }
 
     @Override
-    protected boolean doDownload(boolean skipCache) {
+    protected boolean cacheIsValidForCurrentSettings(CacheInfo cachedData) {
         String group = ScheduleLoader.getGroupFromSettings(getContext());
         if (group == null) {
             return false;
+        }
+        File localPdfFile = getSchedulePdfFile();
+        return group.equals(cachedData.mForGroup) && localPdfFile.exists();
+    }
+
+    @Override
+    protected CacheInfo doDownload(CacheInfo cachedData) throws IOException {
+        String group = ScheduleLoader.getGroupFromSettings(getContext());
+        if (group == null) {
+            return null;
         }
 
         String pdfAddress = String.format(Constants.PDF_SCHEDULE_URL, group);
         File localPdfFile = getSchedulePdfFile();
 
-        try {
-            // Check if schedule is up to date
-            boolean shouldSkipCacheCheck = // We skip checking part of file if
-                    skipCache || // Requested by user
-                    mCachedFileSize == 0 || // Don't have cached version
-                    !group.equals(mForGroup) || // Cached version is for different group
-                    !localPdfFile.exists(); // Cached file doesn't exist
-            if (!shouldSkipCacheCheck) {
-                if (!checkIfShouldDownloadFullPdf(pdfAddress)) {
-                    return false;
-                }
+        // Check if schedule is up to date
+        if (cachedData != null) {
+            if (!checkIfShouldDownloadFullPdf(pdfAddress, cachedData)) {
+                // Already up to date
+                return cachedData;
             }
-
-            // Download new schedule
-            HttpConnect conn = new HttpConnect(pdfAddress);
-            int fileSize = conn.getFullContentLength();
-            try {
-                AtomicFile af = new AtomicFile(localPdfFile);
-                FileOutputStream fileOutputStream = af.startWrite();
-                try {
-                    // Do download
-                    IoUtils.copyStream(conn.getInputStream(), fileOutputStream);
-                    af.finishWrite(fileOutputStream);
-                } catch (Exception e) {
-                    af.failWrite(fileOutputStream);
-                    throw e;
-                }
-
-                // Prepare data for cache so we can just check if file has been changed
-                DataInputStream justWrittenPdf = new DataInputStream(new FileInputStream(localPdfFile));
-                justWrittenPdf.skip(getCheckedRangeStart(fileSize));
-                justWrittenPdf.readFully(mCachedRangeData);
-                justWrittenPdf.close();
-                mCachedFileSize = fileSize;
-                mForGroup = group;
-            } finally {
-                conn.close();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
-        return true;
+
+        // Download new schedule
+        HttpConnect conn = new HttpConnect(pdfAddress);
+        int fileSize = conn.getFullContentLength();
+        try {
+            AtomicFile af = new AtomicFile(localPdfFile);
+            FileOutputStream fileOutputStream = af.startWrite();
+            try {
+                // Do download
+                IoUtils.copyStream(conn.getInputStream(), fileOutputStream);
+                af.finishWrite(fileOutputStream);
+            } catch (Exception e) {
+                af.failWrite(fileOutputStream);
+                throw e;
+            }
+
+            // Prepare data for cache so we can just check if file has been changed
+            CacheInfo newCacheInfo = new CacheInfo();
+            DataInputStream justWrittenPdf = new DataInputStream(new FileInputStream(localPdfFile));
+            justWrittenPdf.skip(getCheckedRangeStart(fileSize));
+            justWrittenPdf.readFully(newCacheInfo.mCachedRangeData);
+            justWrittenPdf.close();
+            newCacheInfo.mCachedFileSize = fileSize;
+            newCacheInfo.mForGroup = group;
+            return newCacheInfo;
+        } finally {
+            conn.close();
+        }
+
     }
 
     @Override
-    protected boolean loadFromCache(File cacheFile) {
+    protected CacheInfo loadFromCache(File cacheFile) throws IOException {
         DataInputStream input = null;
         try {
             input = new DataInputStream(new FileInputStream(cacheFile));
 
-            mForGroup = input.readUTF();
-            mCachedFileSize = input.readInt();
-            input.readFully(mCachedRangeData);
+            CacheInfo cacheInfo = new CacheInfo();
 
-        } catch (IOException e) {
-            mCachedFileSize = 0;
-            e.printStackTrace();
-            return false;
+            cacheInfo.mForGroup = input.readUTF();
+            cacheInfo.mCachedFileSize = input.readInt();
+            input.readFully(cacheInfo.mCachedRangeData);
+
+            return cacheInfo;
+
         } finally {
             IoUtils.closeQuietly(input);
         }
-        return true;
     }
 
     @Override
-    protected boolean saveToCache(File cacheFile) {
-        if (mCachedFileSize == 0) {
-            return false;
-        }
+    protected void saveToCache(CacheInfo cacheInfo, File cacheFile) throws IOException {
         DataOutputStream output = null;
         try {
             output = new DataOutputStream(new FileOutputStream(cacheFile));
 
-            output.writeUTF(mForGroup);
-            output.writeInt(mCachedFileSize);
-            output.write(mCachedRangeData);
+            output.writeUTF(cacheInfo.mForGroup);
+            output.writeInt(cacheInfo.mCachedFileSize);
+            output.write(cacheInfo.mCachedRangeData);
 
-        } catch (IOException e) {
-            mCachedFileSize = 0;
-            e.printStackTrace();
-            return false;
         } finally {
             IoUtils.closeQuietly(output);
         }
-        return false;
     }
 
     @Override
-    protected Uri getData() {
+    protected Uri parseData(CacheInfo cacheInfo) {
         File schedulePdfFile = getSchedulePdfFile();
         if (schedulePdfFile.exists()) {
             return FileProvider.getUriForFile(getContext(), Constants.FILE_PROVIDER_AUTHORITY, schedulePdfFile);
@@ -201,5 +192,11 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri> {
         else {
             return null;
         }
+    }
+
+    class CacheInfo {
+        private String mForGroup;
+        private int mCachedFileSize;
+        private byte[] mCachedRangeData = new byte[CHECKED_RANGE_LENGTH];
     }
 }
