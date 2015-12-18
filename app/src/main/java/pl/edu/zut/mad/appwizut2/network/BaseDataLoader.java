@@ -34,6 +34,19 @@ public abstract class BaseDataLoader<Data, RawData> {
     private final DataLoadingManager mLoadingManager;
 
     /**
+     * Time for which this loader has to be without callbacks to don't reuse data from memory
+     * In milliseconds
+     */
+    private static final int BACKGROUND_EXPIRY = 2000;
+
+    /**
+     * Time before which we'll use data from {@link #mData} instead of reloading it
+     *
+     * Time value as returned by {@link System#currentTimeMillis()}
+     */
+    private long mInMemoryDataExpiresOn;
+
+    /**
      * Get name for file to be used for caching this data
      *
      * The name will be used for file passed
@@ -106,12 +119,20 @@ public abstract class BaseDataLoader<Data, RawData> {
     /**
      * Asynchronously obtain data and invoke callback when they are ready
      *
+     * Note that callback may be invoked immediately after or during this method call,
+     * only call this when you're ready to receive it
+     *
      * Callback registered here must be later unregistered with {@link #unregister(DataLoadedListener)}
      */
     @MainThread
-    public void registerAndLoad(DataLoadedListener<Data> callback) {
+    public void registerAndLoad(final DataLoadedListener<Data> callback) {
+        boolean isFirstRegistered = mCallbacks.isEmpty();
         mCallbacks.add(callback);
-        startLoadTaskIfNotStarted();
+        if (mData != null && mLoadTask == null && (!isFirstRegistered || mInMemoryDataExpiresOn > System.currentTimeMillis())) {
+            callback.onDataLoaded(mData);
+        } else {
+            startLoadTaskIfNotStarted();
+        }
     }
 
     /**
@@ -130,6 +151,9 @@ public abstract class BaseDataLoader<Data, RawData> {
     @MainThread
     public void unregister(DataLoadedListener<Data> callback) {
         mCallbacks.remove(callback);
+        if (mCallbacks.isEmpty()) {
+            mInMemoryDataExpiresOn = System.currentTimeMillis() + BACKGROUND_EXPIRY;
+        }
     }
 
     @MainThread
