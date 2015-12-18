@@ -9,12 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,56 +70,6 @@ public class ScheduleLoader extends BaseDataLoader<Timetable, ScheduleLoader.Raw
         } else {
             conn.close();
             return cachedData;
-        }
-    }
-
-    @Override
-    protected RawData loadFromCache(File cacheFile) throws IOException {
-        DataInputStream cacheInput = null;
-        try {
-            cacheInput = new DataInputStream(new FileInputStream(cacheFile));
-
-            // 1: Cache file version
-            if (cacheInput.readInt() != CACHE_VERSION) {
-                return null;
-            }
-
-            RawData cachedData = new RawData();
-
-            // 2: String indicating group for which the schedule is for
-            cachedData.mCachedForGroup = cacheInput.readUTF();
-
-            // 3: Last modified
-            cachedData.mLastModified = cacheInput.readLong();
-
-            // 4: Actual cached data
-            cachedData.mJsonScheduleAsString = cacheInput.readUTF();
-
-            return cachedData;
-        } finally {
-            IoUtils.closeQuietly(cacheInput);
-        }
-    }
-
-    @Override
-    protected void saveToCache(RawData cachedData, File cacheFile) throws IOException {
-        DataOutputStream cacheOutput = null;
-        try {
-            cacheOutput = new DataOutputStream(new FileOutputStream(cacheFile));
-
-            // 1: Cache version
-            cacheOutput.writeInt(CACHE_VERSION);
-
-            // 2: String indicating group for which the schedule is for
-            cacheOutput.writeUTF(cachedData.mCachedForGroup);
-
-            // 3: Last modified
-            cacheOutput.writeLong(cachedData.mLastModified);
-
-            // 4: Actual cached data
-            cacheOutput.writeUTF(cachedData.mJsonScheduleAsString);
-        } finally {
-            IoUtils.closeQuietly(cacheOutput);
         }
     }
 
@@ -190,7 +136,7 @@ public class ScheduleLoader extends BaseDataLoader<Timetable, ScheduleLoader.Raw
         return getGroupFromSettings(getContext()) != null;
     }
 
-    static class RawData {
+    static class RawData implements Serializable {
         /**
          * Group for which this cache is for
          */

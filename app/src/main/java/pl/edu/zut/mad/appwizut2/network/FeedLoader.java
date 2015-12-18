@@ -4,12 +4,8 @@ import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.fragments.FeedFragment;
@@ -41,35 +37,11 @@ public abstract class FeedLoader extends BaseDataLoader<List<ListItemContainer>,
     }
 
     @Override
-    protected RawData loadFromCache(File cacheFile) throws IOException {
-        DataInputStream in = null;
-        try {
-            in = new DataInputStream(new FileInputStream(cacheFile));
-
-            return new RawData(in.readUTF());
-        } finally {
-            IoUtils.closeQuietly(in);
-        }
-    }
-
-    @Override
-    protected void saveToCache(RawData rawData, File cacheFile) throws IOException {
-        DataOutputStream out = null;
-        try {
-            out = new DataOutputStream(new FileOutputStream(cacheFile));
-
-            out.writeUTF(rawData.feedJson);
-        } finally {
-            IoUtils.closeQuietly(out);
-        }
-    }
-
-    @Override
     protected List<ListItemContainer> parseData(RawData rawData) throws JSONException {
         return FeedFragment.createItemList(rawData.feedJson);
     }
 
-    static final class RawData {
+    static final class RawData implements Serializable {
         String feedJson;
 
         RawData(String feedJson) {

@@ -5,11 +5,11 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.util.AtomicFile;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import pl.edu.zut.mad.appwizut2.utils.Constants;
@@ -150,40 +150,6 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri, SchedulePdfLoader.Cac
     }
 
     @Override
-    protected CacheInfo loadFromCache(File cacheFile) throws IOException {
-        DataInputStream input = null;
-        try {
-            input = new DataInputStream(new FileInputStream(cacheFile));
-
-            CacheInfo cacheInfo = new CacheInfo();
-
-            cacheInfo.mForGroup = input.readUTF();
-            cacheInfo.mCachedFileSize = input.readInt();
-            input.readFully(cacheInfo.mCachedRangeData);
-
-            return cacheInfo;
-
-        } finally {
-            IoUtils.closeQuietly(input);
-        }
-    }
-
-    @Override
-    protected void saveToCache(CacheInfo cacheInfo, File cacheFile) throws IOException {
-        DataOutputStream output = null;
-        try {
-            output = new DataOutputStream(new FileOutputStream(cacheFile));
-
-            output.writeUTF(cacheInfo.mForGroup);
-            output.writeInt(cacheInfo.mCachedFileSize);
-            output.write(cacheInfo.mCachedRangeData);
-
-        } finally {
-            IoUtils.closeQuietly(output);
-        }
-    }
-
-    @Override
     protected Uri parseData(CacheInfo cacheInfo) {
         File schedulePdfFile = getSchedulePdfFile();
         if (schedulePdfFile.exists()) {
@@ -194,7 +160,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri, SchedulePdfLoader.Cac
         }
     }
 
-    class CacheInfo {
+    class CacheInfo implements Serializable {
         private String mForGroup;
         private int mCachedFileSize;
         private byte[] mCachedRangeData = new byte[CHECKED_RANGE_LENGTH];

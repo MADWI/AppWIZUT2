@@ -9,8 +9,13 @@ import android.util.Log;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +24,7 @@ import java.util.List;
  *
  * This base class ensures that:
  *  - data will be reloaded when required so by settings change
- *     Override {@link #cacheIsValidForCurrentSettings(Object)} to check if cache
+ *     Override {@link #cacheIsValidForCurrentSettings(RawData)} to check if cache
  *     is valid for current settings
  *  - no two concurrent tasks to load content will be running
  *  - checking if we are online before downloading data
@@ -29,7 +34,7 @@ import java.util.List;
  *  Data - Parsed data as exposed to users of loader
  *  RawData - Raw data and metadata used for caching, used internally by loader
  */
-public abstract class BaseDataLoader<Data, RawData> {
+public abstract class BaseDataLoader<Data, RawData extends Serializable> {
     private static final String TAG = "BaseDataLoader";
     private final DataLoadingManager mLoadingManager;
 
@@ -69,20 +74,40 @@ public abstract class BaseDataLoader<Data, RawData> {
      *
      * Called only once during class lifetime
      *
-     * @param cacheFile File suggested for use as cache, not interpreted by base loader
+     * @param cacheFile File suggested for use as cache
      */
     @WorkerThread
-    protected abstract RawData loadFromCache(File cacheFile) throws IOException;
+    protected RawData loadFromCache(File cacheFile) throws IOException {
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(cacheFile));
+            try {
+                return ((RawData) ois.readObject());
+            } catch (ClassNotFoundException | ClassCastException e) {
+                throw new IOException(e);
+            }
+        } finally {
+            IoUtils.closeQuietly(ois);
+        }
+    }
 
     /**
      * Save data to cache
      *
      * Called only once during class lifetime
      *
-     * @param cacheFile File suggested for use as cache, not interpreted by base loader
+     * @param cacheFile File suggested for use as cache
      */
     @WorkerThread
-    protected abstract void saveToCache(RawData rawData, File cacheFile) throws IOException;
+    protected void saveToCache(RawData rawData, File cacheFile) throws IOException {
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(cacheFile));
+            oos.writeObject(rawData);
+        } finally {
+            IoUtils.closeQuietly(oos);
+        }
+    }
 
     @WorkerThread
     protected abstract Data parseData(RawData data) throws JSONException;
