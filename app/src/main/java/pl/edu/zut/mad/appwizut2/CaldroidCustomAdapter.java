@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidGridAdapter;
 
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import hirondelle.date4j.DateTime;
@@ -70,13 +71,18 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
         int month = dateTime.getMonth();
         int year = dateTime.getYear();
 
-        String strDate = year + ".";
-        strDate += (month < 10) ? "0" + month + "." : month + ".";
+        // Match FOR_EVENTS_FORMATTER
+        // TODO: clean up
+        String strDate = year + "-";
+        strDate += (month < 10) ? "0" + month + "-" : month + "-";
         strDate += (day < 10) ? "0" + day : day;
+
 
         if(events.containsKey(strDate)) {
             int count = (int )events.get(strDate);
             eventsIndicator.setLineCount(count);
+        } else {
+            eventsIndicator.setLineCount(0);
         }
         tv1.setText("" + dateTime.getDay());
 
