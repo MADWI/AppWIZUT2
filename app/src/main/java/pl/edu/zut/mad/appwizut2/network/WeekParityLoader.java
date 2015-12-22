@@ -5,13 +5,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 
@@ -19,6 +19,11 @@ import pl.edu.zut.mad.appwizut2.models.DayParity;
  * Data loader for week parity
  */
 public class WeekParityLoader extends BaseDataLoader<List<DayParity>, WeekParityLoader.RawData> {
+
+    private static final Pattern DATE_PATTERN = Pattern.compile("_(\\d+)_(\\d+)_(\\d+)");
+    private static final int DATE_GROUP_YEAR = 1;
+    private static final int DATE_GROUP_MONTH = 2;
+    private static final int DATE_GROUP_DAY = 3;
 
     protected WeekParityLoader(DataLoadingManager loadingManager) {
         super(loadingManager);
@@ -47,72 +52,45 @@ public class WeekParityLoader extends BaseDataLoader<List<DayParity>, WeekParity
 
     @Override
     protected List<DayParity> parseData(RawData rawData) throws JSONException {
-        String pageSource = rawData.mDataJson;
-        ArrayList<DayParity> daysParityList = new ArrayList<DayParity>();
+        List<DayParity> daysParityList = new ArrayList<>();
 
-        /*Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);*/
-        //GregorianCalendar today = new GregorianCalendar();
-        String[] weekdays = new DateFormatSymbols().getWeekdays();
-
-        JSONObject pageSrcObject = new JSONObject(pageSource);
+        JSONObject pageSrcObject = new JSONObject(rawData.mDataJson);
         Iterator<String> dates = pageSrcObject.keys();
 
         while (dates.hasNext()) {
 
-            // TODO: clean this up (Might need to move few things in DayParity)
-            String tempDate = dates.next();
-            int charAfterYear = tempDate.indexOf("_", 1);
-            int charAfterMonth = tempDate.indexOf("_", charAfterYear + 1);
+            // Parse date
+            String rawDate = dates.next();
 
-            int yearJSON = Integer.parseInt(tempDate.substring(1, charAfterYear));
-            int monthJSON = Integer.parseInt(tempDate.substring(
-                    charAfterYear + 1, charAfterMonth));
-            int dayJSON = Integer.parseInt(tempDate.substring(charAfterMonth + 1,
-                    tempDate.length()));
-            GregorianCalendar dateJSON = new GregorianCalendar(yearJSON,
+            Matcher matcher = DATE_PATTERN.matcher(rawDate);
+            if (!matcher.matches()) {
+                continue;
+            }
+
+            int yearJSON = Integer.parseInt(matcher.group(DATE_GROUP_YEAR));
+            int monthJSON = Integer.parseInt(matcher.group(DATE_GROUP_MONTH));
+            int dayJSON = Integer.parseInt(matcher.group(DATE_GROUP_DAY));
+
+            GregorianCalendar date = new GregorianCalendar(yearJSON,
                     monthJSON - 1, dayJSON);
 
-            String monthString;
-            String dayString;
+            // Parse parity
+            String rawDayType = pageSrcObject.getString(rawDate);
+            DayParity.Parity parity;
+            if (rawDayType.equals("p")) {
+                parity = DayParity.Parity.EVEN;
+            } else if (rawDayType.equals("n")) {
+                parity = DayParity.Parity.ODD;
+            } else {
+                continue;
+            }
 
-            if (monthJSON < 10)
-                monthString = "0" + Integer.toString(monthJSON);
-            else
-                monthString = Integer.toString(monthJSON);
-
-            if (dayJSON < 10)
-                dayString = "0" + Integer.toString(dayJSON);
-            else
-                dayString = Integer.toString(dayJSON);
-
-            String date = Integer.toString(yearJSON) + "." + monthString + "."
-                    + dayString;
-
-            //ilość wydarzeń w danym dniu
-            //int eventsCount = mEventsManager.getEventsCountOnDay(date);
-
-            String dayType = pageSrcObject.getString(tempDate);
-            if (dayType.equals("x"))
-                dayType = "---";
-            else if (dayType.equals("p"))
-                dayType = "parzysty";
-            else if (dayType.equals("n"))
-                dayType = "nieparzysty";
-            else
-                dayType = "?";
-
-            String dayOfTheWeek = weekdays[dateJSON.get(Calendar.DAY_OF_WEEK)];
-            daysParityList.add(new DayParity(date, dayType, dayOfTheWeek,
-                    dateJSON));
-
+            // Add to list
+            daysParityList.add(new DayParity(date, parity));
         }
 
-        Collections.sort(daysParityList, new DayParity.CustomComparator());
+        Collections.sort(daysParityList);
         return daysParityList;
-
     }
 
     static final class RawData implements Serializable {

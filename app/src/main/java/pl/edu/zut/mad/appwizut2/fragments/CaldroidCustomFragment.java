@@ -172,27 +172,22 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
     private void initUI() {
 
-        // SETTING THE BACKGROUND
-        // Create a hash map
-        HashMap hm = new HashMap();
-        // Put elements to the map
-
+        // Set cells background according to parity
         if (parityList != null) {
             for (DayParity dayParities : parityList) {
-                String parity = dayParities.getParity();
-                if (parity.equals("parzysty")) {
-                    hm.put(ParseDate(dayParities.getDate()), R.color.even);
+                DayParity.Parity parity = dayParities.getParity();
+                if (parity == DayParity.Parity.EVEN) {
+                    setBackgroundResourceForDate(R.color.even, dayParities.getDate());
                 } else {
-                    hm.put(ParseDate(dayParities.getDate()), R.color.uneven);
+                    setBackgroundResourceForDate(R.color.uneven, dayParities.getDate());
                 }
             }
         }
+
+        // Set event counts in views
         HashMap<String, Object> extraData = getExtraData();
         extraData.put("EVENTS", mEventCountsOnDays);
 
-        if (!hm.isEmpty()) {
-            setBackgroundResourceForDates(hm);
-        }
         setCaldroidListener(listener);
         refreshView();
     }

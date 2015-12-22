@@ -1,6 +1,9 @@
 package pl.edu.zut.mad.appwizut2.models;
 
+import android.support.annotation.NonNull;
+
 import java.util.Comparator;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -8,68 +11,35 @@ import java.util.GregorianCalendar;
  * @author Sebastian Swierczek
  * @version 1.0.0
  */
-public class DayParity {
+public class DayParity implements Comparable<DayParity> {
 
-	private String date;
-	private String parity;
-	private String dayName;
-	private GregorianCalendar gregorianCal;
+	private final Parity parity;
+	private final GregorianCalendar gregorianCal;
 
-	public DayParity() {
+	public DayParity(GregorianCalendar gregorianCal, Parity parity) {
+		this.gregorianCal = gregorianCal;
+        this.parity = parity;
+    }
 
-		setDate("");
-		setParity("");
-		setDayName("");
-		setGregorianCal(null);
-	}
-
-	public DayParity(String date, String parity, String dayName,
-					 GregorianCalendar gregorianCal) {
-
-		this.setDate(date);
-		this.setParity(parity);
-		this.setDayName(dayName);
-		this.setGregorianCal(gregorianCal);
-	}
-
-	public String getParity() {
+	public Parity getParity() {
 		return parity;
 	}
 
-	public void setParity(String parity) {
-		this.parity = parity;
-	}
-
-	public String getDate() {
-		return date;
-	}
-
-	public void setDate(String date) {
-		this.date = date;
-	}
-
-	public String getDayName() {
-		return dayName;
-	}
-
-	public void setDayName(String dayName) {
-		this.dayName = dayName;
+	public Date getDate() {
+		return new Date(gregorianCal.getTimeInMillis());
 	}
 
 	public GregorianCalendar getGregorianCal() {
 		return gregorianCal;
 	}
 
-	public void setGregorianCal(GregorianCalendar gregorianCal) {
-		this.gregorianCal = gregorianCal;
+	@Override
+	public int compareTo(@NonNull DayParity another) {
+		return gregorianCal.compareTo(another.gregorianCal);
 	}
 
-
-	// TODO: Make DayParity Comparable itself?
-	public static class CustomComparator implements Comparator<DayParity> {
-        @Override
-        public int compare(DayParity o1, DayParity o2) {
-            return o1.getDate().compareTo(o2.getDate());
-        }
+    public enum Parity {
+        EVEN, // Parzysty
+        ODD // Nieparzysty
     }
 }
