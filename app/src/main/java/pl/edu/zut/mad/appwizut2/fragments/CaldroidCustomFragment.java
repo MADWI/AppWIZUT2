@@ -24,25 +24,27 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
+import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
+import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.HttpConnect;
+import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
 import pl.edu.zut.mad.appwizut2.utils.OfflineHandler;
-import pl.edu.zut.mad.appwizut2.utils.WeekParityChecker;
 
 public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private final static String CURRENT_MONTH = "current_month";
     private final static String CURRENT_YEAR = "current_year";
     private final static String CURRENT_CLICKED_DATE = "clicked_date";
-    private WeekParityChecker checker;
-    private static ArrayList<DayParity> parityList;
+    private List<DayParity> parityList;
     private ArrayList<ListItemContainer> eventsData = new ArrayList<>();
     private ArrayList<ListItemContainer> eventsInDay = new ArrayList<>();
 
@@ -55,6 +57,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     String strDate="";
     private int mMonth = 0;
     private int mYear = 0;
+
+    private WeekParityLoader mParityLoader;
 
     /**
      * ustawienie modelu danych offline dla fragmentu
@@ -87,9 +91,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         }
         // Call super
         super.onCreate(savedInstanceState);
-
-
-        checker = new WeekParityChecker(getActivity().getApplicationContext());
 
 
         initModel(getContext());
@@ -142,7 +143,18 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
         ((ViewGroup) wrapper.findViewById(R.id.calendar_goes_here)).addView(calendarView, 0);
 
+        // Initialize data load
+        mParityLoader = DataLoadingManager.getInstance(getContext()).getLoader(WeekParityLoader.class);
+        mParityLoader.registerAndLoad(mParityListener);
+
         return wrapper;
+    }
+
+    @Override
+    public void onDestroyView() {
+        mParityLoader.unregister(mParityListener);
+        mParityLoader = null;
+        super.onDestroyView();
     }
 
     private void initializeAdapter(){
@@ -153,9 +165,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (parityList == null) {
-            new AsyncTaskGetParityList().execute();
-        }
         if (savedInstanceState != null){
 
             eventsData = (ArrayList<ListItemContainer>) savedInstanceState.getSerializable(Constans.INSTANCE_CURRENT_KEY);
@@ -205,7 +214,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
                 } else {
                     hm.put(ParseDate(dayParities.getDate()), R.color.uneven);
                 }
-                int eventsCount = dayParities.getEventsCount();
+                //int eventsCount = dayParities.getEventsCount();
+                int eventsCount = 0; // TODO: Get events count
                 if(eventsCount > 0){
                     events.put(dayParities.getDate(),eventsCount);
                 }
@@ -276,25 +286,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     }
 
 
-    private class AsyncTaskGetParityList extends
-            AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            if (HttpConnect.isOnline(getContext())) {
-                parityList = checker.getAllParity();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Log.i(TAG, "onPostExecute");
-            initUI();
-        }
-
-    }
-
     private void clearProgressBar(){
         if (progressBar != null) {
             progressBar.clearAnimation();
@@ -337,4 +328,12 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             swipeRefreshLayout.setRefreshing(false);
         }
     }
+
+    private final BaseDataLoader.DataLoadedListener<List<DayParity>> mParityListener = new BaseDataLoader.DataLoadedListener<List<DayParity>>() {
+        @Override
+        public void onDataLoaded(List<DayParity> data) {
+            parityList = data;
+            initUI();
+        }
+    };
 }

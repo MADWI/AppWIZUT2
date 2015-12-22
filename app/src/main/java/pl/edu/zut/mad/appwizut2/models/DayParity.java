@@ -1,6 +1,6 @@
 package pl.edu.zut.mad.appwizut2.models;
 
-import java.io.Serializable;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 
 /**
@@ -8,14 +8,11 @@ import java.util.GregorianCalendar;
  * @author Sebastian Swierczek
  * @version 1.0.0
  */
-
-/* Serializable - aby lepiej zapisywać dane w plikach */
-public class DayParity implements Serializable {
+public class DayParity {
 
 	private String date;
 	private String parity;
 	private String dayName;
-	private int mEventsCount;
 	private GregorianCalendar gregorianCal;
 
 	public DayParity() {
@@ -23,27 +20,16 @@ public class DayParity implements Serializable {
 		setDate("");
 		setParity("");
 		setDayName("");
-        setEventsCount(0);
 		setGregorianCal(null);
 	}
 
 	public DayParity(String date, String parity, String dayName,
-					 int eventsCount, GregorianCalendar gregorianCal) {
+					 GregorianCalendar gregorianCal) {
 
 		this.setDate(date);
 		this.setParity(parity);
 		this.setDayName(dayName);
-        this.setEventsCount(eventsCount);
 		this.setGregorianCal(gregorianCal);
-	}
-
-
-	public int getEventsCount() {
-		return mEventsCount;
-	}
-
-	public void setEventsCount(int eventsCount) {
-		mEventsCount = eventsCount;
 	}
 
 	public String getParity() {
@@ -79,5 +65,11 @@ public class DayParity implements Serializable {
 	}
 
 
-
+	// TODO: Make DayParity Comparable itself?
+	public static class CustomComparator implements Comparator<DayParity> {
+        @Override
+        public int compare(DayParity o1, DayParity o2) {
+            return o1.getDate().compareTo(o2.getDate());
+        }
+    }
 }
