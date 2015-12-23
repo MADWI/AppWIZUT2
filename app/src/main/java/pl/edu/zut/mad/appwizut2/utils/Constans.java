@@ -26,10 +26,6 @@ public class Constans {
      */
     public static final String PREF_GROUP = "group";
 
-    /** Do pobierania contentu w aktualnościach */
-    public static final String TAG_DATE = "created";
-    public static final String TAG_ENTRY = "entry";
-    
     /** Stala definiujaca nazwe grupy */
     public static final String GROUP = "group";
 
