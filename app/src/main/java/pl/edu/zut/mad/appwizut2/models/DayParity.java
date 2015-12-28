@@ -1,6 +1,9 @@
 package pl.edu.zut.mad.appwizut2.models;
 
-import java.io.Serializable;
+import android.support.annotation.NonNull;
+
+import java.util.Comparator;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -8,76 +11,35 @@ import java.util.GregorianCalendar;
  * @author Sebastian Swierczek
  * @version 1.0.0
  */
+public class DayParity implements Comparable<DayParity> {
 
-/* Serializable - aby lepiej zapisywać dane w plikach */
-public class DayParity implements Serializable {
+	private final Parity parity;
+	private final GregorianCalendar gregorianCal;
 
-	private String date;
-	private String parity;
-	private String dayName;
-	private int mEventsCount;
-	private GregorianCalendar gregorianCal;
+	public DayParity(GregorianCalendar gregorianCal, Parity parity) {
+		this.gregorianCal = gregorianCal;
+        this.parity = parity;
+    }
 
-	public DayParity() {
-
-		setDate("");
-		setParity("");
-		setDayName("");
-        setEventsCount(0);
-		setGregorianCal(null);
-	}
-
-	public DayParity(String date, String parity, String dayName,
-					 int eventsCount, GregorianCalendar gregorianCal) {
-
-		this.setDate(date);
-		this.setParity(parity);
-		this.setDayName(dayName);
-        this.setEventsCount(eventsCount);
-		this.setGregorianCal(gregorianCal);
-	}
-
-
-	public int getEventsCount() {
-		return mEventsCount;
-	}
-
-	public void setEventsCount(int eventsCount) {
-		mEventsCount = eventsCount;
-	}
-
-	public String getParity() {
+	public Parity getParity() {
 		return parity;
 	}
 
-	public void setParity(String parity) {
-		this.parity = parity;
-	}
-
-	public String getDate() {
-		return date;
-	}
-
-	public void setDate(String date) {
-		this.date = date;
-	}
-
-	public String getDayName() {
-		return dayName;
-	}
-
-	public void setDayName(String dayName) {
-		this.dayName = dayName;
+	public Date getDate() {
+		return new Date(gregorianCal.getTimeInMillis());
 	}
 
 	public GregorianCalendar getGregorianCal() {
 		return gregorianCal;
 	}
 
-	public void setGregorianCal(GregorianCalendar gregorianCal) {
-		this.gregorianCal = gregorianCal;
+	@Override
+	public int compareTo(@NonNull DayParity another) {
+		return gregorianCal.compareTo(another.gregorianCal);
 	}
 
-
-
+    public enum Parity {
+        EVEN, // Parzysty
+        ODD // Nieparzysty
+    }
 }

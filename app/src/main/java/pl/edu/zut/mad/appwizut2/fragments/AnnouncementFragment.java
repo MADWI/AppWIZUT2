@@ -8,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
+import pl.edu.zut.mad.appwizut2.network.AnnouncementsLoader;
+import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.network.FeedLoader;
 
 /**
  * Created by macko on 04.11.2015.
@@ -16,20 +18,14 @@ import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
 public class AnnouncementFragment extends FeedFragment {
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        super.setFeedUrl(HTTPLinks.ANNOUNCEMENTS);
-        super.initModel(getContext());
-
+    protected FeedLoader createLoader() {
+        return DataLoadingManager.getInstance(getContext()).getLoader(AnnouncementsLoader.class);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        View rootView = super.initView(inflater, container, getContext());
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_announcements);
-        return rootView;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 }
 

@@ -50,15 +50,8 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleLoader.class);
-        mScheduleLoader.registerAndLoad(this);
     }
 
-    @Override
-    public void onDestroy() {
-        mScheduleLoader.unregister(this);
-        super.onDestroy();
-    }
 
     @Nullable
     @Override
@@ -100,7 +93,18 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             }
         });
 
+        // Initialize loader
+        mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleLoader.class);
+        mScheduleLoader.registerAndLoad(this);
+
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        mScheduleLoader.unregister(this);
+
+        super.onDestroyView();
     }
 
     /**

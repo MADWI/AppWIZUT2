@@ -17,4 +17,9 @@ public class HTTPLinks {
     public final static String line80 = "http://bus.avris.it/api/przystanek-227604?kompresja=brak";
     public final static String lineUpdate = "http://bus.avris.it/api/najnowsza-wersja?kompresja=brak";
 
+    /**
+     * Zmienna zawierajaca adres strony z danymi o parzystosci tygodnia w formacie
+     * JSON
+     */
+    public static final String WEEK_PARITY = "http://wi.zut.edu.pl/components/com_kalendarztygodni/zapis.json";
 }

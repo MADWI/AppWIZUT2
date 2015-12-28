@@ -26,10 +26,6 @@ public class Constans {
      */
     public static final String PREF_GROUP = "group";
 
-    /** Do pobierania contentu w aktualnościach */
-    public static final String TAG_DATE = "created";
-    public static final String TAG_ENTRY = "entry";
-    
     /** Stala definiujaca nazwe grupy */
     public static final String GROUP = "group";
 
@@ -74,10 +70,6 @@ public class Constans {
     public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault());
     public static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault());
     public static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
-
-    /** for onSavedInstace */
-    public static final String INSTANCE_EVENTS_KEY = "events_in_day_data";
-    public static final String INSTANCE_CURRENT_KEY = "current_data";
-    public static final String INSTANCE_CURRENT_SIZE = "current_size";
+    public static final SimpleDateFormat IN_FEED_FORMATTER = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", java.util.Locale.US);
 
 }
