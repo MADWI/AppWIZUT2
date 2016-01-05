@@ -3,6 +3,9 @@ package pl.edu.zut.mad.appwizut2.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -12,12 +15,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -27,9 +30,11 @@ import pl.edu.zut.mad.appwizut2.fragments.BusTimetableFragment;
 import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlanChangesFragment;
 import pl.edu.zut.mad.appwizut2.fragments.TimetableFragment;
-import pl.edu.zut.mad.appwizut2.models.BusTimetableModel;
-import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
-import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
+import pl.edu.zut.mad.appwizut2.models.DayParity;
+import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
+import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
+import pl.edu.zut.mad.appwizut2.utils.Constans;
 
 
 public class MainActivity extends AppCompatActivity
@@ -59,6 +64,8 @@ public class MainActivity extends AppCompatActivity
     };
 
     private static final String PREF_LAST_DRAWER_FRAGMENT = "last_selected_drawer_fragment";
+    private WeekParityLoader mWeekParityLoader;
+    private DayParity.Parity mTodayParity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +97,15 @@ public class MainActivity extends AppCompatActivity
             openFragment(item);
             navigationView.setCheckedItem(item.id);
         }
+
+        mWeekParityLoader = DataLoadingManager.getInstance(this).getLoader(WeekParityLoader.class);
+        mWeekParityLoader.registerAndLoad(mParityListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mWeekParityLoader.unregister(mParityListener);
+        super.onDestroy();
     }
 
     private void openFragment(DrawerFragmentItem item) {
@@ -219,4 +235,31 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        int icon = R.drawable.ic_event_white_48dp;
+        if (mTodayParity == DayParity.Parity.EVEN) {
+            icon = R.drawable.ic_event_even_48dp;
+        } else if (mTodayParity == DayParity.Parity.ODD) {
+            icon = R.drawable.ic_event_uneven_48dp;
+        }
+        menu.findItem(R.id.event_calendar).setIcon(icon);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    BaseDataLoader.DataLoadedListener<List<DayParity>> mParityListener = new BaseDataLoader.DataLoadedListener<List<DayParity>>() {
+        @Override
+        public void onDataLoaded(List<DayParity> dayParities) {
+            String todayStr = Constans.FOR_EVENTS_FORMATTER.format(new Date());
+            for (DayParity checkedParity : dayParities) {
+                if (todayStr.equals(Constans.FOR_EVENTS_FORMATTER.format(checkedParity.getDate()))) {
+                    mTodayParity = checkedParity.getParity();
+                    Toast.makeText(MainActivity.this, String.valueOf(mTodayParity), Toast.LENGTH_LONG).show();
+                    break;
+                }
+            }
+            invalidateOptionsMenu();
+        }
+    };
 }
