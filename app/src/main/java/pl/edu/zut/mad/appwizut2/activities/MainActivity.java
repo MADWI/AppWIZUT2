@@ -251,6 +251,9 @@ public class MainActivity extends AppCompatActivity
     BaseDataLoader.DataLoadedListener<List<DayParity>> mParityListener = new BaseDataLoader.DataLoadedListener<List<DayParity>>() {
         @Override
         public void onDataLoaded(List<DayParity> dayParities) {
+            if (dayParities == null) {
+                return;
+            }
             String todayStr = Constans.FOR_EVENTS_FORMATTER.format(new Date());
             for (DayParity checkedParity : dayParities) {
                 if (todayStr.equals(Constans.FOR_EVENTS_FORMATTER.format(checkedParity.getDate()))) {
