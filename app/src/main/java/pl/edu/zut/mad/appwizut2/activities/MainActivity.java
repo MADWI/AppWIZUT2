@@ -255,7 +255,6 @@ public class MainActivity extends AppCompatActivity
             for (DayParity checkedParity : dayParities) {
                 if (todayStr.equals(Constans.FOR_EVENTS_FORMATTER.format(checkedParity.getDate()))) {
                     mTodayParity = checkedParity.getParity();
-                    Toast.makeText(MainActivity.this, String.valueOf(mTodayParity), Toast.LENGTH_LONG).show();
                     break;
                 }
             }
