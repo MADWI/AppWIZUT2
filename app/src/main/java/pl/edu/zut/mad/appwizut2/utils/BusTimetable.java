@@ -226,7 +226,7 @@ public class BusTimetable extends ListFragment implements SwipeRefreshLayout.OnR
 
 
 
-
+        if (data != null) // TODO: Switch to throwing exception on failed download
         for (BusTimetableModel model : data){
 
             // tmp hashmap for single departure
