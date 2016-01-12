@@ -64,6 +64,13 @@ public class Timetable {
             return type;
         }
 
+        public String getRawWG() {
+            if ("null".equals(rawWG)) {
+                return null;
+            }
+            return rawWG;
+        }
+
         public TimeRange getTime() {
             return time;
         }
