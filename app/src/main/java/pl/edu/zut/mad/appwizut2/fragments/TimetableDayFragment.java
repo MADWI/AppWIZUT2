@@ -111,13 +111,18 @@ public class TimetableDayFragment extends Fragment {
 
             String lecturer = hour.getLecturer();
             String room = hour.getRoom();
-            if (lecturer == null) {
-                lecturer = "";
+            String wg = hour.getRawWG();
+            String text = "";
+            if (lecturer != null) {
+                text += lecturer;
             }
-            if (room == null) {
-                room = "";
+            if (room != null) {
+                text += " " + room;
             }
-            holder.roomLecturerTextView.setText(room + " " + lecturer);
+            if (wg != null) {
+                text += "\n" + wg;
+            }
+            holder.roomLecturerTextView.setText(text);
         }
 
         @Override
