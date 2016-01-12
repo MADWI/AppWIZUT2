@@ -5,64 +5,65 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_text">Mobile Application Developers</string>
 
-    <string name="nav_calendar">Kalendarz</string>
-    <string name="nav_announcements">Ogłoszenia</string>
-    <string name="nav_about_us">O nas</string>
-    <string name="nav_settings">Ustawienia</string>
-    <string name="nav_public_transport">Rozkład jazdy</string>
-    <string name="nav_plan_changes">Zmiany w planie</string>
-    <string name="nav_timetable">Plan zajęć</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_announcements">Announcements</string>
+    <string name="nav_about_us">About us</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_public_transport">Timetable</string>
+    <string name="nav_plan_changes">Changes in schedule</string>
+    <string name="nav_timetable">Schedule</string>
 
-    <string name="mad_name">SKN Mobile Applications Developers</string>
-    <string name="authors">Autorzy:</string>
-    <string name="mentor">Opiekun koła naukowego:</string>
-    <string name="contact">Kontakt: </string>
+    <string name="mad_name">SSA Mobile Applications Developers</string>
+    <string name="authors">Authors:</string>
+    <string name="mentor">SSA patron:</string>
+    <string name="contact">Contact: </string>
 
     <string name="action_settings">Settings</string>
 
-    <string name="no_Internet">Brak połączenia z Internetem</string>
+    <string name="no_Internet">No connection with the web</string>
 
     <!-- Timetable -->
-    <string name="show_pdf">Pokaż PDF</string>
+    <string name="show_pdf">Show PDF</string>
     <string name="downloading_pdf_schedule">Checking if PDF is up to date</string>
     <string name="cannot_download_pdf">Cannot download schedule PDF</string>
     <string name="cannot_open_pdf">Cannot open schedule PDF</string>
 
     <string-array name="week_days_short">
-        <item>PON</item>
-        <item>WT</item>
-        <item>ŚR</item>
-        <item>CZW</item>
-        <item>PT</item>
+        <item>MON</item>
+        <item>TUE</item>
+        <item>WED</item>
+        <item>THU</item>
+        <item>FRI</item>
     </string-array>
-    <string name="timetable_unavailable">Nie możemy pokazać tego planu w aplikacji</string>
-    <string name="timetable_not_configured">Nie wybrałeś żadnej grupy</string>
+    <string name="timetable_unavailable">Cannot display the schedule in the app</string>
+    <string name="timetable_not_configured">You have not chosen a group</string>
 
 
-    <string name="card_see_more">... Zobacz więcej</string>
+    <string name="card_see_more">... See more</string>
 
     <!--Settings Strings -->
-    <string name="title_activity_settings">Ustawienia</string>
-    <string name="group_settings_title">Ustawienia grupy</string>
-    <string name="download_groups_title">Pobieranie grup</string>
-    <string name="refreshing_body">Proszę czekać &#8230;</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="group_settings_title">Group settings</string>
+    <string name="download_groups_title">Group download</string>
+    <string name="refreshing_body">Please wait &#8230;</string>
 
-    <string name="pref_default_tab">Domyślna karta</string>
-    <string name="pref_default_language">Język</string>
+    <string name="pref_default_tab">Default card</string>
+    <string name="pref_default_language">Language</string>
 
-    <string name="studies_type">Rodzaj studiów:</string>
-    <string name="studies_degree">Kierunek_studiów:</string>
-    <string name="studies_level">Stopień studiów:</string>
-    <string name="studies_year">Rok studiów:</string>
-    <string name="studies_group">Grupa:</string>
+    <string name="studies_type">Type of studies:</string>
+    <string name="studies_degree">Field of studies:</string>
+    <string name="studies_level">Degree of studies:</string>
+    <string name="studies_year">Year of studies:</string>
+    <string name="studies_group">Group:</string>
+    <string name="setting_group">Group</string>
 
-    <string name="ok_button">Dalej</string>
-    <string name="cancel_button">Anuluj</string>
+    <string name="ok_button">Next</string>
+    <string name="cancel_button">Cancel</string>
 
-    <string name="about_title">O nas</string>
-    <string name="empty_group">brak</string>
-    <string name="cannot_download_groups">Brak grup lub nie można ich pobrać</string>
-    <string name="application_settings">Ustawienia aplikacji</string>
-    <string name="timetable_settings">Plan</string>
+    <string name="about_title">About us</string>
+    <string name="empty_group">empty</string>
+    <string name="cannot_download_groups">No groups or download is not possible</string>
+    <string name="application_settings">Application settings</string>
+    <string name="timetable_settings">Schedule</string>
 
 </resources>

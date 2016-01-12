@@ -2,11 +2,11 @@
 <resources>
 
     <string-array name="pref_default_tab_titles">
-        <item>Last opened</item>
-        <item>Changes in schedule</item>
-        <item>Calendar</item>
-        <item>Announcements</item>
-        <item>Timetable</item>
+        <item>En son açılmış</item>
+        <item>Ders programındaki değişiklikler</item>
+        <item>Takvim</item>
+        <item>İlanlar</item>
+        <item>çizelge</item>
     </string-array>
     <string-array name="pref_default_tab_values">
         <item>___</item>
@@ -16,38 +16,40 @@
         <item>tra</item>
     </string-array>
     <string-array name="pref_languages_list">
-        <item>Systematic</item>
-        <item>English</item>
-        <item>Polish</item>
-        <item>Turkish</item>
+        <item>Sistematik</item>
+        <item>Ingilizce </item>
+        <item>Lehçe</item>
+        <item>Türkçe</item>
     </string-array>
     <string-array name="pref_default_languages_list">
         <item>system</item>
         <item>en</item>
+        <item>pl</item>
+        <item>tr</item>
     </string-array>
     <string-array name="list_rodzaj_studiow">
-        <item>Full-time</item>
-        <item>Part-time</item>
+        <item>Tam gün</item>
+        <item>Yarım günlük</item>
     </string-array>
     <string-array name="list_kierunek_studiow">
-        <item>Computer Science</item>
-        <item>MPE</item>
-        <item>Bioinformatics</item>
-        <item>Digitisation</item>
+        <item>Bilgisayar Bilimleri</item>
+        <item>Yönetim ve Üretim Mühendisliği</item>
+        <item>Biyoinformatik </item>
+        <item> Mühendislik sayısallaştırma</item>
     </string-array>
     <string-array name="list_stopien_studiow">
         <item>I</item>
         <item>II</item>
     </string-array>
     <string-array name="list_rok_studiow">
-        <item>First</item>
-        <item>Second</item>
-        <item>Third</item>
-        <item>Fourth</item>
+        <item>Birinci </item>
+        <item>Ikinci </item>
+        <item>Üçüncü </item>
+        <item>Dördüncü </item>
     </string-array>
     <string-array name="actions_on_plan">
-        <item>Open</item>
-        <item>Delete</item>
+        <item>Açık </item>
+        <item>Silme</item>
     </string-array>
 
 </resources>

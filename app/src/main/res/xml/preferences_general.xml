@@ -21,7 +21,7 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null" />
 
-
+<!--
         <ListPreference
             android:background="@color/colorPrimaryBright"
             android:key="default_language"
@@ -32,12 +32,12 @@
             android:entryValues="@array/pref_default_languages_list"
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"/>
+-->
 
     <pl.edu.zut.mad.appwizut2.fragments.MyPreferenceCategory android:title="@string/timetable_settings" />
         <Preference
             android:background="@color/colorPrimaryBright"
             android:key="groups"
-            android:summary="Wybór swojej grupy"
-            android:title="Grupa" />
+            android:title="@string/setting_group" />
 
 </PreferenceScreen>
