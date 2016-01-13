@@ -43,7 +43,6 @@
 
     <!--Settings Strings -->
     <string name="title_activity_settings">Ayarlar</string>
-    <string name="group_settings_title">Grup ayarları	</string>
     <string name="download_groups_title">Grup karşıdan</string>
     <string name="refreshing_body">Lütfen bekleyiniz &#8230;</string>
 

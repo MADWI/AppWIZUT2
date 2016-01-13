@@ -43,7 +43,6 @@
 
     <!--Settings Strings -->
     <string name="title_activity_settings">Ustawienia</string>
-    <string name="group_settings_title">Ustawienia grupy</string>
     <string name="download_groups_title">Pobieranie grup</string>
     <string name="refreshing_body">Proszę czekać &#8230;</string>
 
