@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file contains arrays that are not exposed to user and should not be translated
+-->
+<resources>
+    <string-array name="pref_default_tab_values">
+        <item>___</item>
+        <item>chg</item>
+        <item>cal</item>
+        <item>ann</item>
+        <item>tra</item>
+    </string-array>
+
+    <string-array name="pref_default_languages_list">
+        <item>system</item>
+        <item>en</item>
+        <item>pl</item>
+        <item>tr</item>
+    </string-array>
+
+    <!-- Values must match list_rodzaj_studiow -->
+    <string-array name="list_rodzaj_studiow_internal">
+        <item>Stacjonarne</item>
+        <item>Niestacjonarne</item>
+    </string-array>
+
+    <!-- Values must match list_kierunek_studiow -->
+    <string-array name="list_kierunek_studiow_internal">
+        <item>I</item>
+        <item>ZIP</item>
+        <item>BI</item>
+        <item>IC</item>
+    </string-array>
+</resources>

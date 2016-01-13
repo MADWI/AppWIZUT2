@@ -105,35 +105,11 @@ public class PlanDownloader {
      */
     private static Pattern getRodzaj(String rodzaj, String kierunek,
                                      int stopien, int rok) {
-        Pattern p = null;
         if (rodzaj.equals("Stacjonarne")) {
-            if (kierunek.equals("Bioinformatyka")) {
-                p = Pattern.compile(">BI" + stopien + "-" + rok
-                        + "[0-9]{1,2}\\.pdf<");
-            } else if (kierunek.equals("Inżynieria cyfryzacji")) {
-                p = Pattern.compile(">IC" + stopien + "-" + rok
-                        + "[0-9]{1,2}\\.pdf<");
-            } else if (kierunek.equals("Informatyka")) {
-                p = Pattern.compile(">I" + stopien + "-" + rok
-                        + "[0-9]{1,2}\\.pdf<");
-            } else if (kierunek.equals("ZIP")) {
-                p = Pattern.compile(">ZIP" + stopien + "-" + rok
-                        + "[0-9]{1,2}\\.pdf<");
-            }
-            return p;
+            // BI, IC, I, ZIP
+            return Pattern.compile(">" + kierunek + stopien + "-" + rok + "[0-9]{1,2}\\.pdf<");
         } else if (rodzaj.equals("Niestacjonarne")) {
-            if (kierunek.equals("Bioinformatyka")) {
-                p = null;
-            } else if (kierunek.equals("Inżynieria cyfryzacji")) {
-                p = null;
-            } else if (kierunek.equals("Informatyka")) {
-                p = Pattern.compile(">I" + stopien + "n-" + rok
-                        + "[0-9]{1,2}\\.pdf<");
-            } else if (kierunek.equals("ZIP")) {
-                p = Pattern.compile(">ZIP" + stopien + "n-" + rok
-                        + "[0-9]{1,2}\\.pdf<");
-            }
-            return p;
+            return Pattern.compile(">" + kierunek + stopien + "n-" + rok + "[0-9]{1,2}\\.pdf<");
         }
 
         return null;

@@ -8,24 +8,11 @@
         <item>İlanlar</item>
         <item>çizelge</item>
     </string-array>
-    <string-array name="pref_default_tab_values">
-        <item>___</item>
-        <item>chg</item>
-        <item>cal</item>
-        <item>ann</item>
-        <item>tra</item>
-    </string-array>
     <string-array name="pref_languages_list">
         <item>Sistematik</item>
         <item>Ingilizce </item>
         <item>Lehçe</item>
         <item>Türkçe</item>
-    </string-array>
-    <string-array name="pref_default_languages_list">
-        <item>system</item>
-        <item>en</item>
-        <item>pl</item>
-        <item>tr</item>
     </string-array>
     <string-array name="list_rodzaj_studiow">
         <item>Tam gün</item>

@@ -8,22 +8,11 @@
         <item>Announcements</item>
         <item>Timetable</item>
     </string-array>
-    <string-array name="pref_default_tab_values">
-        <item>___</item>
-        <item>chg</item>
-        <item>cal</item>
-        <item>ann</item>
-        <item>tra</item>
-    </string-array>
     <string-array name="pref_languages_list">
         <item>Systematic</item>
         <item>English</item>
         <item>Polish</item>
         <item>Turkish</item>
-    </string-array>
-    <string-array name="pref_default_languages_list">
-        <item>system</item>
-        <item>en</item>
     </string-array>
     <string-array name="list_rodzaj_studiow">
         <item>Full-time</item>

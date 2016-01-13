@@ -148,8 +148,9 @@ public class MyGroups extends Activity implements OnClickListener {
                 Log.i(TAG, "onClick button next");
 
                 if (pick_studies.getVisibility() == View.VISIBLE) {
-                    rodzaj = spinType.getSelectedItem().toString();
-                    kierunek = spinDegree.getSelectedItem().toString();
+                    Resources res = getResources();
+                    rodzaj = res.getStringArray(R.array.list_rodzaj_studiow_internal)[spinType.getSelectedItemPosition()];
+                    kierunek = res.getStringArray(R.array.list_kierunek_studiow_internal)[spinDegree.getSelectedItemPosition()];
                     stopien = spinLevel.getSelectedItemPosition() + 1;
                     rok = spinYear.getSelectedItemPosition() + 1;
 
