@@ -386,7 +386,9 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
             handledOtherwise = true;
         }
 
-        getParent().requestDisallowInterceptTouchEvent(isTriggered());
+        if (isTriggered()) {
+            getParent().requestDisallowInterceptTouchEvent(true);
+        }
         return handledGenericGesture || handledScaleGesture || handledOtherwise;
     }
 
