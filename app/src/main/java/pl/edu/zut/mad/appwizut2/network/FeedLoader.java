@@ -24,14 +24,14 @@ public abstract class FeedLoader extends BaseDataLoader<List<ListItemContainer>,
     /**
      * Name of key in root object in json feed containing entries as array
      */
-    private static final String ATTR_ENTRIES = "entry";
+    protected static final String ATTR_ENTRIES = "entry";
 
     /** Keys used in json feed entry */
-    private static final String ATTR_DATE = "created";
-    private static final String ATTR_TITLE = "title";
-    private static final String ATTR_AUTHOR = "author";
-    private static final String ATTR_BODY = "content";
-    private static final String ATTR_ID = "id";
+    protected static final String ATTR_DATE = "created";
+    protected static final String ATTR_TITLE = "title";
+    protected static final String ATTR_AUTHOR = "author";
+    protected static final String ATTR_BODY = "content";
+    protected static final String ATTR_ID = "id";
 
     protected FeedLoader(DataLoadingManager loadingManager) {
         super(loadingManager);

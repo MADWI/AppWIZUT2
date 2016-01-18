@@ -7,7 +7,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +29,9 @@ import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
-import pl.edu.zut.mad.appwizut2.network.AnnouncementsLoader;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.network.EventsLoader;
 import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constans;
 
@@ -55,7 +54,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     private int mYear = 0;
 
     private WeekParityLoader mParityLoader;
-    private AnnouncementsLoader mEventsDataLoader;
+    private EventsLoader mEventsDataLoader;
     private final Map<String, Integer> mEventCountsOnDays = new HashMap<>();
 
     @Override
@@ -127,7 +126,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         DataLoadingManager loadingManager = DataLoadingManager.getInstance(getContext());
         mParityLoader = loadingManager.getLoader(WeekParityLoader.class);
         mParityLoader.registerAndLoad(mParityListener);
-        mEventsDataLoader = loadingManager.getLoader(AnnouncementsLoader.class);
+        mEventsDataLoader = loadingManager.getLoader(EventsLoader.class);
         mEventsDataLoader.registerAndLoad(mEventsDataListener);
 
         return wrapper;
@@ -258,13 +257,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             mEventCountsOnDays.clear();
             if (data != null) {
                 for (ListItemContainer entry : data) {
-                    String date;
-                    try {
-                        date = Constans.FOR_EVENTS_FORMATTER.format(Constans.IN_FEED_FORMATTER.parse(entry.getDate()));
-                    } catch (ParseException e) {
-                        Log.e(TAG, "Unable to parse event date for counting", e);
-                        continue;
-                    }
+                    String date = entry.getDate();
                     Integer countSoFar = mEventCountsOnDays.get(date);
                     if (countSoFar == null) {
                         mEventCountsOnDays.put(date, 1);
