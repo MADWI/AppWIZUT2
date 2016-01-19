@@ -24,6 +24,14 @@
         android:id="@+id/item_list_progress_bar"
         style="android.R.attr.progressBarStyleLarge" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/data_not_available"
+        android:id="@+id/data_not_available"
+        android:visibility="gone" />
+
 </RelativeLayout>
 
 

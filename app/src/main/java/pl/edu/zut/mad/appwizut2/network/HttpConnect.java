@@ -163,7 +163,7 @@ public class HttpConnect {
 
             connectIfNeeded();
 
-            reader = new InputStreamReader(mUrlConnection.getInputStream(), "iso-8859-1");
+            reader = new InputStreamReader(getInputStream(), "iso-8859-1");
 
             StringBuilder sb = new StringBuilder();
             char[] buf = new char[1024];
