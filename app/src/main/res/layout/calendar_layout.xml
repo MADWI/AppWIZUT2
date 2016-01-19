@@ -28,7 +28,7 @@
             android:translationZ="3dp"/>
 
         <include
-            layout="@layout/item_list"
+            layout="@layout/item_list_in_calendar"
             android:background="@color/calendar_default" />
 
     </LinearLayout>
