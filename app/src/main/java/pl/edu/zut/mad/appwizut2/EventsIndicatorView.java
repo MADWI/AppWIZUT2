@@ -39,6 +39,7 @@ public class EventsIndicatorView extends View {
             lineCount = MAX_LINE_COUNT;
         }
         mLineCount = lineCount;
+        invalidate();
     }
 
     @Override
