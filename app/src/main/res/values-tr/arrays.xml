@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_default_tab_titles">
+        <item>En son açılmış</item>
+        <item>Ders programındaki değişiklikler</item>
+        <item>Takvim</item>
+        <item>İlanlar</item>
+        <item>çizelge</item>
+    </string-array>
+    <string-array name="pref_languages_list">
+        <item>Sistematik</item>
+        <item>Ingilizce </item>
+        <item>Lehçe</item>
+        <item>Türkçe</item>
+    </string-array>
+    <string-array name="list_rodzaj_studiow">
+        <item>Tam gün</item>
+        <item>Yarım günlük</item>
+    </string-array>
+    <string-array name="list_kierunek_studiow">
+        <item>Bilgisayar Bilimleri</item>
+        <item>Yönetim ve Üretim Mühendisliği</item>
+        <item>Biyoinformatik </item>
+        <item> Mühendislik sayısallaştırma</item>
+    </string-array>
+    <string-array name="list_stopien_studiow">
+        <item>I</item>
+        <item>II</item>
+    </string-array>
+    <string-array name="list_rok_studiow">
+        <item>Birinci </item>
+        <item>Ikinci </item>
+        <item>Üçüncü </item>
+        <item>Dördüncü </item>
+    </string-array>
+    <string-array name="actions_on_plan">
+        <item>Açık </item>
+        <item>Silme</item>
+    </string-array>
+
+</resources>

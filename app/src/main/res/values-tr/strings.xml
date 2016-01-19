@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">AppWIZUT</string>
+
+    <string name="navigation_drawer_open">Açık seyir çekmece</string>
+    <string name="navigation_drawer_close">Yakın seyir çekmece</string>
+    <string name="nav_header_text">Mobile Application Developers</string>
+
+    <string name="nav_calendar">Takvim</string>
+    <string name="nav_announcements">İlanlar</string>
+    <string name="nav_about_us">Hakkımızda</string>
+    <string name="nav_settings">Ayarlar</string>
+    <string name="nav_public_transport">İletişim program</string>
+    <string name="nav_plan_changes">Ders programındaki değişiklikler</string>
+    <string name="nav_timetable">Ders programı</string>
+
+    <string name="mad_name">Öğrenci bilim birliği MAD</string>
+    <string name="authors">Yazarlar:</string>
+    <string name="mentor">Öğrenci bilim birliği patron:</string>
+    <string name="contact">İlişki: </string>
+
+    <string name="action_settings">Ayarlar</string>
+
+    <string name="no_Internet">İnternet bağlantısı yok</string>
+
+    <!-- Timetable -->
+    <string name="show_pdf">PDF’yi göster</string>
+    <string name="downloading_pdf_schedule">PDF güncellemesini control etme</string>
+    <string name="cannot_download_pdf">Program PDF olarak indirilemez</string>
+    <string name="cannot_open_pdf">İnternet bağlantısı yok</string>
+
+    <string-array name="week_days_short">
+        <item>Pzt</item>
+        <item>Sal</item>
+        <item>Çar</item>
+        <item>Per</item>
+        <item>Cum</item>
+    </string-array>
+    <string name="timetable_unavailable">Görüntülenemiyor takvimi app</string>
+    <string name="timetable_not_configured">Hiçbir grup</string>
+
+
+    <string name="card_see_more">... See more</string>
+
+    <!--Settings Strings -->
+    <string name="title_activity_settings">Ayarlar</string>
+    <string name="download_groups_title">Grup karşıdan</string>
+    <string name="refreshing_body">Lütfen bekleyiniz &#8230;</string>
+
+    <string name="pref_default_tab">Default card</string>
+    <string name="pref_default_language">Language</string>
+
+    <string name="studies_type">Çalışmaların türü:</string>
+    <string name="studies_degree">Disiplin Çalışmaların:</string>
+    <string name="studies_level">Çalışmaların aşaması:</string>
+    <string name="studies_year">Çalışmanın yılı:</string>
+    <string name="studies_group">Grup:</string>
+    <string name="setting_group">Grup</string>
+
+    <string name="ok_button">Sonraki</string>
+    <string name="cancel_button">İptal</string>
+
+    <string name="about_title">Hakkımızda</string>
+    <string name="empty_group">Boş</string>
+    <string name="cannot_download_groups">Gruplar uygun değil ya da indirilmesi mümkün değil</string>
+    <string name="application_settings">Uygulama ayarları</string>
+    <string name="timetable_settings">Ders programı</string>
+
+</resources>

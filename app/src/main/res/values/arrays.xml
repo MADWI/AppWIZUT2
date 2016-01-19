@@ -2,50 +2,41 @@
 <resources>
 
     <string-array name="pref_default_tab_titles">
-        <item>Ostatnio otwarta</item>
-        <item>Zmiany w planie</item>
-        <item>Kalendarz</item>
-        <item>Ogłoszenia</item>
-        <item>Rozkład jazdy</item>
-    </string-array>
-    <string-array name="pref_default_tab_values">
-        <item>___</item>
-        <item>chg</item>
-        <item>cal</item>
-        <item>ann</item>
-        <item>tra</item>
+        <item>Last opened</item>
+        <item>Changes in schedule</item>
+        <item>Calendar</item>
+        <item>Announcements</item>
+        <item>Timetable</item>
     </string-array>
     <string-array name="pref_languages_list">
-        <item>Systemowy</item>
-        <item>Polski</item>
-    </string-array>
-    <string-array name="pref_default_languages_list">
-        <item>system</item>
-        <item>pl</item>
+        <item>Systematic</item>
+        <item>English</item>
+        <item>Polish</item>
+        <item>Turkish</item>
     </string-array>
     <string-array name="list_rodzaj_studiow">
-        <item>Stacjonarne</item>
-        <item>Niestacjonarne</item>
+        <item>Full-time</item>
+        <item>Part-time</item>
     </string-array>
     <string-array name="list_kierunek_studiow">
-        <item>Informatyka</item>
-        <item>ZIP</item>
-        <item>Bioinformatyka</item>
-        <item>Inżynieria cyfryzacji</item>
+        <item>Computer Science</item>
+        <item>MPE</item>
+        <item>Bioinformatics</item>
+        <item>Digitisation</item>
     </string-array>
     <string-array name="list_stopien_studiow">
         <item>I</item>
         <item>II</item>
     </string-array>
     <string-array name="list_rok_studiow">
-        <item>Pierwszy</item>
-        <item>Drugi</item>
-        <item>Trzeci</item>
-        <item>Czwarty</item>
+        <item>First</item>
+        <item>Second</item>
+        <item>Third</item>
+        <item>Fourth</item>
     </string-array>
     <string-array name="actions_on_plan">
-        <item>Otwórz</item>
-        <item>Usuń</item>
+        <item>Open</item>
+        <item>Delete</item>
     </string-array>
 
 </resources>
