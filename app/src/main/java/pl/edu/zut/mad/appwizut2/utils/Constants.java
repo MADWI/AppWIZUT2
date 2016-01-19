@@ -45,5 +45,5 @@ public class Constants {
     /**
      * Number of upcoming departures displayed on bus timetable
      */
-    public static final int DISPLAYED_DEPARTURES_COUNT = 5;
+    public static final int DISPLAYED_DEPARTURES_COUNT = 7;
 }

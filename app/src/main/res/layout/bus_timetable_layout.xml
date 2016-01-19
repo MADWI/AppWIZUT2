@@ -49,6 +49,7 @@
             android:textColor="@color/textGray"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_below="@+id/type"
-            android:padding="2dp"/>
+            android:padding="2dp"
+            android:singleLine="true" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>
