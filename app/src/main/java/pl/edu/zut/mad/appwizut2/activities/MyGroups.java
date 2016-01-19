@@ -103,7 +103,6 @@ public class MyGroups extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_preferences);
-        Log.i(TAG, "onCreate");
 		/*
 		 * Connect object with view elements
 		 */
@@ -142,11 +141,8 @@ public class MyGroups extends Activity implements OnClickListener {
     /** Metoda wywolywana przez klikniecie w dane View */
     @Override
     public void onClick(View v) {
-        Log.i(TAG, "onClick");
         switch (v.getId()) {
             case R.id.btnNextPrefs:
-                Log.i(TAG, "onClick button next");
-
                 if (pick_studies.getVisibility() == View.VISIBLE) {
                     Resources res = getResources();
                     rodzaj = res.getStringArray(R.array.list_rodzaj_studiow_internal)[spinType.getSelectedItemPosition()];
@@ -154,10 +150,6 @@ public class MyGroups extends Activity implements OnClickListener {
                     stopien = spinLevel.getSelectedItemPosition() + 1;
                     rok = spinYear.getSelectedItemPosition() + 1;
 
-                    Log.d(TAG,
-                            rodzaj + " " + kierunek + " "
-                                    + Integer.toString(stopien) + " "
-                                    + Integer.toString(rok));
                     if (HttpConnect.isOnline(this.getApplicationContext())) {
                         downloadGroups = new AsyncTaskDownloadGroups();
                         downloadGroups.execute();
@@ -196,8 +188,6 @@ public class MyGroups extends Activity implements OnClickListener {
         /** Wykonywanie zadan w tle watku glownego */
         @Override
         protected String[] doInBackground(Void... params) {
-            Log.i(TAG, "doInBackground");
-
             String[] tempGroups = null;
 
             tempGroups = PlanDownloader.getGroups(rodzaj, kierunek, stopien,
@@ -209,7 +199,6 @@ public class MyGroups extends Activity implements OnClickListener {
         /** Metoda wykonywana przed doInBackground() */
         @Override
         protected void onPreExecute() {
-            Log.i(TAG, "onPreExecute");
             progresDialog = ProgressDialog.show(MyGroups.this,
                     res.getString(R.string.download_groups_title),
                     res.getString(R.string.refreshing_body), true, true);
@@ -220,7 +209,6 @@ public class MyGroups extends Activity implements OnClickListener {
         /** Metoda wykonywana po doInBackground() */
         @Override
         protected void onPostExecute(String[] result) {
-            Log.i(TAG, "onPostExecute");
             progresDialog.dismiss();
 
             if (result != null && result.length > 0) {

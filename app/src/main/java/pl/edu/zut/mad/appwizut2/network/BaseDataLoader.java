@@ -220,7 +220,7 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
                 } catch (FileNotFoundException ignored) {
                     // No cached version
                 } catch (IOException e) {
-                    Log.e(TAG, "Failed to load cached data", e);
+                    Log.v(TAG, "Failed to load cached data", e);
                 }
             }
 
@@ -236,7 +236,7 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
                 try {
                     downloadedData = doDownload(mRawData);
                 } catch (IOException e) {
-                    Log.e(TAG, "Failed to download data", e);
+                    Log.v(TAG, "Failed to download data", e);
                 }
             }
 
@@ -248,7 +248,7 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
                 try {
                     parsedData = parseData(downloadedData);
                 } catch (JSONException e) {
-                    Log.e(TAG, "Couldn't parse just downloaded data", e);
+                    Log.v(TAG, "Couldn't parse just downloaded data", e);
 
                     // Discard downloaded data so we'll try from cache
                     downloadedData = null;
@@ -260,7 +260,7 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
                 try {
                     parsedData = parseData(mRawData);
                 } catch (JSONException e) {
-                    Log.e(TAG, "Couldn't parse just downloaded data", e);
+                    Log.v(TAG, "Couldn't parse just downloaded data", e);
                 }
             }
 
@@ -270,7 +270,7 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
                 try {
                     saveToCache(mRawData, cacheFile);
                 } catch (IOException e) {
-                    Log.e(TAG, "Failed to save new data into cache", e);
+                    Log.v(TAG, "Failed to save new data into cache", e);
                 }
             }
 

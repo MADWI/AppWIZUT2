@@ -146,11 +146,10 @@ public class HttpConnect {
      * @deprecated Use {@link #readAllAndClose()} and catch exception
      */
     public String getPage() {
-        Log.i(TAG, "getPage");
         try {
             return readAllAndClose();
         } catch (IOException e) {
-            Log.e(TAG, "Exception during load through non throwing api", e);
+            Log.w(TAG, "Exception during load through non throwing api", e);
             return ""; // Legacy...
         }
     }
@@ -221,8 +220,6 @@ public class HttpConnect {
      * @return true jezeli stwierdzono polaczenie
      */
     public static boolean isOnline(Context ctx) {
-        Log.i(TAG, "isOnline...");
-
         ConnectivityManager cm = (ConnectivityManager) ctx
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();

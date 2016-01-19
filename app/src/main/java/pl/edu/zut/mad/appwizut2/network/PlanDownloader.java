@@ -38,9 +38,6 @@ public class PlanDownloader {
      */
     public static String[] getGroups(String rodzajStudiow, String kierunek,
                                      int stopien, int rok) {
-        Log.d(TAG, "Stopien: " + Integer.valueOf(stopien));
-        Log.d(TAG, "Rok: " + Integer.valueOf(rok));
-
         HttpConnect con = new HttpConnect(siteIn + rodzajStudiow);
         String site = null;
 
@@ -48,13 +45,13 @@ public class PlanDownloader {
         // przydzielana to co jest nie tak?
         try {
             site = con.getPage();
-            Log.d(TAG, "Polaczono ze strona");
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
 
         if ("" == site) {
             Log.e(TAG, "Error con.getStrona()");
+            return null;
         }
 
         // wybor kierunku i roku
@@ -84,7 +81,6 @@ public class PlanDownloader {
         while (m.find()) {
             outputTab[i] = m.group().subSequence(1, m.group().indexOf(".pdf"))
                     .toString();
-            Log.d(TAG, outputTab[i]);
             i++;
         }
         return outputTab;
