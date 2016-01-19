@@ -65,4 +65,6 @@
     <string name="application_settings">Uygulama ayarları</string>
     <string name="timetable_settings">Ders programı</string>
 
+    <string name="data_not_available">Veri yok</string>
+
 </resources>
