@@ -1,4 +1,4 @@
-package pl.edu.zut.mad.appwizut2.utils;
+package pl.edu.zut.mad.appwizut2.views;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
