@@ -39,7 +39,8 @@ public class Constants {
             new BusStop("60", " Klonowica Zajezdnia -> Stocznia Szczecińska", 230967),
             new BusStop("75", " Klonowica Zajezdnia -> Dworzec Główny", 227431),
             new BusStop("75", " Klonowica Zajezdnia -> Krzekowo", 231628),
-            new BusStop("80", " Klonowica Zajezdnia -> Rugiańska", 227604)
+            new BusStop("80", " Klonowica Zajezdnia -> Rugiańska", 227604),
+            new BusStop("105", " Klonowica Zajezdnia -> Dobra Osiedle", 292001)
     };
 
     /**
