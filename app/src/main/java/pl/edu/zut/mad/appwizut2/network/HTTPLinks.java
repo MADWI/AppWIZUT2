@@ -14,4 +14,9 @@ public class HTTPLinks {
      * JSON
      */
     public static final String WEEK_PARITY = "http://wi.zut.edu.pl/components/com_kalendarztygodni/zapis.json";
+
+    public static final String PLAN_CHANGES = "http://wi.zut.edu.pl/plan-zajec/zmiany-w-planie?format=json";
+    public static final String ANNOUNCEMENTS = "http://wi.zut.edu.pl/ogloszenia?format=json";
+    public static final String EVENTS = "http://wi.zut.edu.pl/kalendarz?format=json";
+    public static final String NEWS = "http://wi.zut.edu.pl/aktualnosci?format=json";
 }
