@@ -1,4 +1,4 @@
-package pl.edu.zut.mad.appwizut2.network;
+package pl.edu.zut.mad.appwizut2.utils;
 
 import java.io.Closeable;
 import java.io.IOException;
