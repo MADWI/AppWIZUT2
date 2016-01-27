@@ -2,6 +2,8 @@ package pl.edu.zut.mad.appwizut2.utils;
 
 import android.content.Context;
 
+import java.text.SimpleDateFormat;
+
 import pl.edu.zut.mad.appwizut2.models.BusStop;
 
 public class Constants {
@@ -47,4 +49,25 @@ public class Constants {
      * Number of upcoming departures displayed on bus timetable
      */
     public static final int DISPLAYED_DEPARTURES_COUNT = 7;
+
+
+    /**
+     * Name of preference for studies type
+     *
+     * "Stacjonarne" or "Niestacjonarne"
+     */
+    public static final String PREF_STUDIES_TYPE = "type";
+
+    /**
+     * Name of preference for group name
+     *
+     * eg. "I1-110"
+     */
+    public static final String PREF_GROUP = "group";
+
+
+    /** calendar - for format dates */
+    public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault());
+    public static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault());
+    public static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
 }

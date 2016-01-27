@@ -33,7 +33,7 @@ import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
 import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
-import pl.edu.zut.mad.appwizut2.utils.Constans;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -203,9 +203,9 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         @Override
         public void onSelectDate(Date date, View view) {
 
-            strDate = Constans.FOR_EVENTS_FORMATTER.format(date);
+            strDate = Constants.FOR_EVENTS_FORMATTER.format(date);
             updateEventsInDay();
-            clickedDate.setText("Wydarzenia " + Constans.REVERSED_FORMATTER.format(date));
+            clickedDate.setText("Wydarzenia " + Constants.REVERSED_FORMATTER.format(date));
         }
     };
 
@@ -214,7 +214,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     public Date ParseDate(String date_str) {
         Date dateStr = null;
         try {
-            dateStr = Constans.FORMATTER.parse(date_str);
+            dateStr = Constants.FORMATTER.parse(date_str);
         } catch (ParseException e) {
             e.printStackTrace();
         }

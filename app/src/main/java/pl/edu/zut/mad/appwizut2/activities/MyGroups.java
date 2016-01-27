@@ -3,8 +3,8 @@ package pl.edu.zut.mad.appwizut2.activities;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.HttpConnect;
-import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.network.PlanDownloader;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 import android.app.Activity;
 import android.preference.PreferenceManager;
@@ -15,7 +15,6 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -159,10 +158,10 @@ public class MyGroups extends Activity implements OnClickListener {
 
                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
-                    editor.putString(Constans.PREF_GROUP,
+                    editor.putString(Constants.PREF_GROUP,
                             spinGroup.getSelectedItem().toString());
 
-                    editor.putString(Constans.PREF_STUDIES_TYPE,
+                    editor.putString(Constants.PREF_STUDIES_TYPE,
                             spinType.getSelectedItem().toString());
 
                     editor.apply();
