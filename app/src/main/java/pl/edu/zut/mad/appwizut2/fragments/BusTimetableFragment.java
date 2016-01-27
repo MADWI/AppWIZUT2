@@ -22,7 +22,7 @@ import java.util.Map;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.BusHours;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
-import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader2;
+import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
@@ -36,7 +36,7 @@ public class BusTimetableFragment extends ListFragment implements SwipeRefreshLa
     private ProgressBar mProgressBar;
     private View mDataNotAvailableView;
 
-    private BusTimetableLoader2 mLoader;
+    private BusTimetableLoader mLoader;
 
     /** Keys for Map used by {@link SimpleAdapter} */
     private static final String TAG_FROM_TO = "type";
@@ -56,7 +56,7 @@ public class BusTimetableFragment extends ListFragment implements SwipeRefreshLa
         mDataNotAvailableView = view.findViewById(R.id.data_not_available);
 
         // Create and register loader
-        mLoader = DataLoadingManager.getInstance(getContext()).getLoader(BusTimetableLoader2.class);
+        mLoader = DataLoadingManager.getInstance(getContext()).getLoader(BusTimetableLoader.class);
         mLoader.registerAndLoad(this);
         return view;
     }
