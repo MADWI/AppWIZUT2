@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.utils.FoldableTextView;
+import pl.edu.zut.mad.appwizut2.views.FoldableTextView;
 
 /**
  * Created by macko on 04.11.2015.

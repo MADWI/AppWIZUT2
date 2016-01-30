@@ -63,13 +63,6 @@ public class HttpConnect {
     }
 
     /**
-     * @deprecated Don't provide timeout (this constructor ignores it anyway)
-     */
-    public HttpConnect(int timeout, String address) {
-        this(address);
-    }
-
-    /**
      * Only get resource if it's newer than provided date
      */
     public void ifModifiedSince(long lastModified) {

@@ -9,10 +9,10 @@ import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidGridAdapter;
 
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import hirondelle.date4j.DateTime;
+import pl.edu.zut.mad.appwizut2.views.EventsIndicatorView;
 
 /**
  * Created by Marcin on 2015-11-16.

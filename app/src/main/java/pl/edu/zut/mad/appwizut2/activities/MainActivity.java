@@ -3,9 +3,6 @@ package pl.edu.zut.mad.appwizut2.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -17,10 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -34,7 +29,7 @@ import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
-import pl.edu.zut.mad.appwizut2.utils.Constans;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 
 public class MainActivity extends AppCompatActivity
@@ -254,9 +249,9 @@ public class MainActivity extends AppCompatActivity
             if (dayParities == null) {
                 return;
             }
-            String todayStr = Constans.FOR_EVENTS_FORMATTER.format(new Date());
+            String todayStr = Constants.FOR_EVENTS_FORMATTER.format(new Date());
             for (DayParity checkedParity : dayParities) {
-                if (todayStr.equals(Constans.FOR_EVENTS_FORMATTER.format(checkedParity.getDate()))) {
+                if (todayStr.equals(Constants.FOR_EVENTS_FORMATTER.format(checkedParity.getDate()))) {
                     mTodayParity = checkedParity.getParity();
                     break;
                 }

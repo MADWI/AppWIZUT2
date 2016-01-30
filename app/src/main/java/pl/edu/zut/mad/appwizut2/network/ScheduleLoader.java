@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.models.Timetable;
-import pl.edu.zut.mad.appwizut2.utils.Constans;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
@@ -122,8 +121,8 @@ public class ScheduleLoader extends BaseDataLoader<Timetable, ScheduleLoader.Raw
     @Nullable
     static String getGroupFromSettings(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String type = prefs.getString(Constans.PREF_STUDIES_TYPE, null);
-        String group = prefs.getString(Constans.PREF_GROUP, null);
+        String type = prefs.getString(Constants.PREF_STUDIES_TYPE, null);
+        String group = prefs.getString(Constants.PREF_GROUP, null);
 
         if (type == null || group == null) {
             return null;

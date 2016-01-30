@@ -27,7 +27,7 @@ import pl.edu.zut.mad.appwizut2.utils.Constants;
 /**
  * Data loader for loading data about bus departures from bus.avris.it
  */
-public class BusTimetableLoader2 extends BaseDataLoader<List<BusHours>, BusTimetableLoader2.CachedData> {
+public class BusTimetableLoader extends BaseDataLoader<List<BusHours>, BusTimetableLoader.CachedData> {
 
     private static final String TAG = "BusTimetableLoader2";
 
@@ -39,7 +39,7 @@ public class BusTimetableLoader2 extends BaseDataLoader<List<BusHours>, BusTimet
 
     private static final Pattern MINUTE_PATTERN = Pattern.compile("\\D*(\\d+)\\D*");
 
-    BusTimetableLoader2(DataLoadingManager loadingManager) {
+    BusTimetableLoader(DataLoadingManager loadingManager) {
         super(loadingManager);
     }
 

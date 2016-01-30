@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:gravity="bottom|start" />
 
-    <pl.edu.zut.mad.appwizut2.EventsIndicatorView
+    <pl.edu.zut.mad.appwizut2.views.EventsIndicatorView
         android:id="@+id/events_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

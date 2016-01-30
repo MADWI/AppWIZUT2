@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
-import pl.edu.zut.mad.appwizut2.utils.HTTPLinks;
 
 /**
  * Loader for events feed

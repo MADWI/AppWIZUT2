@@ -1,10 +1,12 @@
-package pl.edu.zut.mad.appwizut2;
+package pl.edu.zut.mad.appwizut2.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
+
+import pl.edu.zut.mad.appwizut2.R;
 
 /**
  * View showing lines indicating an events in the day cell

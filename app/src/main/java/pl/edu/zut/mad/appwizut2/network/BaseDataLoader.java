@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import pl.edu.zut.mad.appwizut2.utils.IoUtils;
+
 /**
  * Helper class for loading data from network and caching it
  *

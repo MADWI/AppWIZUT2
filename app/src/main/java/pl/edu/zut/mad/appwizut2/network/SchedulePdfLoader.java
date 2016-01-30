@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import pl.edu.zut.mad.appwizut2.utils.Constants;
+import pl.edu.zut.mad.appwizut2.utils.IoUtils;
 
 /**
  * Loader for downloading pdf with schedule
