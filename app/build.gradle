@@ -8,8 +8,8 @@ android {
         applicationId "pl.edu.zut.mad.appwizut2"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "1.01"
     }
     buildTypes {
         release {
