@@ -2,6 +2,8 @@ package pl.edu.zut.mad.appwizut2.models;
 
 import java.io.Serializable;
 
+import pl.edu.zut.mad.appwizut2.utils.MyTextUtils;
+
 /**
  * Created by macko on 04.11.2015.
  */
@@ -38,9 +40,8 @@ public class ListItemContainer implements Serializable {
 
     public String getAuthor() {return author; }
 
-    public String getBody() {
-        String bodyNoImg = body.replaceAll("<img.+?>", "");
-        return bodyNoImg;
+    public CharSequence getBody() {
+        return MyTextUtils.fromHtmlAndClean(body);
     }
 
     public String getId() {
