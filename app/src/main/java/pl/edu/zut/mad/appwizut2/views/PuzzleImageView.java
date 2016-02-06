@@ -185,8 +185,9 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
         canvas.save();
         canvas.translate(getPaddingLeft(), getPaddingTop());
 
-        // Draw image
+
         if (!isPuzzled()) {
+            // Draw whole not-puzzled image
             canvas.save();
             if (mNotPuzzledClipPath != null) {
                 canvas.clipPath(mNotPuzzledClipPath);
@@ -194,78 +195,9 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
             canvas.concat(matrix);
             drawable.draw(canvas);
             canvas.restore();
-        }
 
-        if (isTriggered()) {
-            if (isPuzzled()) {
-                // Draw puzzled elements
-
-                int piecesX = getPiecesX();
-                int piecesY = getPiecesY();
-
-                int pieceWidth = viewWidth / piecesX;
-                int pieceHeight = viewHeight / piecesY;
-
-                for (int i = 0; i < mPiecePositions.length; i++) {
-                    byte piecePosition = mPiecePositions[i];
-                    if (piecePosition == EMPTY_FIELD) {
-                        continue;
-                    }
-
-                    // Calculate positions
-                    int viewX = i % piecesX;
-                    int viewY = i / piecesX;
-                    int imageX = piecePosition % piecesX;
-                    int imageY = piecePosition / piecesX;
-
-
-                    int piecePositionX = viewX * pieceWidth;
-                    int piecePositionY = viewY * pieceHeight;
-
-                    if (mCurrentlyMovedPieceDirection != null && i == mCurrentlyMovedPiecePos) {
-                        switch (mCurrentlyMovedPieceDirection) {
-                            case LEFT:
-                                piecePositionX += (mMoveXOffset < -pieceWidth ? -pieceWidth : mMoveXOffset);
-                                break;
-                            case RIGHT:
-                                piecePositionX += (mMoveXOffset > pieceWidth ? pieceWidth : mMoveXOffset);
-                                break;
-                            case UP:
-                                piecePositionY += (mMoveYOffset < -pieceHeight ? -pieceHeight : mMoveYOffset);
-                                break;
-                            case DOWN:
-                                piecePositionY += (mMoveYOffset > pieceHeight ? pieceHeight : mMoveYOffset);
-                                break;
-                        }
-                    }
-
-                    // Draw the piece
-                    canvas.save();
-                    canvas.clipRect(
-                            piecePositionX,
-                            piecePositionY,
-                            piecePositionX + pieceWidth,
-                            piecePositionY + pieceHeight
-                    );
-                    canvas.translate(
-                            piecePositionX - imageX * pieceWidth,
-                            piecePositionY - imageY * pieceHeight
-                    );
-                    canvas.concat(matrix);
-                    drawable.draw(canvas);
-                    canvas.restore();
-
-                    // Draw overlay
-                    canvas.drawRect(
-                            piecePositionX,
-                            piecePositionY,
-                            piecePositionX + pieceWidth,
-                            piecePositionY + pieceHeight,
-                            mSeparatorLinesPaint
-                    );
-                }
-            } else {
-                // Draw size choosing lines
+            // Draw size choosing lines
+            if (isTriggered()) {
                 float currentScaleWithFraction = getCurrentScaleWithFraction();
 
                 // Split by X (vertical lines)
@@ -285,6 +217,73 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
                     float offset = (i + 1) * linesOffset;
                     canvas.drawLine(0, offset, viewWidth, offset, mSeparatorLinesPaint);
                 }
+            }
+        } else {
+            // Draw puzzle elements
+
+            int piecesX = getPiecesX();
+            int piecesY = getPiecesY();
+
+            int pieceWidth = viewWidth / piecesX;
+            int pieceHeight = viewHeight / piecesY;
+
+            for (int i = 0; i < mPiecePositions.length; i++) {
+                byte piecePosition = mPiecePositions[i];
+                if (piecePosition == EMPTY_FIELD) {
+                    continue;
+                }
+
+                // Calculate positions
+                int viewX = i % piecesX;
+                int viewY = i / piecesX;
+                int imageX = piecePosition % piecesX;
+                int imageY = piecePosition / piecesX;
+
+
+                int piecePositionX = viewX * pieceWidth;
+                int piecePositionY = viewY * pieceHeight;
+
+                if (mCurrentlyMovedPieceDirection != null && i == mCurrentlyMovedPiecePos) {
+                    switch (mCurrentlyMovedPieceDirection) {
+                        case LEFT:
+                            piecePositionX += (mMoveXOffset < -pieceWidth ? -pieceWidth : mMoveXOffset);
+                            break;
+                        case RIGHT:
+                            piecePositionX += (mMoveXOffset > pieceWidth ? pieceWidth : mMoveXOffset);
+                            break;
+                        case UP:
+                            piecePositionY += (mMoveYOffset < -pieceHeight ? -pieceHeight : mMoveYOffset);
+                            break;
+                        case DOWN:
+                            piecePositionY += (mMoveYOffset > pieceHeight ? pieceHeight : mMoveYOffset);
+                            break;
+                    }
+                }
+
+                // Draw the piece
+                canvas.save();
+                canvas.clipRect(
+                        piecePositionX,
+                        piecePositionY,
+                        piecePositionX + pieceWidth,
+                        piecePositionY + pieceHeight
+                );
+                canvas.translate(
+                        piecePositionX - imageX * pieceWidth,
+                        piecePositionY - imageY * pieceHeight
+                );
+                canvas.concat(matrix);
+                drawable.draw(canvas);
+                canvas.restore();
+
+                // Draw overlay
+                canvas.drawRect(
+                        piecePositionX,
+                        piecePositionY,
+                        piecePositionX + pieceWidth,
+                        piecePositionY + pieceHeight,
+                        mSeparatorLinesPaint
+                );
             }
         }
 
