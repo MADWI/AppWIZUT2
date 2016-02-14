@@ -1,23 +1,21 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.support.v4.util.ArrayMap;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.BusHours;
@@ -29,19 +27,15 @@ import pl.edu.zut.mad.appwizut2.utils.Constants;
 /**
  * Created by barto on 23/11/2015.
  */
-public class BusTimetableFragment extends ListFragment implements SwipeRefreshLayout.OnRefreshListener, BaseDataLoader.DataLoadedListener<List<BusHours>> {
+public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, BaseDataLoader.DataLoadedListener<List<BusHours>> {
 
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
     private View mDataNotAvailableView;
+    private RecyclerView mRecyclerView;
 
     private BusTimetableLoader mLoader;
-
-    /** Keys for Map used by {@link SimpleAdapter} */
-    private static final String TAG_FROM_TO = "type";
-    private static final String TAG_LINE_NUMBER = "line";
-    private static final String TAG_HOUR_INFO = "hour_info";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,6 +48,8 @@ public class BusTimetableFragment extends ListFragment implements SwipeRefreshLa
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mProgressBar = (ProgressBar) view.findViewById(R.id.item_list_progress_bar);
         mDataNotAvailableView = view.findViewById(R.id.data_not_available);
+        mRecyclerView = (RecyclerView) view.findViewById(android.R.id.list);
+        mRecyclerView.setHasFixedSize(true);
 
         // Create and register loader
         mLoader = DataLoadingManager.getInstance(getContext()).getLoader(BusTimetableLoader.class);
@@ -91,7 +87,7 @@ public class BusTimetableFragment extends ListFragment implements SwipeRefreshLa
         int currentMinute = today.get(Calendar.HOUR_OF_DAY) * 60 + today.get(Calendar.MINUTE);
 
 
-        List<Map<String, String>> departuresForDisplay = new ArrayList<>();
+        List<BusInfo> departuresForDisplay = new ArrayList<>();
         for (BusHours busHours : buses) {
             int[] rawDepartures = busHours.getHoursForDay(today);
             if (rawDepartures == null) {
@@ -122,23 +118,65 @@ public class BusTimetableFragment extends ListFragment implements SwipeRefreshLa
             // TODO: Do we want to show next day upcoming departures here?
 
             // Wrap results for display
-            ArrayMap<String, String> busForDisplay = new ArrayMap<>();
-            busForDisplay.put(TAG_LINE_NUMBER, busHours.getStop().getLineName());
-            busForDisplay.put(TAG_FROM_TO, busHours.getStop().getFromTo());
-            busForDisplay.put(TAG_HOUR_INFO, departureHours.toString());
+            BusInfo busForDisplay = new BusInfo();
+            busForDisplay.line = busHours.getStop().getLineName();
+            busForDisplay.fromTo = busHours.getStop().getFromTo();
+            busForDisplay.hourInfo = departureHours.toString();
             departuresForDisplay.add(busForDisplay);
         }
 
         // Put results in ListView
-        ListAdapter adapter = new SimpleAdapter(
-                getActivity(),
-                departuresForDisplay,
-                R.layout.bus_timetable_layout,
-                new String[]{TAG_LINE_NUMBER, TAG_FROM_TO, TAG_HOUR_INFO},
-                new int[]{R.id.line, R.id.type, R.id.hour}
-        );
-
-        setListAdapter(adapter);
+        mRecyclerView.setAdapter(new BusAdapter(departuresForDisplay));
         clearProgressBar();
+    }
+
+    private static class BusInfo {
+        String line;
+        String fromTo;
+        String hourInfo;
+    }
+
+    private static class BusAdapter extends RecyclerView.Adapter<BusViewHolder> {
+
+        private List<BusInfo> mItems;
+
+        public BusAdapter(List<BusInfo> items) {
+            mItems = items;
+        }
+
+        @Override
+        public BusViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new BusViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.bus_timetable_layout, parent, false)
+            );
+        }
+
+        @Override
+        public void onBindViewHolder(BusViewHolder holder, int position) {
+            BusInfo busInfo = mItems.get(position);
+            holder.mLineTextView.setText(busInfo.line);
+            holder.mFromToTextView.setText(busInfo.fromTo);
+            holder.mHoursTextView.setText(busInfo.hourInfo);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mItems.size();
+        }
+    }
+
+    private static class BusViewHolder extends RecyclerView.ViewHolder {
+
+        TextView mLineTextView;
+        TextView mFromToTextView;
+        TextView mHoursTextView;
+
+        BusViewHolder(View itemView) {
+            super(itemView);
+            mLineTextView = (TextView) itemView.findViewById(R.id.line);
+            mFromToTextView = (TextView) itemView.findViewById(R.id.type);
+            mHoursTextView = (TextView) itemView.findViewById(R.id.hour);
+        }
     }
 }
