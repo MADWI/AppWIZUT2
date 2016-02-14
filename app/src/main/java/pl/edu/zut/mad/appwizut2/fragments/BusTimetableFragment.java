@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
+import pl.edu.zut.mad.appwizut2.utils.SelectedBuses;
 
 /**
  * Created by barto on 23/11/2015.
@@ -36,6 +39,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
     private RecyclerView mRecyclerView;
 
     private BusTimetableLoader mLoader;
+    private final BusAdapter mAdapter = new BusAdapter();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,7 +53,12 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
         mProgressBar = (ProgressBar) view.findViewById(R.id.item_list_progress_bar);
         mDataNotAvailableView = view.findViewById(R.id.data_not_available);
         mRecyclerView = (RecyclerView) view.findViewById(android.R.id.list);
+
+        // Configure RecyclerView
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setAdapter(mAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(new TouchHelperCallback());
+        touchHelper.attachToRecyclerView(mRecyclerView);
 
         // Create and register loader
         mLoader = DataLoadingManager.getInstance(getContext()).getLoader(BusTimetableLoader.class);
@@ -119,6 +128,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
 
             // Wrap results for display
             BusInfo busForDisplay = new BusInfo();
+            busForDisplay.idInApi = busHours.getStop().getIdInApi();
             busForDisplay.line = busHours.getStop().getLineName();
             busForDisplay.fromTo = busHours.getStop().getFromTo();
             busForDisplay.hourInfo = departureHours.toString();
@@ -126,11 +136,14 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
         }
 
         // Put results in ListView
-        mRecyclerView.setAdapter(new BusAdapter(departuresForDisplay));
+        mAdapter.mItems = departuresForDisplay;
+        mAdapter.notifyDataSetChanged();
+
         clearProgressBar();
     }
 
     private static class BusInfo {
+        int idInApi;
         String line;
         String fromTo;
         String hourInfo;
@@ -138,11 +151,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
 
     private static class BusAdapter extends RecyclerView.Adapter<BusViewHolder> {
 
-        private List<BusInfo> mItems;
-
-        public BusAdapter(List<BusInfo> items) {
-            mItems = items;
-        }
+        List<BusInfo> mItems = Collections.emptyList();
 
         @Override
         public BusViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -155,6 +164,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
         @Override
         public void onBindViewHolder(BusViewHolder holder, int position) {
             BusInfo busInfo = mItems.get(position);
+            holder.mBusIdInApi = busInfo.idInApi;
             holder.mLineTextView.setText(busInfo.line);
             holder.mFromToTextView.setText(busInfo.fromTo);
             holder.mHoursTextView.setText(busInfo.hourInfo);
@@ -168,6 +178,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
 
     private static class BusViewHolder extends RecyclerView.ViewHolder {
 
+        int mBusIdInApi;
         TextView mLineTextView;
         TextView mFromToTextView;
         TextView mHoursTextView;
@@ -177,6 +188,35 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
             mLineTextView = (TextView) itemView.findViewById(R.id.line);
             mFromToTextView = (TextView) itemView.findViewById(R.id.type);
             mHoursTextView = (TextView) itemView.findViewById(R.id.hour);
+        }
+    }
+
+    private class TouchHelperCallback extends ItemTouchHelper.Callback {
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            // Move in displayed list
+            int fromPosition = viewHolder.getAdapterPosition();
+            int toPosition = target.getAdapterPosition();
+            Collections.swap(mAdapter.mItems, fromPosition, toPosition);
+            mAdapter.notifyItemMoved(fromPosition, toPosition);
+
+            // Move in underlying list used by loader
+            SelectedBuses.moveBusInList(
+                    getContext(),
+                    ((BusViewHolder) viewHolder).mBusIdInApi,
+                    ((BusViewHolder) target).mBusIdInApi
+            );
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            // Not currently supported
         }
     }
 }

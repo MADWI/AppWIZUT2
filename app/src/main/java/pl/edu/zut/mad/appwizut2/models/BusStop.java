@@ -1,5 +1,8 @@
 package pl.edu.zut.mad.appwizut2.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Information about bus stop that are choosen once and not updated on refresh
  * (that is, not hours when bus arrives)
@@ -35,5 +38,32 @@ public class BusStop {
 
     public String getFromTo() {
         return mLineFromTo;
+    }
+
+
+
+    public JSONObject toJsonObject() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("idInApi", mIdInApi);
+        json.put("lineName", mLineName);
+        json.put("lineFromTo", mLineFromTo);
+        return json;
+    }
+
+    public BusStop(JSONObject json) throws JSONException {
+        mIdInApi = json.getInt("idInApi");
+        mLineName = json.getString("lineName");
+        mLineFromTo = json.getString("lineFromTo");
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof BusStop) && (((BusStop) o).mIdInApi == mIdInApi);
+    }
+
+    @Override
+    public int hashCode() {
+        return mIdInApi;
     }
 }
