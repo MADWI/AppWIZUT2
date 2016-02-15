@@ -17,14 +17,17 @@ public class BusStop {
     /** aka. line number */
     private final String mLineName;
 
-    /** "This stop name -> Final stop name" */
-    // TODO: Split into two fields?
-    private final String mLineFromTo;
+    /** This stop name */
+    private final String mStopName;
+
+    /** Final stop name */
+    private final String mDestinationName;
 
 
-    public BusStop(String lineName, String lineFromTo, int idInApi) {
+    public BusStop(String lineName, String stopName, String destinationName, int idInApi) {
         mLineName = lineName;
-        mLineFromTo = lineFromTo;
+        mStopName = stopName;
+        mDestinationName = destinationName;
         mIdInApi = idInApi;
     }
 
@@ -36,8 +39,12 @@ public class BusStop {
         return mLineName;
     }
 
+    public String getStopName() {
+        return mStopName;
+    }
+
     public String getFromTo() {
-        return mLineFromTo;
+        return mStopName + " -> " + mDestinationName;
     }
 
 
@@ -46,14 +53,16 @@ public class BusStop {
         JSONObject json = new JSONObject();
         json.put("idInApi", mIdInApi);
         json.put("lineName", mLineName);
-        json.put("lineFromTo", mLineFromTo);
+        json.put("stopName", mStopName);
+        json.put("destinationName", mDestinationName);
         return json;
     }
 
     public BusStop(JSONObject json) throws JSONException {
         mIdInApi = json.getInt("idInApi");
         mLineName = json.getString("lineName");
-        mLineFromTo = json.getString("lineFromTo");
+        mStopName = json.getString("stopName");
+        mDestinationName = json.getString("destinationName");
     }
 
 

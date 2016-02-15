@@ -93,7 +93,7 @@ public class AddBusChooseStopFragment extends DialogFragment {
             } else {
                 // Button
                 BusStop busStop = (BusStop) item;
-                text = busStop.getFromTo();
+                text = busStop.getStopName();
                 ((StopButtonVH) holder).mBusStop = busStop;
             }
             ((TextView) holder.itemView).setText(text);
@@ -167,7 +167,8 @@ public class AddBusChooseStopFragment extends DialogFragment {
                         // TODO: Normalize case
                         result.add(new BusStop(
                                 lineName,
-                                stopJson.getString("name") + " -> " + destinationName,
+                                stopJson.getString("name"),
+                                destinationName,
                                 stopJson.getInt("id")
                         ));
                     }

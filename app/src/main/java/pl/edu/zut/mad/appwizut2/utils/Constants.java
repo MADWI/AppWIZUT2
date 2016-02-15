@@ -32,17 +32,17 @@ public class Constants {
      * Default bus stops
      */
     public static final BusStop[] DEFAULT_BUS_STOPS = new BusStop[]{
-            new BusStop("4", " Żołnierska -> Pomorzany", 226059),
-            new BusStop("5", " Żołnierska -> Stocznia Szczecińska", 226112),
-            new BusStop("7", " Żołnierska -> Basen Górniczy", 226179),
-            new BusStop("53", " Klonowica Zajezdnia -> Stocznia Szczecińska", 226503),
-            new BusStop("53", " Klonowica Zajezdnia -> Pomorzany Dobrzyńska", 230637),
-            new BusStop("60", " Żołnierska -> Cukrowa", 226769),
-            new BusStop("60", " Klonowica Zajezdnia -> Stocznia Szczecińska", 230967),
-            new BusStop("75", " Klonowica Zajezdnia -> Dworzec Główny", 227431),
-            new BusStop("75", " Klonowica Zajezdnia -> Krzekowo", 231628),
-            new BusStop("80", " Klonowica Zajezdnia -> Rugiańska", 227604),
-            new BusStop("105", " Klonowica Zajezdnia -> Dobra Osiedle", 292001)
+            new BusStop("4", " Żołnierska", "Pomorzany", 226059),
+            new BusStop("5", " Żołnierska", "Stocznia Szczecińska", 226112),
+            new BusStop("7", " Żołnierska", "Basen Górniczy", 226179),
+            new BusStop("53", " Klonowica Zajezdnia", "Stocznia Szczecińska", 226503),
+            new BusStop("53", " Klonowica Zajezdnia", "Pomorzany Dobrzyńska", 230637),
+            new BusStop("60", " Żołnierska", "Cukrowa", 226769),
+            new BusStop("60", " Klonowica Zajezdnia", "Stocznia Szczecińska", 230967),
+            new BusStop("75", " Klonowica Zajezdnia", "Dworzec Główny", 227431),
+            new BusStop("75", " Klonowica Zajezdnia", "Krzekowo", 231628),
+            new BusStop("80", " Klonowica Zajezdnia", "Rugiańska", 227604),
+            new BusStop("105", " Klonowica Zajezdnia", "Dobra Osiedle", 292001)
     };
 
     /**
