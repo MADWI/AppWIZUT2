@@ -135,4 +135,57 @@ public class SelectedBuses {
         // Put in settings
         saveBusStops(context, busStops);
     }
+
+    /**
+     * Remove bus from list
+     *
+     * @param removedStopId {@link BusStop#getIdInApi()} of bus being removed
+     */
+    public static void removeBusStop(Context context, int removedStopId) {
+        // Read old stops
+        BusStop[] oldBusStops = getBusStops(context);
+        int oldLength = oldBusStops.length;
+
+        // Translate id to position
+        int removeFromPosition = findStopWithId(oldBusStops, removedStopId);
+
+        if (removeFromPosition == -1) {
+            Log.e(TAG, "Cannot remove bus");
+            return;
+        }
+
+        // Shrink array
+        BusStop[] busStops = new BusStop[oldLength - 1];
+        System.arraycopy(oldBusStops, 0, busStops, 0, removeFromPosition);
+        System.arraycopy(oldBusStops, removeFromPosition + 1, busStops, removeFromPosition, oldLength - removeFromPosition - 1);
+
+        // Put in settings
+        saveBusStops(context, busStops);
+    }
+
+    /**
+     * Helper class to save state of buses and restore it
+     */
+    public static class Reverter {
+        private final SharedPreferences mPreferences;
+        private final String mOriginalValue;
+
+        /**
+         * Create Reverter and save setting value
+         */
+        public Reverter(Context context) {
+            mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+            mOriginalValue = mPreferences.getString(PREF_BUSES, "");
+        }
+
+        /**
+         * Revert setting to state at constructor call
+         */
+        public void revert() {
+            mPreferences
+                    .edit()
+                    .putString(PREF_BUSES, mOriginalValue)
+                    .apply();
+        }
+    }
 }

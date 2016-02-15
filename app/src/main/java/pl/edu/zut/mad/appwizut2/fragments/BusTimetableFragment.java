@@ -2,6 +2,7 @@ package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
 
     private BusTimetableLoader mLoader;
     private final BusAdapter mAdapter = new BusAdapter();
+    private Snackbar mSnackbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,6 +82,11 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
     public void onDestroyView() {
         // Unregister from loader
         mLoader.unregister(this);
+
+        // Dismiss Snackbar
+        if (mSnackbar != null && isRemoving()) {
+            mSnackbar.dismiss();
+        }
         super.onDestroyView();
     }
 
@@ -164,6 +171,11 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
         mAdapter.notifyDataSetChanged();
 
         clearProgressBar();
+
+        // Dismiss Snackbar
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
+        }
     }
 
     private static class BusInfo {
@@ -218,7 +230,12 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
     private class TouchHelperCallback extends ItemTouchHelper.Callback {
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+            return makeMovementFlags(
+                    // Drag
+                    ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                    // Swipe away (But only if there are at least two items, to not make list empty)
+                    mAdapter.mItems.size() >= 2 ? ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT : 0
+            );
         }
 
         @Override
@@ -235,12 +252,50 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
                     ((BusViewHolder) viewHolder).mBusIdInApi,
                     ((BusViewHolder) target).mBusIdInApi
             );
+
+            // Dismiss Snackbar
+            if (mSnackbar != null) {
+                mSnackbar.dismiss();
+            }
             return true;
         }
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             // Not currently supported
+            final int position = viewHolder.getAdapterPosition();
+
+            // Back-up for undo
+            final ArrayList<BusInfo> oldList = new ArrayList<>(mAdapter.mItems);
+            final SelectedBuses.Reverter reverter = new SelectedBuses.Reverter(getContext());
+
+            // Remove
+            mAdapter.mItems.remove(position);
+            mAdapter.notifyItemRemoved(position);
+            SelectedBuses.removeBusStop(getContext(), ((BusViewHolder) viewHolder).mBusIdInApi);
+
+            // Show undo action
+            mSnackbar = Snackbar
+                    // TODO: Extract strings
+                    .make(mRecyclerView, "Removed from list [TODO: Extract string]", Snackbar.LENGTH_LONG)
+                    .setAction("Undo", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Undo remove
+                            mAdapter.mItems = oldList;
+                            mAdapter.notifyItemInserted(position);
+                            reverter.revert();
+                        }
+                    })
+                    .setCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            if (mSnackbar == snackbar) {
+                                mSnackbar = null;
+                            }
+                        }
+                    });
+            mSnackbar.show();
         }
     }
 }
