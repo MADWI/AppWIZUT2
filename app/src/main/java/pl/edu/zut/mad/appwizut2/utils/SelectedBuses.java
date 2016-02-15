@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import pl.edu.zut.mad.appwizut2.models.BusStop;
+import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 
 /**
  * Class managing list of selected buses
@@ -108,6 +109,28 @@ public class SelectedBuses {
             System.arraycopy(busStops, takeFromPosition + 1, busStops, takeFromPosition, putAtPosition - takeFromPosition);
         }
         busStops[putAtPosition] = movedStop;
+
+        // Put in settings
+        saveBusStops(context, busStops);
+    }
+
+    /**
+     * Add new bus stop to list
+     *
+     * Note: this doesn't trigger refresh,
+     *       you'll need to call {@link BusTimetableLoader#requestRefresh()} yourself
+     */
+    public static void addBusStop(Context context, BusStop newBusStop) {
+        // Read old stops
+        BusStop[] oldBusStops = getBusStops(context);
+        int oldLength = oldBusStops.length;
+
+        // TODO: Check if line already exists
+
+        // Append to array
+        BusStop[] busStops = new BusStop[oldLength + 1];
+        System.arraycopy(oldBusStops, 0, busStops, 0, oldLength);
+        busStops[oldLength] = newBusStop;
 
         // Put in settings
         saveBusStops(context, busStops);

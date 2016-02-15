@@ -1,12 +1,16 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -42,6 +46,12 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
     private final BusAdapter mAdapter = new BusAdapter();
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Set activity title
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_public_transport);
@@ -71,6 +81,20 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
         // Unregister from loader
         mLoader.unregister(this);
         super.onDestroyView();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.bus_timetable, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.add_bus) {
+            new AddBusChooseLineFragment().show(getFragmentManager(), "AddBusChoLine");
+            return true;
+        }
+        return false;
     }
 
     public void onRefresh(){

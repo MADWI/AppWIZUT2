@@ -55,7 +55,7 @@ public class BusTimetableLoader extends BaseDataLoader<List<BusHours>, BusTimeta
     /**
      * Download JSON as text from bus.avris.it api, handling their custom compression
      */
-    private static String downloadFromAvrisApi(String url) throws IOException {
+    public static String downloadFromAvrisApi(String url) throws IOException {
         if (ENABLE_COMPRESSION) {
             return new HttpConnect(url) {
                 @Override
