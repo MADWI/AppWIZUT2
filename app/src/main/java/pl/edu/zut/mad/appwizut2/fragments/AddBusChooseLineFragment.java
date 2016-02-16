@@ -1,6 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 
 /**
@@ -29,20 +32,43 @@ public class AddBusChooseLineFragment extends DialogFragment {
 
     private List<BusLine> mLines;
     private final Adapter mAdapter = new Adapter();
+    private boolean mFailed;
+    private RecyclerView mRecyclerView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         new LoadLinesTask().execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (mFailed) {
+            dismissAllowingStateLoss();
+            return null;
+        }
+        mRecyclerView = new RecyclerView(getContext());
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+        mRecyclerView.setAdapter(mAdapter);
+        return mRecyclerView;
+    }
 
-        RecyclerView recyclerView = new RecyclerView(getContext());
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
-        recyclerView.setAdapter(mAdapter);
-        return recyclerView;
+    @Override
+    public void onDestroyView() {
+        if (mRecyclerView != null) {
+            // Unregister from observer to avoid memory leak
+            mRecyclerView.setAdapter(null);
+            mRecyclerView = null;
+        }
+
+        try {
+            // Work around dismiss on rotation after setRetainInstance(true)
+            // http://stackoverflow.com/a/13596466
+            getDialog().setOnDismissListener(null);
+        } catch (Exception ignored) {}
+
+        super.onDestroyView();
     }
 
     @NonNull
@@ -152,8 +178,17 @@ public class AddBusChooseLineFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(List<BusLine> lines) {
-            mLines = lines;
-            mAdapter.notifyDataSetChanged();
+            if (lines == null) {
+                mFailed = true;
+                Context context = getContext();
+                if (context != null) {
+                    Toast.makeText(context, R.string.no_Internet, Toast.LENGTH_SHORT).show();
+                }
+                dismissAllowingStateLoss();
+            } else {
+                mLines = lines;
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 }

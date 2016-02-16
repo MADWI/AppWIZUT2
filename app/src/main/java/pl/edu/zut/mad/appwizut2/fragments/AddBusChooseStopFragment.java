@@ -1,6 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,19 +41,43 @@ public class AddBusChooseStopFragment extends DialogFragment {
 
     private final Adapter mAdapter = new Adapter();
     private List<Object> mListItems;
+    private boolean mFailed;
+    private RecyclerView mRecyclerView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         new LoadStopsTask().execute();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        RecyclerView recyclerView = new RecyclerView(getContext());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(mAdapter);
-        return recyclerView;
+        if (mFailed) {
+            dismissAllowingStateLoss();
+            return null;
+        }
+        mRecyclerView = new RecyclerView(getContext());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(mAdapter);
+        return mRecyclerView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mRecyclerView != null) {
+            // Unregister from observer to avoid memory leak
+            mRecyclerView.setAdapter(null);
+            mRecyclerView = null;
+        }
+
+        try {
+            // Work around dismiss on rotation after setRetainInstance(true)
+            // http://stackoverflow.com/a/13596466
+            getDialog().setOnDismissListener(null);
+        } catch (Exception ignored) {}
+
+        super.onDestroyView();
     }
 
     @NonNull
@@ -184,8 +210,17 @@ public class AddBusChooseStopFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(List<Object> lines) {
-            mListItems = lines;
-            mAdapter.notifyDataSetChanged();
+            if (lines == null) {
+                mFailed = true;
+                Context context = getContext();
+                if (context != null) {
+                    Toast.makeText(context, R.string.no_Internet, Toast.LENGTH_SHORT).show();
+                }
+                dismissAllowingStateLoss();
+            } else {
+                mListItems = lines;
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 }
