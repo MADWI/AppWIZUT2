@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">AppWIZUT</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -66,5 +66,15 @@
     <string name="timetable_settings">Plan</string>
 
     <string name="data_not_available">Brak danych</string>
+
+    <string name="add_bus">Dodaj przystanek</string>
+    <string name="add_bus_choose_line_title">Wybierz linię</string>
+    <string name="add_bus_choose_stop_title">Linia <xliff:g id="line" example="7">%s</xliff:g></string>
+    <string name="add_bus_direction">Kierunek: <xliff:g id="bus_destination" example="Stocznia Szczecińska">%s</xliff:g></string>
+    <string name="add_bus_added">Dodano do rozkładu</string>
+    <string name="add_bus_already_exist">Ten przystanek jest już w twoim rozkładzie</string>
+
+    <string name="remove_bus_message">Usunięto</string>
+    <string name="remove_bus_undo">Cofnij</string>
 
 </resources>

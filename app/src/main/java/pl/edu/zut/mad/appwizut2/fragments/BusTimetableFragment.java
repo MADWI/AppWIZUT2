@@ -276,9 +276,8 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
 
             // Show undo action
             mSnackbar = Snackbar
-                    // TODO: Extract strings
-                    .make(mRecyclerView, "Removed from list [TODO: Extract string]", Snackbar.LENGTH_LONG)
-                    .setAction("Undo", new View.OnClickListener() {
+                    .make(mRecyclerView, R.string.remove_bus_message, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.remove_bus_undo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // Undo remove

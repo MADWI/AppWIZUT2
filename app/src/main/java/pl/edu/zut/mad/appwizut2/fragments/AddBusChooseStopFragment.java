@@ -33,7 +33,6 @@ import pl.edu.zut.mad.appwizut2.utils.SelectedBuses;
 /**
  * Dialog for selecting bus stop on line, opened after user chooses line in {@link AddBusChooseLineFragment}
  */
-// TODO: Don't reload on rotation
 public class AddBusChooseStopFragment extends DialogFragment {
 
     public static final String ARG_LINE_NAME = "ABC-SF.lineName";
@@ -85,8 +84,7 @@ public class AddBusChooseStopFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        // TODO: Extract string (with template)
-        dialog.setTitle("[TODO: Extract string] Linia " + getArguments().getString(ARG_LINE_NAME));
+        dialog.setTitle(getString(R.string.add_bus_choose_stop_title, getArguments().getString(ARG_LINE_NAME)));
         return dialog;
     }
 
@@ -115,8 +113,8 @@ public class AddBusChooseStopFragment extends DialogFragment {
             String text;
             if (item instanceof String) {
                 // Header
-                // TODO: wrap in "Direction %s" (and extract string)
-                text = (String) item;
+                String direction = (String) item;
+                text = getString(R.string.add_bus_direction, direction);
             } else {
                 // Button
                 BusStop busStop = (BusStop) item;
@@ -150,13 +148,16 @@ public class AddBusChooseStopFragment extends DialogFragment {
 
         @Override
         public void onClick(View v) {
-            SelectedBuses.addBusStop(getContext(), mBusStop);
-            // TODO: Check if already exist (in addBusStop)
-            DataLoadingManager
-                    .getInstance(getContext())
-                    .getLoader(BusTimetableLoader.class)
-                    .requestRefresh();
-            // TODO: Acknowledge (Toast?)
+            boolean added = SelectedBuses.addBusStop(getContext(), mBusStop);
+            if (added) {
+                DataLoadingManager
+                        .getInstance(getContext())
+                        .getLoader(BusTimetableLoader.class)
+                        .requestRefresh();
+                Toast.makeText(getContext(), R.string.add_bus_added, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), R.string.add_bus_already_exist, Toast.LENGTH_SHORT).show();
+            }
             dismiss();
         }
     }

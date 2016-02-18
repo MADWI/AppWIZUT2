@@ -27,7 +27,6 @@ import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 /**
  * Dialog for selecting line to add, will continue to {@link AddBusChooseStopFragment}
  */
-// TODO: Don't reload on rotation
 public class AddBusChooseLineFragment extends DialogFragment {
 
     private List<BusLine> mLines;
@@ -75,7 +74,7 @@ public class AddBusChooseLineFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.setTitle("[TODO: Extract string] Wybierz linie");
+        dialog.setTitle(R.string.add_bus_choose_line_title);
         return dialog;
     }
 

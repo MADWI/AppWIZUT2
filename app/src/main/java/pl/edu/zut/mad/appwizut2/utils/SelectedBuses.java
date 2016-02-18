@@ -120,12 +120,15 @@ public class SelectedBuses {
      * Note: this doesn't trigger refresh,
      *       you'll need to call {@link BusTimetableLoader#requestRefresh()} yourself
      */
-    public static void addBusStop(Context context, BusStop newBusStop) {
+    public static boolean addBusStop(Context context, BusStop newBusStop) {
         // Read old stops
         BusStop[] oldBusStops = getBusStops(context);
         int oldLength = oldBusStops.length;
 
-        // TODO: Check if line already exists
+        // Check if line already exists on list
+        if (findStopWithId(oldBusStops, newBusStop.getIdInApi()) != -1) {
+            return false;
+        }
 
         // Append to array
         BusStop[] busStops = new BusStop[oldLength + 1];
@@ -134,6 +137,7 @@ public class SelectedBuses {
 
         // Put in settings
         saveBusStops(context, busStops);
+        return true;
     }
 
     /**
