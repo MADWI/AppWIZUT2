@@ -27,6 +27,7 @@ import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.BusStop;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.utils.MyTextUtils;
 import pl.edu.zut.mad.appwizut2.utils.SelectedBuses;
 
 /**
@@ -181,8 +182,12 @@ public class AddBusChooseStopFragment extends DialogFragment {
                 for (int i = 0; i < directions.length(); i++) {
                     JSONArray stops = directions.getJSONArray(i);
 
-                    // TODO: Normalize case
-                    String destinationName = stops.getJSONObject(stops.length() - 1).getString("name");
+                    String destinationName =
+                            MyTextUtils.capitalizeString(
+                                    stops
+                                            .getJSONObject(stops.length() - 1)
+                                            .getString("name")
+                            );
 
                     // Add header
                     result.add(destinationName);
@@ -190,10 +195,9 @@ public class AddBusChooseStopFragment extends DialogFragment {
                     // Add stops
                     for (int j = 0; j < stops.length(); j++) {
                         JSONObject stopJson = stops.getJSONObject(j);
-                        // TODO: Normalize case
                         result.add(new BusStop(
                                 lineName,
-                                stopJson.getString("name"),
+                                MyTextUtils.capitalizeString(stopJson.getString("name")),
                                 destinationName,
                                 stopJson.getInt("id")
                         ));
