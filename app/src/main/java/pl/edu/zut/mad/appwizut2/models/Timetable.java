@@ -2,15 +2,19 @@ package pl.edu.zut.mad.appwizut2.models;
 
 
 // TODO: Better names (especially for 'Hour')
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * The timetable for a (exercise, not laboratory) group
  */
 public class Timetable {
 
-    private final Hour[][] mHours;
+    private final Day[] mDays;
 
-    public Timetable(Hour[][] hours) {
-        mHours = hours;
+    public Timetable(Day[] days) {
+        mDays = days;
     }
 
     /**
@@ -65,9 +69,6 @@ public class Timetable {
         }
 
         public String getRawWG() {
-            if ("null".equals(rawWG)) {
-                return null;
-            }
             return rawWG;
         }
 
@@ -76,8 +77,51 @@ public class Timetable {
         }
     }
 
-    public Hour[] getScheduleForDay(int day) {
-        return mHours[day];
+    public static class Day {
+        private final GregorianCalendar mDate;
+        private final Hour[] mTasks;
+
+        public Day(GregorianCalendar date, Hour[] tasks) {
+            mDate = date;
+            mTasks = tasks;
+        }
+
+        public GregorianCalendar getDate() {
+            return mDate;
+        }
+
+        public Hour[] getTasks() {
+            return mTasks;
+        }
+    }
+
+    public Day getScheduleForDay(int day) {
+        GregorianCalendar today = new GregorianCalendar();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        for (Day checkedDay : mDays) {
+            if (checkedDay == null) {
+                continue;
+            }
+            GregorianCalendar checkedDayDate = checkedDay.getDate();
+            if (!checkedDayDate.before(today) && checkedDayDate.get(Calendar.DAY_OF_WEEK) == day) {
+                return checkedDay;
+            }
+        }
+
+        // Just check weekday if day is missing
+        for (Day checkedDay : mDays) {
+            if (checkedDay == null) {
+                continue;
+            }
+            GregorianCalendar checkedDayDate = checkedDay.getDate();
+            if (checkedDayDate.get(Calendar.DAY_OF_WEEK) == day) {
+                return checkedDay;
+            }
+        }
+        return null;
     }
 
 }

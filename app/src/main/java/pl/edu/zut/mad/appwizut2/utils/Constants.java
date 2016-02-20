@@ -19,16 +19,6 @@ public class Constants {
     public static final String FILE_PROVIDER_AUTHORITY = "pl.edu.zut.mad.appwizut2.files";
 
     /**
-     * Path where parsed schedules are downloaded from
-     */
-    public static final String PARSED_SCHEDULE_URL = "http://bm29640.zut.edu.pl/parsed-schedules/PlanGrup/%s.json";
-
-    /**
-     * Path where pdf schedules are downloaded from
-     */
-    public static final String PDF_SCHEDULE_URL = "http://wi.zut.edu.pl/plan/Wydruki/PlanGrup/%s.pdf";
-
-    /**
      * Default bus stops
      */
     public static final BusStop[] DEFAULT_BUS_STOPS = new BusStop[]{
