@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -93,6 +94,18 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
                 startActivity(new Intent(getContext(), MyGroups.class));
             }
         });
+
+        // Select current page depending on current week day
+        if (savedInstanceState == null) {
+            int weekday = new GregorianCalendar().get(Calendar.DAY_OF_WEEK);
+            int tabToSelect =
+                    weekday == Calendar.TUESDAY   ? 1 :
+                    weekday == Calendar.WEDNESDAY ? 2 :
+                    weekday == Calendar.THURSDAY  ? 3 :
+                    weekday == Calendar.FRIDAY    ? 4 :
+                    0;
+            pager.setCurrentItem(tabToSelect);
+        }
 
         // Initialize loader
         mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleLoader.class);
