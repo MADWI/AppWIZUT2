@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,7 +90,7 @@ public class HttpConnect {
      * Request only part of document
      */
     public void requestRange(int fromByte, int length) {
-        mUrlConnection.setRequestProperty("Range", String.format("bytes=%d-%d", fromByte, fromByte + length));
+        mUrlConnection.setRequestProperty("Range", String.format(Locale.US, "bytes=%d-%d", fromByte, fromByte + length));
     }
 
     /**
