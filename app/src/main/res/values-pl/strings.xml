@@ -55,6 +55,7 @@
     <string name="studies_year">Rok studiów:</string>
     <string name="studies_group">Grupa:</string>
     <string name="setting_group">Grupa</string>
+    <string name="choose_group">Wybierz grupę</string>
 
     <string name="ok_button">Dalej</string>
     <string name="cancel_button">Anuluj</string>

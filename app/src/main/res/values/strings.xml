@@ -53,8 +53,10 @@
     <string name="studies_degree">Field of studies:</string>
     <string name="studies_level">Degree of studies:</string>
     <string name="studies_year">Year of studies:</string>
+    <!-- TODO: Deduplicate -->
     <string name="studies_group">Group:</string>
     <string name="setting_group">Group</string>
+    <string name="choose_group">Choose group</string>
 
     <string name="ok_button">Next</string>
     <string name="cancel_button">Cancel</string>
