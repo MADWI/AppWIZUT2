@@ -109,7 +109,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri, SchedulePdfLoader.Cac
             return null;
         }
 
-        String pdfAddress = String.format(Constants.PDF_SCHEDULE_URL, group);
+        String pdfAddress = String.format(HTTPLinks.PDF_SCHEDULE_URL, group);
         File localPdfFile = getSchedulePdfFile();
 
         // Check if schedule is up to date

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
  * Schedule for a particular day
@@ -26,6 +28,8 @@ import pl.edu.zut.mad.appwizut2.models.Timetable;
  *       (so e.g. {@link #onActivityResult(int, int, Intent)} won't work)
  */
 public class TimetableDayFragment extends Fragment {
+    private static final String TAG = "TimetableDayFragment";
+
     public static String ARG_DAY = "TDF.Day";
 
     private int mDay;
@@ -50,7 +54,14 @@ public class TimetableDayFragment extends Fragment {
     }
 
     void onScheduleAvailable(Timetable timetable) {
-        mHoursInDay = Arrays.asList(timetable.getScheduleForDay(mDay));
+        Timetable.Day scheduleDay = timetable.getScheduleForDay(mDay);
+        if (scheduleDay == null) {
+            Log.w(TAG, "Day missing in schedule");
+            return;
+        }
+        // TODO: Show this in UI?
+        Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(scheduleDay.getDate().getTime()));
+        mHoursInDay = Arrays.asList(scheduleDay.getTasks());
         mAdapter.notifyDataSetChanged();
     }
 
