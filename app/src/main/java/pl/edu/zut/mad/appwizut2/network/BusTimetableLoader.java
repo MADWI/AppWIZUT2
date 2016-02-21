@@ -22,7 +22,7 @@ import java.util.zip.InflaterInputStream;
 
 import pl.edu.zut.mad.appwizut2.models.BusHours;
 import pl.edu.zut.mad.appwizut2.models.BusStop;
-import pl.edu.zut.mad.appwizut2.utils.Constants;
+import pl.edu.zut.mad.appwizut2.utils.SelectedBuses;
 
 /**
  * Data loader for loading data about bus departures from bus.avris.it
@@ -49,14 +49,13 @@ public class BusTimetableLoader extends BaseDataLoader<List<BusHours>, BusTimeta
     }
 
     private BusStop[] getSelectedBusStops() {
-        // TODO: Load these from settings
-        return Constants.DEFAULT_BUS_STOPS;
+        return SelectedBuses.getBusStops(getContext());
     }
 
     /**
      * Download JSON as text from bus.avris.it api, handling their custom compression
      */
-    private static String downloadFromAvrisApi(String url) throws IOException {
+    public static String downloadFromAvrisApi(String url) throws IOException {
         if (ENABLE_COMPRESSION) {
             return new HttpConnect(url) {
                 @Override

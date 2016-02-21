@@ -5,5 +5,12 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+
+        <!--
+        Use system-provided Material Dialog theme instead of one from AppCompat
+        This from AppCompat doesn't have title on Android 5
+        (Through has it on Android 4)
+        -->
+        <item name="android:dialogTheme">@android:style/Theme.Material.Light.Dialog</item>
     </style>
 </resources>
