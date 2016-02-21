@@ -19,4 +19,15 @@ public class HTTPLinks {
     public static final String ANNOUNCEMENTS = "http://wi.zut.edu.pl/ogloszenia?format=json";
     public static final String EVENTS = "http://wi.zut.edu.pl/kalendarz?format=json";
     public static final String NEWS = "http://wi.zut.edu.pl/aktualnosci?format=json";
+
+
+    /**
+     * Path where parsed schedules are downloaded from
+     */
+    public static final String PARSED_SCHEDULE_URL = "http://bm29640.zut.edu.pl/parsed-schedules/PlanGrup/%s.json";
+
+    /**
+     * Path where pdf schedules are downloaded from
+     */
+    public static final String PDF_SCHEDULE_URL = "http://wi.zut.edu.pl/plan/Wydruki/PlanGrup/%s.pdf";
 }

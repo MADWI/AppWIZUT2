@@ -20,6 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -92,6 +94,18 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
                 startActivity(new Intent(getContext(), MyGroups.class));
             }
         });
+
+        // Select current page depending on current week day
+        if (savedInstanceState == null) {
+            int weekday = new GregorianCalendar().get(Calendar.DAY_OF_WEEK);
+            int tabToSelect =
+                    weekday == Calendar.TUESDAY   ? 1 :
+                    weekday == Calendar.WEDNESDAY ? 2 :
+                    weekday == Calendar.THURSDAY  ? 3 :
+                    weekday == Calendar.FRIDAY    ? 4 :
+                    0;
+            pager.setCurrentItem(tabToSelect);
+        }
 
         // Initialize loader
         mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleLoader.class);
@@ -181,7 +195,15 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
 
         @Override
         public Fragment getItem(int position) {
-            return TimetableDayFragment.newInstance(position);
+            // Map tab number to day in Calendar
+            int day =
+                    position == 0 ? Calendar.MONDAY :
+                    position == 1 ? Calendar.TUESDAY :
+                    position == 2 ? Calendar.WEDNESDAY :
+                    position == 3 ? Calendar.THURSDAY :
+                    position == 4 ? Calendar.FRIDAY : -1;
+
+            return TimetableDayFragment.newInstance(day);
         }
     }
 

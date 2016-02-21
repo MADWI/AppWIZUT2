@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,26 +12,29 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
+import pl.edu.zut.mad.appwizut2.utils.JsonUtils;
 
 /**
  * Helper class for loading schedule
  */
-// TODO: Refactor all the Loaders/OfflineHandlers/Checkers; make some common superclass
 public class ScheduleLoader extends BaseDataLoader<Timetable, ScheduleLoader.RawData> {
 
     /** Log tag */
     private static final String TAG = "ScheduleLoader";
 
     /**
-     * Value saved at beginning of cache file
-     * to avoid loading cache meant for different app version
+     * Date format in which are dates stored in calendar
      */
-    private static final int CACHE_VERSION = 1;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yy",java.util.Locale.US);
 
 
     ScheduleLoader(DataLoadingManager loadingManager) {
@@ -56,7 +60,7 @@ public class ScheduleLoader extends BaseDataLoader<Timetable, ScheduleLoader.Raw
         if (group == null) {
             return null;
         }
-        HttpConnect conn = new HttpConnect(String.format(Constants.PARSED_SCHEDULE_URL, group));
+        HttpConnect conn = new HttpConnect(String.format(HTTPLinks.PARSED_SCHEDULE_URL, group));
         if (cachedData != null) {
             conn.ifModifiedSince(cachedData.mLastModified);
         }
@@ -90,32 +94,46 @@ public class ScheduleLoader extends BaseDataLoader<Timetable, ScheduleLoader.Raw
         }
 
         // Parse days
-        JSONArray weekdaySchedulesJson = json.getJSONArray("weekdaySchedules");
-        Timetable.Hour[][] weekdaysSchedules = new Timetable.Hour[5][];
-        List<Timetable.Hour> daySchedule = new ArrayList<>();
-        for (int weekday = 0; weekday < 5; weekday++) {
-            JSONArray dayScheduleJson = weekdaySchedulesJson.getJSONArray(weekday);
-            daySchedule.clear();
+        JSONArray daySchedulesJson = json.getJSONArray("days");
+        int daysInSchedule = daySchedulesJson.length();
+        Timetable.Day[] days = new Timetable.Day[daysInSchedule];
+        List<Timetable.Hour> dayTasks = new ArrayList<>();
+        for (int dayNr = 0; dayNr < daysInSchedule; dayNr++) {
+            JSONObject dayScheduleJson = daySchedulesJson.getJSONObject(dayNr);
+            JSONArray dayTasksJson = dayScheduleJson.getJSONArray("hours");
 
+            dayTasks.clear();
             for (int hour = 0; hour < hoursCount; hour++) {
-                JSONArray tasksInHour = dayScheduleJson.getJSONArray(hour);
+                JSONArray tasksInHour = dayTasksJson.getJSONArray(hour);
                 for (int i = 0; i < tasksInHour.length(); i++) {
                     JSONObject taskJson = tasksInHour.getJSONObject(i);
-                    daySchedule.add(new Timetable.Hour(
-                            taskJson.getString("name"),
-                            taskJson.getString("type"),
-                            taskJson.getString("room"),
-                            taskJson.getString("teacher"),
-                            taskJson.getString("rawWG"),
+                    dayTasks.add(new Timetable.Hour(
+                            JsonUtils.optString(taskJson, "name"),
+                            JsonUtils.optString(taskJson, "type"),
+                            JsonUtils.optString(taskJson, "room"),
+                            JsonUtils.optString(taskJson, "teacher"),
+                            JsonUtils.optString(taskJson, "rawWG"),
                             ranges[hour]
                     ));
                 }
             }
 
-            weekdaysSchedules[weekday] = daySchedule.toArray(new Timetable.Hour[daySchedule.size()]);
+            Timetable.Hour[] tasksInDay = dayTasks.toArray(new Timetable.Hour[dayTasks.size()]);
+
+            Date date;
+            try {
+                date = DATE_FORMAT.parse(dayScheduleJson.getString("rawDate"));
+            } catch (ParseException e) {
+                Log.e(TAG, "Unable to parse date", e);
+                continue;
+            }
+            GregorianCalendar dateCal = new GregorianCalendar();
+            dateCal.setTime(date);
+
+            days[dayNr] = new Timetable.Day(dateCal, tasksInDay);
         }
 
-        return new Timetable(weekdaysSchedules);
+        return new Timetable(days);
     }
 
     @Nullable

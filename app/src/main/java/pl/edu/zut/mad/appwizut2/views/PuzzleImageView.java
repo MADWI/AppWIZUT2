@@ -1,9 +1,13 @@
 package pl.edu.zut.mad.appwizut2.views;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,6 +16,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
+
+import java.util.Random;
 
 import pl.edu.zut.mad.appwizut2.R;
 
@@ -52,6 +58,13 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
      */
     private static final byte EMPTY_FIELD = -1;
 
+    /**
+     * Clip path used when image is not in puzzled state
+     *
+     * Used for {@link #animateInLastElement()}
+     */
+    private Path mNotPuzzledClipPath;
+
     public PuzzleImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mGestureDetector = new GestureDetector(context, this);
@@ -76,6 +89,12 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
 
     private int mMoveXOffset;
     private int mMoveYOffset;
+
+    private OnSolvedListener mOnSolvedListener;
+
+    public void setOnSolvedListener(OnSolvedListener onSolvedListener) {
+        mOnSolvedListener = onSolvedListener;
+    }
 
     /**
      * Whether the view is triggered, that is we don't pretend it's plain ImageView anymore
@@ -166,84 +185,19 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
         canvas.save();
         canvas.translate(getPaddingLeft(), getPaddingTop());
 
-        // Draw image
+
         if (!isPuzzled()) {
+            // Draw whole not-puzzled image
             canvas.save();
+            if (mNotPuzzledClipPath != null) {
+                canvas.clipPath(mNotPuzzledClipPath);
+            }
             canvas.concat(matrix);
             drawable.draw(canvas);
             canvas.restore();
-        }
 
-        if (isTriggered()) {
-            if (isPuzzled()) {
-                // Draw puzzled elements
-
-                int piecesX = getPiecesX();
-                int piecesY = getPiecesY();
-
-                int pieceWidth = viewWidth / piecesX;
-                int pieceHeight = viewHeight / piecesY;
-
-                for (int i = 0; i < mPiecePositions.length; i++) {
-                    byte piecePosition = mPiecePositions[i];
-                    if (piecePosition == EMPTY_FIELD) {
-                        continue;
-                    }
-
-                    // Calculate positions
-                    int viewX = i % piecesX;
-                    int viewY = i / piecesX;
-                    int imageX = piecePosition % piecesX;
-                    int imageY = piecePosition / piecesX;
-
-
-                    int piecePositionX = viewX * pieceWidth;
-                    int piecePositionY = viewY * pieceHeight;
-
-                    if (mCurrentlyMovedPieceDirection != null && i == mCurrentlyMovedPiecePos) {
-                        switch (mCurrentlyMovedPieceDirection) {
-                            case LEFT:
-                                piecePositionX += (mMoveXOffset < -pieceWidth ? -pieceWidth : mMoveXOffset);
-                                break;
-                            case RIGHT:
-                                piecePositionX += (mMoveXOffset > pieceWidth ? pieceWidth : mMoveXOffset);
-                                break;
-                            case UP:
-                                piecePositionY += (mMoveYOffset < -pieceHeight ? -pieceHeight : mMoveYOffset);
-                                break;
-                            case DOWN:
-                                piecePositionY += (mMoveYOffset > pieceHeight ? pieceHeight : mMoveYOffset);
-                                break;
-                        }
-                    }
-
-                    // Draw the piece
-                    canvas.save();
-                    canvas.clipRect(
-                            piecePositionX,
-                            piecePositionY,
-                            piecePositionX + pieceWidth,
-                            piecePositionY + pieceHeight
-                    );
-                    canvas.translate(
-                            piecePositionX - imageX * pieceWidth,
-                            piecePositionY - imageY * pieceHeight
-                    );
-                    canvas.concat(matrix);
-                    drawable.draw(canvas);
-                    canvas.restore();
-
-                    // Draw overlay
-                    canvas.drawRect(
-                            piecePositionX,
-                            piecePositionY,
-                            piecePositionX + pieceWidth,
-                            piecePositionY + pieceHeight,
-                            mSeparatorLinesPaint
-                    );
-                }
-            } else {
-                // Draw size choosing lines
+            // Draw size choosing lines
+            if (isTriggered()) {
                 float currentScaleWithFraction = getCurrentScaleWithFraction();
 
                 // Split by X (vertical lines)
@@ -264,6 +218,73 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
                     canvas.drawLine(0, offset, viewWidth, offset, mSeparatorLinesPaint);
                 }
             }
+        } else {
+            // Draw puzzle elements
+
+            int piecesX = getPiecesX();
+            int piecesY = getPiecesY();
+
+            int pieceWidth = viewWidth / piecesX;
+            int pieceHeight = viewHeight / piecesY;
+
+            for (int i = 0; i < mPiecePositions.length; i++) {
+                byte piecePosition = mPiecePositions[i];
+                if (piecePosition == EMPTY_FIELD) {
+                    continue;
+                }
+
+                // Calculate positions
+                int viewX = i % piecesX;
+                int viewY = i / piecesX;
+                int imageX = piecePosition % piecesX;
+                int imageY = piecePosition / piecesX;
+
+
+                int piecePositionX = viewX * pieceWidth;
+                int piecePositionY = viewY * pieceHeight;
+
+                if (mCurrentlyMovedPieceDirection != null && i == mCurrentlyMovedPiecePos) {
+                    switch (mCurrentlyMovedPieceDirection) {
+                        case LEFT:
+                            piecePositionX += (mMoveXOffset < -pieceWidth ? -pieceWidth : mMoveXOffset);
+                            break;
+                        case RIGHT:
+                            piecePositionX += (mMoveXOffset > pieceWidth ? pieceWidth : mMoveXOffset);
+                            break;
+                        case UP:
+                            piecePositionY += (mMoveYOffset < -pieceHeight ? -pieceHeight : mMoveYOffset);
+                            break;
+                        case DOWN:
+                            piecePositionY += (mMoveYOffset > pieceHeight ? pieceHeight : mMoveYOffset);
+                            break;
+                    }
+                }
+
+                // Draw the piece
+                canvas.save();
+                canvas.clipRect(
+                        piecePositionX,
+                        piecePositionY,
+                        piecePositionX + pieceWidth,
+                        piecePositionY + pieceHeight
+                );
+                canvas.translate(
+                        piecePositionX - imageX * pieceWidth,
+                        piecePositionY - imageY * pieceHeight
+                );
+                canvas.concat(matrix);
+                drawable.draw(canvas);
+                canvas.restore();
+
+                // Draw overlay
+                canvas.drawRect(
+                        piecePositionX,
+                        piecePositionY,
+                        piecePositionX + pieceWidth,
+                        piecePositionY + pieceHeight,
+                        mSeparatorLinesPaint
+                );
+            }
         }
 
         // Restore canvas state (padding)
@@ -280,6 +301,66 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
             mPiecePositions[i] = (byte) i;
         }
         mPiecePositions[nElems - 1] = EMPTY_FIELD;
+    }
+
+    /**
+     * Check if puzzle is solved; may be only called when {@link #isPuzzled()} is true
+     */
+    private boolean isSolved() {
+        int nElems = getPiecesX() * getPiecesY();
+        for (int i = 0; i < nElems - 1; i++) {
+            if (mPiecePositions[i] != (byte) i) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void shuffle() {
+        Random random = new Random();
+
+        // Find empty position
+        int emptyPos = -1;
+        for (int i = 0; i < mPiecePositions.length; i++) {
+            if (mPiecePositions[i] == EMPTY_FIELD) {
+                emptyPos = i;
+            }
+        }
+
+        // Keep randomly moving pieces
+        for (int i = 0; i < 1000 || isSolved(); i++) {
+            // Choose random direction
+            int toMove = -1;
+            switch (Direction.values()[random.nextInt(4)]) {
+                case LEFT:
+                    if (emptyPos % getPiecesX() != getPiecesX() - 1) {
+                        toMove = (byte) (emptyPos + 1);
+                    }
+                    break;
+                case RIGHT:
+                    if (emptyPos % getPiecesX() != 0) {
+                        toMove = (byte) (emptyPos - 1);
+                    }
+                    break;
+                case UP:
+                    if (emptyPos / getPiecesX() != getPiecesY() - 1) {
+                        toMove = (byte) (emptyPos + getPiecesX());
+                    }
+                    break;
+                case DOWN:
+                    if (emptyPos / getPiecesX() != 0) {
+                        toMove = (byte) (emptyPos - getPiecesX());
+                    }
+                    break;
+            }
+
+            // Perform move if possible
+            if (toMove != -1) {
+                mPiecePositions[emptyPos] = mPiecePositions[toMove];
+                mPiecePositions[toMove] = EMPTY_FIELD;
+                emptyPos = toMove;
+            }
+        }
     }
 
     /**
@@ -372,6 +453,76 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
         mCurrentlyMovedPieceDirection = null;
         mMoveXOffset = 0;
         mMoveYOffset = 0;
+
+        // Check if puzzle is solved
+        if (isSolved()) {
+            mPiecePositions = null;
+            animateInLastElement();
+            if (mOnSolvedListener != null) {
+                mOnSolvedListener.onPuzzleSolved(mCurrentScaleSetting);
+            }
+        }
+    }
+
+    /**
+     * Show animation of last element appearing (after puzzle is solved)
+     */
+    private void animateInLastElement() {
+        // Calculate sizes
+        final int viewWidth = getWidth();
+        final int viewHeight = getHeight();
+
+        final int pieceWidth = viewWidth / getPiecesX();
+        final int pieceHeight = viewHeight / getPiecesY();
+
+        // Make value animator
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0.5f, 0f);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float animatedValue = (Float) animation.getAnimatedValue();
+                if (mNotPuzzledClipPath == null) {
+                    mNotPuzzledClipPath = new Path();
+                } else {
+                    mNotPuzzledClipPath.reset();
+                }
+
+                // Actually draw clip path of last element appearing
+                // Whole image not clipped away (CW - Adds non-clipped region)
+                mNotPuzzledClipPath.addRect(
+                        0,
+                        0,
+                        viewWidth,
+                        viewHeight,
+                        Path.Direction.CW
+                );
+                // Remove center rectangle in last piece (CCW - Adds clipped-out region)
+                mNotPuzzledClipPath.addRect(
+                        viewWidth - pieceWidth * (0.5f + animatedValue),
+                        viewHeight - pieceHeight * (0.5f + animatedValue),
+                        viewWidth - pieceWidth * (0.5f - animatedValue),
+                        viewHeight - pieceHeight * (0.5f - animatedValue),
+                        Path.Direction.CCW
+                );
+                invalidate();
+            }
+        });
+        // Reset clip path when animation is finished
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mNotPuzzledClipPath = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mNotPuzzledClipPath = null;
+            }
+        });
+
+        // Start animation
+        valueAnimator.setDuration(700);
+        valueAnimator.start();
     }
 
     @Override
@@ -408,6 +559,7 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
     public boolean onSingleTapUp(MotionEvent e) {
         if (mCurrentScaleSetting != 0 && !isPuzzled()) {
             makePuzzle();
+            shuffle();
             invalidate();
         }
         return false;
@@ -529,6 +681,10 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
             }
         };
 
+    }
+
+    public interface OnSolvedListener {
+        void onPuzzleSolved(int difficulty);
     }
 
 }

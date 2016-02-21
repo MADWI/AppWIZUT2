@@ -103,9 +103,9 @@ public class PlanDownloader {
                                      int stopien, int rok) {
         if (rodzaj.equals("Stacjonarne")) {
             // BI, IC, I, ZIP
-            return Pattern.compile(">" + kierunek + stopien + "-" + rok + "[0-9]{1,2}\\.pdf<");
+            return Pattern.compile(">" + kierunek + stopien + "-[A-Z]*" + rok + "\\w+\\.pdf<");
         } else if (rodzaj.equals("Niestacjonarne")) {
-            return Pattern.compile(">" + kierunek + stopien + "n-" + rok + "[0-9]{1,2}\\.pdf<");
+            return Pattern.compile(">" + kierunek + stopien + "n?-[A-Z]*" + rok + "\\w+\\.pdf<");
         }
 
         return null;
