@@ -74,12 +74,13 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     public void onDataLoaded(List<ListItemContainer> data) {
         progressBar.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
+
         if(data != null && data.size() > 0){
             getView().findViewById(R.id.text_no_data).setVisibility(View.INVISIBLE);
-
             ListItemAdapter listItemAdapter = new ListItemAdapter(data);
             itemListView.setAdapter(listItemAdapter);
         }else {
+            itemListView.setAdapter(null);
             getView().findViewById(R.id.text_no_data).setVisibility(View.VISIBLE);
         }
     }

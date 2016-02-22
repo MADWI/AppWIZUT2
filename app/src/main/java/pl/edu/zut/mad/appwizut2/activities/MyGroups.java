@@ -21,8 +21,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 
 public class MyGroups extends Activity implements OnClickListener {
 
@@ -144,14 +142,9 @@ public class MyGroups extends Activity implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnNextPrefs:
-                int pos = spinType.getSelectedItemPosition();
-                if (pos == 0) {
-                    rodzaj = "Stacjonarne";
-                }else {
-                    rodzaj = "Niestacjonarne";
-                }
+                Resources res = getResources();
+                rodzaj = res.getStringArray(R.array.list_rodzaj_studiow_internal)[spinType.getSelectedItemPosition()];
                 if (pick_studies.getVisibility() == View.VISIBLE) {
-                    Resources res = getResources();
                     kierunek = res.getStringArray(R.array.list_kierunek_studiow_internal)[spinDegree.getSelectedItemPosition()];
                     stopien = spinLevel.getSelectedItemPosition() + 1;
                     rok = spinYear.getSelectedItemPosition() + 1;
