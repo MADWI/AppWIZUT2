@@ -77,5 +77,7 @@
 
     <string name="remove_bus_message">Usunięto</string>
     <string name="remove_bus_undo">Cofnij</string>
+    <string name="no_data">Brak danych</string>
+
 
 </resources>
