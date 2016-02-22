@@ -161,7 +161,7 @@ public class SchedulePdfLoader extends BaseDataLoader<Uri, SchedulePdfLoader.Cac
         }
     }
 
-    class CacheInfo implements Serializable {
+    static class CacheInfo implements Serializable {
         private String mForGroup;
         private int mCachedFileSize;
         private byte[] mCachedRangeData = new byte[CHECKED_RANGE_LENGTH];
