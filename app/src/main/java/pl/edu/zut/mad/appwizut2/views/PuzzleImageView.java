@@ -65,6 +65,8 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
      */
     private Path mNotPuzzledClipPath;
 
+    private ValueAnimator mLastElementAnimator;
+
     public PuzzleImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mGestureDetector = new GestureDetector(context, this);
@@ -190,7 +192,14 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
             // Draw whole not-puzzled image
             canvas.save();
             if (mNotPuzzledClipPath != null) {
-                canvas.clipPath(mNotPuzzledClipPath);
+                try {
+                    canvas.clipPath(mNotPuzzledClipPath);
+                } catch (UnsupportedOperationException e) {
+                    // Skip last element animation if clip paths are not supported
+                    if (mLastElementAnimator != null) {
+                        mLastElementAnimator.cancel();
+                    }
+                }
             }
             canvas.concat(matrix);
             drawable.draw(canvas);
@@ -476,8 +485,8 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
         final int pieceHeight = viewHeight / getPiecesY();
 
         // Make value animator
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0.5f, 0f);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mLastElementAnimator = ValueAnimator.ofFloat(0.5f, 0f);
+        mLastElementAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float animatedValue = (Float) animation.getAnimatedValue();
@@ -508,21 +517,25 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
             }
         });
         // Reset clip path when animation is finished
-        valueAnimator.addListener(new AnimatorListenerAdapter() {
+        mLastElementAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                mLastElementAnimator = null;
                 mNotPuzzledClipPath = null;
+                invalidate();
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                mLastElementAnimator = null;
                 mNotPuzzledClipPath = null;
+                invalidate();
             }
         });
 
         // Start animation
-        valueAnimator.setDuration(700);
-        valueAnimator.start();
+        mLastElementAnimator.setDuration(700);
+        mLastElementAnimator.start();
     }
 
     @Override
@@ -558,6 +571,9 @@ public class PuzzleImageView extends ImageView implements ScaleGestureDetector.O
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         if (mCurrentScaleSetting != 0 && !isPuzzled()) {
+            if (mLastElementAnimator != null) {
+                mLastElementAnimator.cancel();
+            }
             makePuzzle();
             shuffle();
             invalidate();
