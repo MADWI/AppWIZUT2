@@ -1,8 +1,8 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">AppWIZUT</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open">Otwórz menu</string>
+    <string name="navigation_drawer_close">Zamknij menu</string>
     <string name="nav_header_text">Mobile Application Developers</string>
 
     <string name="nav_calendar">Kalendarz</string>
@@ -18,15 +18,13 @@
     <string name="mentor">Opiekun koła naukowego:</string>
     <string name="contact">Kontakt: </string>
 
-    <string name="action_settings">Settings</string>
-
     <string name="no_Internet">Brak połączenia z Internetem</string>
 
     <!-- Timetable -->
     <string name="show_pdf">Pokaż PDF</string>
-    <string name="downloading_pdf_schedule">Checking if PDF is up to date</string>
-    <string name="cannot_download_pdf">Cannot download schedule PDF</string>
-    <string name="cannot_open_pdf">Cannot open schedule PDF</string>
+    <string name="downloading_pdf_schedule">Sprawdzanie czy PDF jest aktualny</string>
+    <string name="cannot_download_pdf">Nie udało się pobrać pliku PDF</string>
+    <string name="cannot_open_pdf">Nie udało się otworzyć pliku PDF</string>
 
     <string-array name="week_days_short">
         <item>PON</item>
