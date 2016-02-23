@@ -95,6 +95,15 @@ public class MainActivity extends AppCompatActivity
 
         mWeekParityLoader = DataLoadingManager.getInstance(this).getLoader(WeekParityLoader.class);
         mWeekParityLoader.registerAndLoad(mParityListener);
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this,WebPlanActivity.class);
+        startActivity(intent);
     }
 
     @Override
