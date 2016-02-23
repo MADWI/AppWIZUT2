@@ -38,7 +38,6 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_list, container, false);
         itemListView = (RecyclerView) rootView.findViewById(R.id.itemList);
-
         swipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById(R.id.item_list_swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         progressBar = (ProgressBar)rootView.findViewById(R.id.item_list_progress_bar);
@@ -75,9 +74,14 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     public void onDataLoaded(List<ListItemContainer> data) {
         progressBar.setVisibility(View.GONE);
         swipeRefreshLayout.setRefreshing(false);
-        if(data != null){
+
+        if(data != null && data.size() > 0){
+            getView().findViewById(R.id.text_no_data).setVisibility(View.INVISIBLE);
             ListItemAdapter listItemAdapter = new ListItemAdapter(data);
             itemListView.setAdapter(listItemAdapter);
+        }else {
+            itemListView.setAdapter(null);
+            getView().findViewById(R.id.text_no_data).setVisibility(View.VISIBLE);
         }
     }
 
