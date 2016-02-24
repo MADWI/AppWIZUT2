@@ -74,7 +74,6 @@ public class WebPlanParser {
                         // last - exam form (also not needed)
                         currentData.remove(currentData.size() - 1);
                         ArrayList<String> cpy = new ArrayList<>(currentData);
-                        //finalData.put(currentDate,cpy);
                         ArrayList<ArrayList<String>> classesArray = finalData.get(currentDate);
                         if (classesArray == null){
                             classesArray = new ArrayList<>();
