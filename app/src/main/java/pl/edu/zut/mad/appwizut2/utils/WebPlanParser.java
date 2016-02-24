@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,7 +36,7 @@ public class WebPlanParser {
         String currentTag = "";
         String currentText = "";
         String currentDate = "";
-        HashMap<String,ArrayList<String>> finalData = new HashMap<>();
+        HashMap<String,ArrayList<ArrayList<String>>> finalData = new HashMap<>();
         ArrayList<String> currentData = new ArrayList<>();
         while (xpp.getAttributeCount() <= 0){
             try {
@@ -73,9 +74,16 @@ public class WebPlanParser {
                         // last - exam form (also not needed)
                         currentData.remove(currentData.size() - 1);
                         ArrayList<String> cpy = new ArrayList<>(currentData);
-                        finalData.put(currentDate,cpy);
+                        //finalData.put(currentDate,cpy);
+                        ArrayList<ArrayList<String>> classesArray = finalData.get(currentDate);
+                        if (classesArray == null){
+                            classesArray = new ArrayList<>();
+                        }
+                        classesArray.add(cpy);
+                        finalData.put(currentDate,classesArray);
+                        currentData.clear();
+
                     }
-                    currentData.clear();
                 }
 
             }
