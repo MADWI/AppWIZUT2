@@ -17,6 +17,8 @@
     <string name="authors">Autorzy:</string>
     <string name="mentor">Opiekun koła naukowego:</string>
     <string name="contact">Kontakt: </string>
+    <string name="app_info">Informacje o aplikacji:</string>
+    <string name="app_version">Wersja aplikacji: </string>
 
     <string name="no_Internet">Brak połączenia z Internetem</string>
 
