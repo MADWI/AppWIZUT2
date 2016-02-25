@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import pl.edu.zut.mad.appwizut2.BuildConfig;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.views.PuzzleImageView;
 
@@ -32,7 +33,7 @@ public class AboutUsFragment extends Fragment implements PuzzleImageView.OnSolve
         try {
             PackageInfo pInfo = getActivity().getPackageManager()
                     .getPackageInfo(getActivity().getPackageName(), 0);
-            versionNumber.setText( getResources().getString(R.string.app_version) + " v" + pInfo.versionName);
+            versionNumber.setText( getResources().getString(R.string.app_version) + " v" + pInfo.versionName + " (" + BuildConfig.GIT_HASH + ")");
         } catch (PackageManager.NameNotFoundException e) {
         }
 
