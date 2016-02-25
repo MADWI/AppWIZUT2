@@ -1,5 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.views.PuzzleImageView;
@@ -25,6 +28,13 @@ public class AboutUsFragment extends Fragment implements PuzzleImageView.OnSolve
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_about_us);
 
         ((PuzzleImageView) v.findViewById(R.id.mad_team_photo)).setOnSolvedListener(this);
+        TextView versionNumber = (TextView) v.findViewById(R.id.app_version);
+        try {
+            PackageInfo pInfo = getActivity().getPackageManager()
+                    .getPackageInfo(getActivity().getPackageName(), 0);
+            versionNumber.setText( getResources().getString(R.string.app_version) + " v" + pInfo.versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+        }
 
         return v;
     }

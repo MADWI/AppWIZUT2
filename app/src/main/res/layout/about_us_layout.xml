@@ -120,6 +120,45 @@
             android:textStyle="bold"
             android:autoLink="email"
             android:linksClickable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25dp"
+            android:text="@string/app_info"
+            android:id="@+id/appInfo"
+            android:textColor="@color/textGray"
+            android:layout_below="@+id/mail_string"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentLeft="true"
+            android:gravity="left" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/app_version"
+            android:layout_below="@+id/appInfo"
+            android:textSize="12dp"
+            android:layout_alignParentLeft="true"
+            android:textColor="@color/textGray" />
+
+        <TextView
+            android:id="@+id/legalNoticesTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/app_version"
+            android:textStyle="bold"
+            android:text="@string/legalNoticesTitle"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/legalNotices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/legalNoticesTitle"
+            android:layout_marginTop="8dp"
+            android:text="@string/legalNotices"
+            android:textSize="12sp" />
         
     </RelativeLayout>
 </ScrollView>
