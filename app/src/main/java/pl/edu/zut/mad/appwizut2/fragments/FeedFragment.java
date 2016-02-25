@@ -30,6 +30,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
     private RecyclerView itemListView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
+    private View mNoDataMessageView;
 
 
     private FeedLoader mLoader;
@@ -41,6 +42,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         swipeRefreshLayout = (SwipeRefreshLayout)rootView.findViewById(R.id.item_list_swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         progressBar = (ProgressBar)rootView.findViewById(R.id.item_list_progress_bar);
+        mNoDataMessageView = rootView.findViewById(R.id.text_no_data);
 
         // TODO: These should be moved to layout xml
         itemListView.setHasFixedSize(true);
@@ -76,12 +78,12 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         swipeRefreshLayout.setRefreshing(false);
 
         if(data != null && data.size() > 0){
-            getView().findViewById(R.id.text_no_data).setVisibility(View.INVISIBLE);
+            mNoDataMessageView.setVisibility(View.INVISIBLE);
             ListItemAdapter listItemAdapter = new ListItemAdapter(data);
             itemListView.setAdapter(listItemAdapter);
         }else {
             itemListView.setAdapter(null);
-            getView().findViewById(R.id.text_no_data).setVisibility(View.VISIBLE);
+            mNoDataMessageView.setVisibility(View.VISIBLE);
         }
     }
 
