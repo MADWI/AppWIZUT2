@@ -33,6 +33,16 @@ if (location.pathname.indexOf("PodzGodzDruk") != -1) {
             };
             document.querySelector('input[id$="_btDrukuj"]').onclick();
         }
+    } else {
+        var login_error = document.querySelector('.login_criteria ~ * .error_label');
+        if (
+            login_error && (
+                login_error.textContent.indexOf("czas bezczyn") != -1 ||
+                login_error.textContent.indexOf("idle timeout") != -1
+            )
+        ) {
+            login_error.style.visibility = 'hidden';
+        }
     }
 }
 })();
