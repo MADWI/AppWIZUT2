@@ -110,7 +110,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="mad@zut.edu.pl"
+            android:text="@string/email_contact"
             android:id="@+id/mail_string"
             android:layout_below="@+id/website_string"
             android:layout_marginTop="10dp"
@@ -143,10 +143,32 @@
             android:textColor="@color/textGray" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/repo"
+            android:text="@string/repo"
+            android:textSize="12dp"
+            android:textColor="@color/textGray"
+            android:layout_below="@+id/app_version"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/repo_link"
+            android:text="@string/repo_link"
+            android:autoLink="web"
+            android:textSize="12dp"
+            android:layout_below="@+id/repo"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
             android:id="@+id/legalNoticesTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/app_version"
+            android:layout_below="@+id/repo_link"
             android:textStyle="bold"
             android:text="@string/legalNoticesTitle"
             android:textSize="14sp" />
