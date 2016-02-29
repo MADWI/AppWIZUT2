@@ -33,6 +33,8 @@ public class WebPlanActivity extends Activity {
 
         // Inject "/res/raw/grab_schedule.js" on all pages
         web.setWebViewClient(new WebViewClient(){
+            private String mReceivedErrorForUrl;
+
             @Override
             public void onPageFinished(WebView view, String url) {
                 // Add to page script from "/appwizut-injected-script.js" (replaced below)
@@ -72,7 +74,27 @@ public class WebPlanActivity extends Activity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 // Show or hide "please wait" text
-                pleaseWaitView.setVisibility(url.contains("Logowanie2.aspx") ? View.GONE : View.VISIBLE);
+                // Hide on login page
+                boolean shouldHidePleaseWait = url.contains("Logowanie2.aspx");
+
+                // Hide if on error page
+                if (mReceivedErrorForUrl != null) {
+                    if (mReceivedErrorForUrl.equals(url)) {
+                        shouldHidePleaseWait = true;
+                    } else {
+                        mReceivedErrorForUrl = null;
+                    }
+                }
+
+                pleaseWaitView.setVisibility(shouldHidePleaseWait ? View.GONE : View.VISIBLE);
+            }
+
+            @Override
+            @SuppressWarnings("deprecation") // Newer version is not supported on older Android versions
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                // Hide "please wait" text
+                pleaseWaitView.setVisibility(View.GONE);
+                mReceivedErrorForUrl = failingUrl;
             }
         });
 
