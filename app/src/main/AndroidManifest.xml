@@ -32,9 +32,9 @@
         </activity>
         <activity
             android:name=".activities.WebPlanActivity"
-            android:label="Test">
+            android:label="@string/import_from_edziekanat"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize" />
 
-        </activity>
         <provider
             android:authorities="pl.edu.zut.mad.appwizut2.files"
             android:name="android.support.v4.content.FileProvider"
