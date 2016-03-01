@@ -1,6 +1,7 @@
 package pl.edu.zut.mad.appwizut2.activities;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,6 +36,13 @@ import pl.edu.zut.mad.appwizut2.utils.Constants;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String TAB_CHANGES_IN_SCHEDULE = "chg";
+    public static final String TAB_CALENDAR = "cal";
+    public static final String TAB_TIMETABLE = "tim";
+    public static final String TAB_ABOUT_US = "abo";
+    public static final String TAB_ANNOUNCEMENTS = "ann";
+    public static final String TAB_BUS_TIMETABLE = "tra";
+
     /**
      * Fragments selectable from drawer
      *
@@ -50,17 +58,43 @@ public class MainActivity extends AppCompatActivity
      *       and should specify android:checkable="false" in xml
      */
     private static final DrawerFragmentItem[] DRAWER_FRAGMENTS = new DrawerFragmentItem[]{
-            new DrawerFragmentItem(R.id.plan_changes,   "chg", PlanChangesFragment.class),
-            new DrawerFragmentItem(R.id.event_calendar, "cal", CaldroidCustomFragment.class),
-            new DrawerFragmentItem(R.id.timetable,      "tim", TimetableFragment.class),
-            new DrawerFragmentItem(R.id.about_us,       "abo", AboutUsFragment.class),
-            new DrawerFragmentItem(R.id.announcements,  "ann", AnnouncementFragment.class),
-            new DrawerFragmentItem(R.id.public_transport, "tra", BusTimetableFragment.class)
+            new DrawerFragmentItem(R.id.plan_changes, TAB_CHANGES_IN_SCHEDULE, PlanChangesFragment.class),
+            new DrawerFragmentItem(R.id.event_calendar, TAB_CALENDAR, CaldroidCustomFragment.class),
+            new DrawerFragmentItem(R.id.timetable, TAB_TIMETABLE, TimetableFragment.class),
+            new DrawerFragmentItem(R.id.about_us, TAB_ABOUT_US, AboutUsFragment.class),
+            new DrawerFragmentItem(R.id.announcements, TAB_ANNOUNCEMENTS, AnnouncementFragment.class),
+            new DrawerFragmentItem(R.id.public_transport, TAB_BUS_TIMETABLE, BusTimetableFragment.class)
     };
+
+    /**
+     * Get Intent that can be used to open MainActivity and select the specified tab
+     *
+     * @param tab One of the TAB_* constants (e.g. {@link #TAB_TIMETABLE})
+     */
+    public static Intent getIntentToOpenWithTab(Context context, String tab) {
+        return new Intent(
+                ACTION_PREFIX_OPEN_FRAGMENT + tab,
+                null,
+                context,
+                MainActivity.class
+        );
+    }
+
+    /**
+     * Action prefix for opening this activity and selecting fragment from drawer
+     *
+     * Note: As these actions are not registered in AndroidManifest.xml, they must be used with
+     *       explicit Intent.
+     *
+     * @see #getIntentToOpenWithTab(Context, String)
+     * @see #getDrawerItemFromIntent(Intent)
+     */
+    private static final String ACTION_PREFIX_OPEN_FRAGMENT = "pl.edu.zut.mad.appwizut2.OPEN_FRAGMENT.";
 
     private static final String PREF_LAST_DRAWER_FRAGMENT = "last_selected_drawer_fragment";
     private WeekParityLoader mWeekParityLoader;
     private DayParity.Parity mTodayParity;
+    private NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,25 +110,58 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
-        // Open recently used fragment
+        // Choose and open fragment
         if (savedInstanceState == null) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            DrawerFragmentItem item = findDrawerItemFragmentWithName(prefs.getString("default_tab", null));
+
+            // Choose fragment based on Intent
+            DrawerFragmentItem item = getDrawerItemFromIntent(getIntent());
+
+            // If above didn't picked anything, choose fragment based on settings
+            if (item == null) {
+                item = findDrawerItemFragmentWithName(prefs.getString("default_tab", null));
+            }
+
+            // If above didn't picked anything, choose fragment last selected fragment
             if (item == null) {
                 item = findDrawerItemFragmentWithName(prefs.getString(PREF_LAST_DRAWER_FRAGMENT, null));
-                if (item == null) {
-                    item = DRAWER_FRAGMENTS[0];
-                }
             }
+
+            // If nothing above chosen anything, use default fragment
+            if (item == null) {
+                item = DRAWER_FRAGMENTS[0];
+            }
+
+            // Actually open the fragment
             openFragment(item);
-            navigationView.setCheckedItem(item.id);
+            mNavigationView.setCheckedItem(item.id);
         }
 
         mWeekParityLoader = DataLoadingManager.getInstance(this).getLoader(WeekParityLoader.class);
         mWeekParityLoader.registerAndLoad(mParityListener);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        // Open fragment based on Intent
+        DrawerFragmentItem item = getDrawerItemFromIntent(intent);
+        if (item != null) {
+            openFragment(item);
+            mNavigationView.setCheckedItem(item.id);
+        }
+    }
+
+    private static DrawerFragmentItem getDrawerItemFromIntent(Intent intent) {
+        String action = intent.getAction();
+        if (action != null && action.startsWith(ACTION_PREFIX_OPEN_FRAGMENT)) {
+            return findDrawerItemFragmentWithName(action.substring(ACTION_PREFIX_OPEN_FRAGMENT.length()));
+        }
+        return null;
     }
 
     @Override
