@@ -1,20 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <WebView
+        android:id="@+id/web_view_plan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/please_wait"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/web_view_plan">
-    </WebView>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/please_wait"
-        android:layout_gravity="bottom"
-        android:background="#c8ffffff"
+        android:background="#ffffff"
         android:gravity="center"
-        android:id="@+id/please_wait"
-        android:textSize="25sp"
-        android:textIsSelectable="false"/>
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/please_wait"
+
+            android:textIsSelectable="false"
+            android:textSize="25sp" />
+    </LinearLayout>
 </FrameLayout>
