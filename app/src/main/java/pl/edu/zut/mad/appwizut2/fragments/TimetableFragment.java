@@ -1,7 +1,9 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -26,27 +28,31 @@ import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.activities.MyGroups;
+import pl.edu.zut.mad.appwizut2.activities.WebPlanActivity;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
 import pl.edu.zut.mad.appwizut2.network.ScheduleLoader;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
  * Created by Dawid on 19.11.2015.
  */
-public class TimetableFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable> {
+public class TimetableFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private String[] mDayNames;
 
     private Timetable mTimetable;
 
     private List<TimetableDayFragment> mActiveDayFragments = new ArrayList<>();
-    private ScheduleLoader mScheduleLoader;
+    private BaseDataLoader<Timetable, ?> mScheduleLoader;
     private View mTimetableUnavailableWrapper;
     private TextView mTimetableUnavailableMessage;
     private Button mOpenPdfButton;
     private ProgressBar mLoadingIndicator;
     private View mTimetableWrapper;
+    private SharedPreferences mPreferences;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +80,8 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
         mTimetableUnavailableMessage = (TextView) view.findViewById(R.id.message);
         mOpenPdfButton = (Button) view.findViewById(R.id.view_pdf);
         Button chooseGroupButton = (Button) view.findViewById(R.id.choose_group);
+        Button importFromEdziekanatButton = (Button) view.findViewById(R.id.import_from_edziekanat);
+
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.loading_indicator);
 
@@ -94,6 +102,12 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
                 startActivity(new Intent(getContext(), MyGroups.class));
             }
         });
+        importFromEdziekanatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), WebPlanActivity.class));
+            }
+        });
 
         // Select current page depending on current week day
         if (savedInstanceState == null) {
@@ -107,15 +121,32 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             pager.setCurrentItem(tabToSelect);
         }
 
-        // Initialize loader
-        mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleLoader.class);
+        // Choose loader
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mScheduleLoader = chooseLoaderFromSettings(mPreferences);
+
+        // Start loader
         mScheduleLoader.registerAndLoad(this);
+        mPreferences.registerOnSharedPreferenceChangeListener(this);
 
         return view;
     }
 
+    private BaseDataLoader<Timetable, ?> chooseLoaderFromSettings(SharedPreferences preferences) {
+        DataLoadingManager dataLoadingManager = DataLoadingManager.getInstance(getActivity());
+
+        if ("edziekanat".equals(preferences.getString(Constants.PREF_TIMETABLE_DATA_SOURCE, ""))) {
+            return dataLoadingManager.getLoader(ScheduleEdzLoader.class);
+        } else {
+            return dataLoadingManager.getLoader(ScheduleLoader.class);
+        }
+    }
+
     @Override
     public void onDestroyView() {
+        if (mPreferences != null) {
+            mPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        }
         mScheduleLoader.unregister(this);
 
         super.onDestroyView();
@@ -172,7 +203,7 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             }
             showTimetable();
         } else {
-            showTimetableUnavailable(mScheduleLoader.isConfigured());
+            showTimetableUnavailable(mScheduleLoader instanceof ScheduleLoader && ((ScheduleLoader) mScheduleLoader).isConfigured());
         }
     }
 
@@ -219,6 +250,15 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (Constants.PREF_TIMETABLE_DATA_SOURCE.equals(key)) {
+            mScheduleLoader.unregister(TimetableFragment.this);
+            mScheduleLoader = chooseLoaderFromSettings(sharedPreferences);
+            mScheduleLoader.registerAndLoad(TimetableFragment.this);
+        }
     }
 
     private void openPdf() {

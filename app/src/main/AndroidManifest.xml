@@ -30,6 +30,10 @@
             android:name=".activities.MyGroups"
             android:label="@string/setting_group" >
         </activity>
+        <activity
+            android:name=".activities.WebPlanActivity"
+            android:label="@string/import_from_edziekanat"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize" />
 
         <provider
             android:authorities="pl.edu.zut.mad.appwizut2.files"

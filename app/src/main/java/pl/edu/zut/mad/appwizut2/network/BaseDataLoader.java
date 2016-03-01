@@ -54,6 +54,12 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
     private long mInMemoryDataExpiresOn;
 
     /**
+     * Data from this loader should be next time persisted
+     * even if they doesn't appear to have changed
+     */
+    private boolean mHasJustManuallySetData;
+
+    /**
      * Get name for file to be used for caching this data
      *
      * The name will be used for file passed
@@ -191,6 +197,13 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
         }
     }
 
+    protected void manuallySetCachedData(RawData data) {
+        mRawData = data;
+        mData = null;
+        mHasJustManuallySetData = true;
+        startLoadTaskIfNotStarted();
+    }
+
     /**
      * Not parsed data used by this loader, along with caching metadata
      *
@@ -267,13 +280,14 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
             }
 
             // Save cache
-            if (downloadedData != null && downloadedData != mRawData) {
+            if (downloadedData != null && (mHasJustManuallySetData || downloadedData != mRawData)) {
                 mRawData = downloadedData;
                 try {
                     saveToCache(mRawData, cacheFile);
                 } catch (IOException e) {
                     Log.v(TAG, "Failed to save new data into cache", e);
                 }
+                mHasJustManuallySetData = false;
             }
 
             // Return results

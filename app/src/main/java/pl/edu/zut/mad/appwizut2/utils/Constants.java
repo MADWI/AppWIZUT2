@@ -55,6 +55,13 @@ public class Constants {
      */
     public static final String PREF_GROUP = "group";
 
+    /**
+     * Source of data for Timetable
+     *
+     * "wizut" or "edziekanat"
+     */
+    public static final String PREF_TIMETABLE_DATA_SOURCE = "timetable_data_source";
+
 
     /** calendar - for format dates */
     public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault());

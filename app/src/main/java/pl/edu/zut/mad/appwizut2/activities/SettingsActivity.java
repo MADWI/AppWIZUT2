@@ -78,6 +78,15 @@ public class SettingsActivity extends PreferenceActivity  {
                 return true;
             }
         });
+        findPreference("import_from_edziekanat").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(SettingsActivity.this, WebPlanActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                return true;
+            }
+        });
 
     }
 

@@ -39,5 +39,9 @@
             android:background="@color/colorPrimaryBright"
             android:key="groups"
             android:title="@string/setting_group" />
+        <Preference
+            android:background="@color/colorPrimaryBright"
+            android:key="import_from_edziekanat"
+            android:title="@string/import_from_edziekanat" />
 
 </PreferenceScreen>
