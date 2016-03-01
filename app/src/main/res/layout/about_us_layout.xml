@@ -124,11 +124,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/facebook_page_string"
+            android:layout_below="@id/mail_string"
+            android:text="@string/facebook_page_address"
+            android:autoLink="web"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textSize="25dp"
             android:text="@string/app_info"
             android:id="@+id/appInfo"
             android:textColor="@color/textGray"
-            android:layout_below="@+id/mail_string"
+            android:layout_below="@+id/facebook_page_string"
             android:layout_marginTop="5dp"
             android:layout_alignParentLeft="true"
             android:gravity="left" />
