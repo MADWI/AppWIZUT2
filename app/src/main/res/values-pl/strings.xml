@@ -19,8 +19,11 @@
     <string name="contact">Kontakt: </string>
     <string name="app_info">Informacje o aplikacji:</string>
     <string name="app_version">Wersja aplikacji: </string>
+    <string name="repo">Repozytorium:</string>
 
     <string name="no_Internet">Brak połączenia z Internetem</string>
+
+
 
     <!-- Timetable -->
     <string name="show_pdf">Pokaż PDF</string>
