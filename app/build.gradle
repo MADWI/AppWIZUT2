@@ -31,8 +31,8 @@ android {
         applicationId "pl.edu.zut.mad.appwizut2"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 10
-        versionName "1.14"
+        versionCode 11
+        versionName "1.15"
 
         buildConfigField "String", "GIT_HASH", "\"${getCheckedOutGitCommitHash()}\""
     }
