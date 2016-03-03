@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_top_s">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/widget_mad_logo"
+            android:src="@drawable/widget_top_text"
+            android:layout_gravity="left"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:id="@+id/refresh_button"
+            android:src="@drawable/bar_refresh"
+            android:layout_gravity="right|center_vertical"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/widget_upcoming_hour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/widget_upper_background"
+        android:padding="@dimen/widget_padding"
+        tools:text="[Upcoming schedule hour]"
+        />
+
+    <TextView
+        android:id="@+id/widget_last_change"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/widget_lower_background"
+        android:padding="@dimen/widget_padding"
+        android:textColor="#000000"
+        tools:text="[Latest change]"
+        />
+
+
+</LinearLayout>

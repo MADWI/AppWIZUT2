@@ -75,4 +75,48 @@ public class DataLoadingManager {
             loader.onSettingsChanged();
         }
     }
+
+    public interface MultipleOneshotLoadCallback {
+        void onLoaded(Object[] results);
+    }
+
+    /**
+     * Load asynchronously data from multiple loaders
+     *
+     * Results will be passed to {@link MultipleOneshotLoadCallback#onLoaded(Object[])},
+     * with every array item corresponding to loader specified here in loaderClasses param.
+     */
+    public void multipleOneshotLoad(Class<? extends BaseDataLoader>[] loaderClasses, final MultipleOneshotLoadCallback callback) {
+        final int loadersCount = loaderClasses.length;
+
+        // The collected results from loaders
+        final Object[] results = new Object[loadersCount];
+
+        // Single element array containing in only element
+        // a number of loaders that returned result
+        // when this value reached loadersCount we're done
+        final int[] sharedLoadedValue = new int[1];
+
+        for (int i = 0; i < loadersCount; i++) {
+            //
+            final BaseDataLoader loader = getLoader(loaderClasses[i]);
+            final int loaderIndex = i;
+            loader.registerAndLoad(new BaseDataLoader.DataLoadedListener() {
+                @Override
+                public void onDataLoaded(Object o) {
+                    // Unregister from this loader (oneshot)
+                    loader.unregister(this);
+
+                    // Put result in array
+                    results[loaderIndex] = o;
+
+                    // Increment loaded counter
+                    int loaded = ++sharedLoadedValue[0];
+                    if (loaded == loadersCount) {
+                        callback.onLoaded(results);
+                    }
+                }
+            });
+        }
+    }
 }
