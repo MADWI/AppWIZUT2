@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -70,14 +71,15 @@ public class TimetableDayFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    void onScheduleAvailable(Timetable timetable, int day) {
-        Timetable.Day scheduleDay = timetable.getScheduleForDay(day);
+    void onScheduleAvailable(Timetable timetable, Date date) {
+        Timetable.Day scheduleDay = timetable.getScheduleForDate(date);
         if (scheduleDay == null) {
+            mHoursInDay = Collections.emptyList();
+            mAdapter.notifyDataSetChanged();
             Log.w(TAG, "Day missing in schedule");
             return;
         }
-        // TODO: Show this in UI?
-        Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(scheduleDay.getDate().getTime()));
+
         mHoursInDay = Arrays.asList(scheduleDay.getTasks());
         mAdapter.notifyDataSetChanged();
     }

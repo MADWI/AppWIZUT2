@@ -4,6 +4,7 @@ package pl.edu.zut.mad.appwizut2.models;
 // TODO: Better names (especially for 'Hour')
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -93,6 +94,18 @@ public class Timetable {
         public Hour[] getTasks() {
             return mTasks;
         }
+    }
+
+    public Day getScheduleForDate(Date date) {
+        if (date != null) {
+            for (Day day : mDays) {
+             //   if (day.mDate.get(Calendar.DATE) == date.getDate()) {
+                if (date.compareTo(day.mDate.getTime()) == 0) {
+                    return day;
+                }
+            }
+        }
+        return null;
     }
 
     public Day getScheduleForDay(int day) {

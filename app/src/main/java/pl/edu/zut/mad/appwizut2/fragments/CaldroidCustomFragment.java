@@ -73,6 +73,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     private SharedPreferences mPreferences;
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
+    private Date mDate;
+    private Timetable mTimeTable;
 
     @Override
     public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
@@ -103,6 +105,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             month = mMonth;
             year = mYear;
         }
+
+        mDate = new Date(System.currentTimeMillis());
 
         // Get calendar view from superclass
         ViewGroup calendarView = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
@@ -209,7 +213,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         outState.putInt(CURRENT_YEAR, getYear());
     }
 
-
     private void initUI() {
 
         // Set cells background according to parity
@@ -243,15 +246,16 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     public CaldroidListener listener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
-
+            mDate = date;
             strDate = Constants.FOR_EVENTS_FORMATTER.format(date);
          //   clickedDate.setText("Wydarzenia " + Constants.REVERSED_FORMATTER.format(date));
             clickedDate.setText("Zajęcia " + Constants.REVERSED_FORMATTER.format(date));
 
             mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
             mViewPager.setAdapter(mPagerAdapter);
+            mPagerAdapter.notifyDataSetChanged();
+            mTimetableDayFragment.onScheduleAvailable(mTimeTable, date);
         }
-
     };
 
     // CUSTOM FUNCTION FOR PARSING STRING TO DATA
@@ -318,8 +322,9 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
     @Override
     public void onDataLoaded(Timetable timetable) {
+        mTimeTable = timetable;
         if (mTimetableDayFragment != null) {
-            mTimetableDayFragment.onScheduleAvailable(timetable);
+            mTimetableDayFragment.onScheduleAvailable(timetable, mDate);
         }
     }
 
@@ -332,7 +337,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return mTimetableDayFragment = TimetableDayFragment.newInstance(Calendar.DATE);
+                return mTimetableDayFragment = TimetableDayFragment.newInstance(mDate.getDay());
             } else {
                 return TimetableDayFragment.newInstance(2);
             }
