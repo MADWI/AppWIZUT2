@@ -2,8 +2,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="@color/calendar_default"
-    >
+    android:background="@color/calendar_default">
 
     <FrameLayout
         android:id="@+id/calendar_goes_here"
@@ -28,8 +27,7 @@
             android:translationZ="3dp"/>
 
         <include
-            layout="@layout/item_list_in_calendar"
-            android:background="@color/calendar_default" />
+            layout="@layout/calendar_schedule_layout"/>
 
     </LinearLayout>
 </LinearLayout>

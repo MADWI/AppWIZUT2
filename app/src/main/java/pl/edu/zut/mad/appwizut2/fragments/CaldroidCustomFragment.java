@@ -1,8 +1,16 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +27,8 @@ import com.roomorama.caldroid.CaldroidListener;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,13 +39,16 @@ import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.DayParity;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
+import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
+import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
+import pl.edu.zut.mad.appwizut2.network.ScheduleLoader;
 import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
-public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRefreshLayout.OnRefreshListener, BaseDataLoader.DataLoadedListener<Timetable>{
 
     private final static String CURRENT_MONTH = "current_month";
     private final static String CURRENT_YEAR = "current_year";
@@ -46,8 +59,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
     private TextView clickedDate;
     private RecyclerView itemListView;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ProgressBar progressBar;
 
     String strDate="";
     private int mMonth = 0;
@@ -56,6 +67,12 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
     private WeekParityLoader mParityLoader;
     private EventsLoader mEventsDataLoader;
     private final Map<String, Integer> mEventCountsOnDays = new HashMap<>();
+
+    private TimetableDayFragment mTimetableDayFragment;
+    private BaseDataLoader<Timetable, ?> mTimeTableLoader;
+    private SharedPreferences mPreferences;
+    private PagerAdapter mPagerAdapter;
+    private ViewPager mViewPager;
 
     @Override
     public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
@@ -103,22 +120,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         // Wrap calendarView into out fragment
         ViewGroup wrapper = (ViewGroup) inflater.inflate(R.layout.calendar_layout, container, false);
         clickedDate = (TextView) wrapper.findViewById(R.id.dateTextView);
-        ///////////////////////////////Setting for RecyclerView and ProgressBar
-        itemListView = (RecyclerView) wrapper.findViewById(R.id.itemList);
-
-        swipeRefreshLayout = (SwipeRefreshLayout)wrapper.findViewById(R.id.item_list_swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        progressBar = (ProgressBar)wrapper.findViewById(R.id.item_list_progress_bar);
-        progressBar.clearAnimation();
-        progressBar.setVisibility(View.GONE);
-
-        itemListView.setHasFixedSize(true);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        itemListView.setLayoutManager(layoutManager);
-
-        //inicjalizacja pustego adaptera w celu uniknięcia błędu nieokreślonego layoutu
-        initializeAdapter();
-        ////////////////////////////////////////////////////////////////////////////////
 
         ((ViewGroup) wrapper.findViewById(R.id.calendar_goes_here)).addView(calendarView, 0);
 
@@ -129,7 +130,47 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         mEventsDataLoader = loadingManager.getLoader(EventsLoader.class);
         mEventsDataLoader.registerAndLoad(mEventsDataListener);
 
+        mViewPager = (ViewPager) wrapper.findViewById(R.id.pager);
+        TabLayout tabLayout = (TabLayout) wrapper.findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText("Zajęcia"));
+        tabLayout.addTab(tabLayout.newTab().setText("Wydarzenia"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mTimeTableLoader = chooseLoaderFromSettings(mPreferences);
+        mTimeTableLoader.registerAndLoad(this);
+
         return wrapper;
+    }
+
+    private BaseDataLoader<Timetable, ?> chooseLoaderFromSettings(SharedPreferences preferences) {
+        DataLoadingManager dataLoadingManager = DataLoadingManager.getInstance(getActivity());
+
+        if ("edziekanat".equals(preferences.getString(Constants.PREF_TIMETABLE_DATA_SOURCE, ""))) {
+            return dataLoadingManager.getLoader(ScheduleEdzLoader.class);
+        } else {
+            return dataLoadingManager.getLoader(ScheduleLoader.class);
+        }
     }
 
     @Override
@@ -204,11 +245,14 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         public void onSelectDate(Date date, View view) {
 
             strDate = Constants.FOR_EVENTS_FORMATTER.format(date);
-            updateEventsInDay();
-            clickedDate.setText("Wydarzenia " + Constants.REVERSED_FORMATTER.format(date));
-        }
-    };
+         //   clickedDate.setText("Wydarzenia " + Constants.REVERSED_FORMATTER.format(date));
+            clickedDate.setText("Zajęcia " + Constants.REVERSED_FORMATTER.format(date));
 
+            mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
+            mViewPager.setAdapter(mPagerAdapter);
+        }
+
+    };
 
     // CUSTOM FUNCTION FOR PARSING STRING TO DATA
     public Date ParseDate(String date_str) {
@@ -268,9 +312,35 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             }
 
             initUI();
-            updateEventsInDay();
-
-            swipeRefreshLayout.setRefreshing(false);
+//            updateEventsInDay();
         }
     };
+
+    @Override
+    public void onDataLoaded(Timetable timetable) {
+        if (mTimetableDayFragment != null) {
+            mTimetableDayFragment.onScheduleAvailable(timetable);
+        }
+    }
+
+    private class ScheduleAndEventsAdapter extends FragmentPagerAdapter {
+
+        public ScheduleAndEventsAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                return mTimetableDayFragment = TimetableDayFragment.newInstance(Calendar.DATE);
+            } else {
+                return TimetableDayFragment.newInstance(2);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+    }
 }

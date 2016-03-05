@@ -42,19 +42,36 @@ public class TimetableDayFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDay = getArguments().getInt(ARG_DAY);
-        mTimetableFragment = (TimetableFragment) getParentFragment();
         mAdapter = new Adapter();
-        mTimetableFragment.registerDayFragment(this);
+
+        if (getParentFragment() instanceof TimetableFragment) {
+            mTimetableFragment = (TimetableFragment) getParentFragment();
+            mTimetableFragment.registerDayFragment(this);
+        }
     }
 
     @Override
     public void onDestroy() {
-        mTimetableFragment.unregisterDayFragment(this);
+        if (mTimetableFragment != null) {
+            mTimetableFragment.unregisterDayFragment(this);
+        }
         super.onDestroy();
     }
 
     void onScheduleAvailable(Timetable timetable) {
         Timetable.Day scheduleDay = timetable.getScheduleForDay(mDay);
+        if (scheduleDay == null) {
+            Log.w(TAG, "Day missing in schedule");
+            return;
+        }
+        // TODO: Show this in UI?
+        Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(scheduleDay.getDate().getTime()));
+        mHoursInDay = Arrays.asList(scheduleDay.getTasks());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    void onScheduleAvailable(Timetable timetable, int day) {
+        Timetable.Day scheduleDay = timetable.getScheduleForDay(day);
         if (scheduleDay == null) {
             Log.w(TAG, "Day missing in schedule");
             return;
