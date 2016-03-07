@@ -5,10 +5,19 @@ This file contains arrays that are not exposed to user and should not be transla
 <resources>
     <string-array name="pref_default_tab_values">
         <item>___</item>
+        <item>tim</item>
         <item>chg</item>
         <item>cal</item>
         <item>ann</item>
         <item>tra</item>
+    </string-array>
+    <string-array name="pref_default_tab_titles">
+        <item>@string/tab_last_opened</item>
+        <item>@string/nav_timetable</item>
+        <item>@string/nav_plan_changes</item>
+        <item>@string/nav_calendar</item>
+        <item>@string/nav_announcements</item>
+        <item>@string/nav_public_transport</item>
     </string-array>
 
     <string-array name="pref_default_languages_list">
