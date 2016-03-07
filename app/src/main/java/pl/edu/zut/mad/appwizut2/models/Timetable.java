@@ -99,7 +99,6 @@ public class Timetable {
     public Day getScheduleForDate(Date date) {
         if (date != null) {
             for (Day day : mDays) {
-             //   if (day.mDate.get(Calendar.DATE) == date.getDate()) {
                 if (date.compareTo(day.mDate.getTime()) == 0) {
                     return day;
                 }

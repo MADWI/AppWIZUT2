@@ -1,9 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,24 +9,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,16 +26,12 @@ import java.util.Map;
 
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.models.DayParity;
-import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
 import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
-import pl.edu.zut.mad.appwizut2.network.ScheduleLoader;
-import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 public class CaldroidCustomFragment extends CaldroidFragment {
@@ -53,9 +39,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private final static String CURRENT_MONTH = "current_month";
     private final static String CURRENT_YEAR = "current_year";
     private final static String CURRENT_CLICKED_DATE = "clicked_date";
-
-
-    private List<ListItemContainer> eventsInDay = new ArrayList<>();
 
     private TextView clickedDate;
 
@@ -114,7 +97,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         for (int i = 0; i < calendarView.getChildCount(); i++) {
             calendarView.getChildAt(i).setSaveFromParentEnabled(false);
         }
-
 
         //setting toolbar title
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_calendar);
@@ -213,6 +195,8 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     public CaldroidListener listener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
+            setBackgroundResourceForDate(R.color.calendar_default, mDate);
+            setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
             mDate = date;
             strDate = Constants.FOR_EVENTS_FORMATTER.format(date);
 
@@ -222,6 +206,10 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
             mViewPager.setAdapter(mPagerAdapter);
             mPagerAdapter.notifyDataSetChanged();
+
+            mEventsFragment.updateEventsInDay(mDate);
+            setBackgroundResourceForDate(R.color.even, mDate);
+            refreshView();
         }
     };
 
@@ -257,14 +245,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         }
     };
 
-//    @Override
-//    public void onDataLoaded(Timetable timetable) {
-//        mTimeTable = timetable;
-//        if (mTimetableDayFragment != null && timetable != null) {
-//            mTimetableDayFragment.onScheduleAvailable(timetable, mDate);
-//        }
-//    }
-
     private class ScheduleAndEventsAdapter extends FragmentPagerAdapter {
 
         public ScheduleAndEventsAdapter(FragmentManager fm) {
@@ -279,7 +259,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
                     mTimetableDayFragment = TimetableDayFragment.newInstance(mDate.getDay());
                     return mTimetableDayFragment;
                 case 1:
-                    mEventsFragment = new EventsFragment();
+                    mEventsFragment = new EventsFragment(mDate);
                     return mEventsFragment;
                 default:
                     return null;

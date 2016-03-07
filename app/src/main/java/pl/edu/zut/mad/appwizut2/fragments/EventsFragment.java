@@ -11,7 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -34,6 +38,11 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private ProgressBar progressBar;
 
     private EventsLoader mEventsDataLoader;
+    private Date mDate;
+
+    public EventsFragment(Date date) {
+        mDate = date;
+    }
 
     @Nullable
     @Override
@@ -61,14 +70,22 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         return rootView;
     }
 
-    private void updateEventsInDay() {
+    public void updateEventsInDay(Date selectedDate) {
         eventsInDay = new ArrayList<>();
         if (eventsData != null) {
             for (ListItemContainer item : eventsData) {
-                String date = item.getDate().substring(0, 10);
-         //       if (date.equals(strDate)) {
-                    eventsInDay.add(item);
-           //     }
+                String itemDate = item.getDate().substring(0, 10);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date date = simpleDateFormat.parse(itemDate);
+                    if (date.compareTo(selectedDate) == 0) {
+                        eventsInDay.add(item);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }
         initializeAdapter();
@@ -88,7 +105,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         @Override
         public void onDataLoaded(List<ListItemContainer> data) {
             eventsData = data;
-            updateEventsInDay();
+            updateEventsInDay(mDate);
 
             swipeRefreshLayout.setRefreshing(false);
         }
