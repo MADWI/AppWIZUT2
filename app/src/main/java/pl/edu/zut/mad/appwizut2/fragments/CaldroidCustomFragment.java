@@ -48,29 +48,27 @@ import pl.edu.zut.mad.appwizut2.network.ScheduleLoader;
 import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
-public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRefreshLayout.OnRefreshListener, BaseDataLoader.DataLoadedListener<Timetable>{
+public class CaldroidCustomFragment extends CaldroidFragment {
 
     private final static String CURRENT_MONTH = "current_month";
     private final static String CURRENT_YEAR = "current_year";
     private final static String CURRENT_CLICKED_DATE = "clicked_date";
-    private List<DayParity> parityList;
-    private List<ListItemContainer> eventsData = new ArrayList<>();
+
+
     private List<ListItemContainer> eventsInDay = new ArrayList<>();
 
     private TextView clickedDate;
-    private RecyclerView itemListView;
 
     String strDate="";
     private int mMonth = 0;
     private int mYear = 0;
 
-    private WeekParityLoader mParityLoader;
     private EventsLoader mEventsDataLoader;
     private final Map<String, Integer> mEventCountsOnDays = new HashMap<>();
 
+    private EventsFragment mEventsFragment;
     private TimetableDayFragment mTimetableDayFragment;
     private BaseDataLoader<Timetable, ?> mTimeTableLoader;
-    private SharedPreferences mPreferences;
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
     private Date mDate;
@@ -129,8 +127,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
         // Initialize data load
         DataLoadingManager loadingManager = DataLoadingManager.getInstance(getContext());
-        mParityLoader = loadingManager.getLoader(WeekParityLoader.class);
-        mParityLoader.registerAndLoad(mParityListener);
         mEventsDataLoader = loadingManager.getLoader(EventsLoader.class);
         mEventsDataLoader.registerAndLoad(mEventsDataListener);
 
@@ -160,35 +156,19 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             }
         });
 
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mTimeTableLoader = chooseLoaderFromSettings(mPreferences);
-        mTimeTableLoader.registerAndLoad(this);
+        mTimeTableLoader = loadingManager.getLoader(ScheduleEdzLoader.class);
+        mTimeTableLoader.registerAndLoad(mTimeTableListener);
 
         return wrapper;
-    }
-
-    private BaseDataLoader<Timetable, ?> chooseLoaderFromSettings(SharedPreferences preferences) {
-        DataLoadingManager dataLoadingManager = DataLoadingManager.getInstance(getActivity());
-
-        if ("edziekanat".equals(preferences.getString(Constants.PREF_TIMETABLE_DATA_SOURCE, ""))) {
-            return dataLoadingManager.getLoader(ScheduleEdzLoader.class);
-        } else {
-            return dataLoadingManager.getLoader(ScheduleLoader.class);
-        }
     }
 
     @Override
     public void onDestroyView() {
         mEventsDataLoader.unregister(mEventsDataListener);
-        mParityLoader.unregister(mParityListener);
         mEventsDataLoader = null;
-        mParityLoader = null;
+        mTimeTableLoader.unregister(mTimeTableListener);
+        mTimeTableLoader = null;
         super.onDestroyView();
-    }
-
-    private void initializeAdapter(){
-        ListItemAdapter listItemAdapter = new ListItemAdapter(eventsInDay);
-        itemListView.setAdapter(listItemAdapter);
     }
 
     @Override
@@ -199,33 +179,20 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             if(selectedDate != null ){
                 clickedDate.setText(selectedDate);
             }
-            updateEventsInDay();
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(listener != null) {
-            outState.putString(CURRENT_CLICKED_DATE, clickedDate.getText().toString());
+        if (listener != null) {
+//            outState.putString(CURRENT_CLICKED_DATE, clickedDate.getText().toString());
         }
         outState.putInt(CURRENT_MONTH, getMonth());
         outState.putInt(CURRENT_YEAR, getYear());
     }
 
     private void initUI() {
-
-        // Set cells background according to parity
-        if (parityList != null) {
-            for (DayParity dayParities : parityList) {
-                DayParity.Parity parity = dayParities.getParity();
-                if (parity == DayParity.Parity.EVEN) {
-                    setBackgroundResourceForDate(R.color.even, dayParities.getDate());
-                } else {
-                    setBackgroundResourceForDate(R.color.uneven, dayParities.getDate());
-                }
-            }
-        }
 
         // Set event counts in views
         HashMap<String, Object> extraData = getExtraData();
@@ -248,58 +215,29 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         public void onSelectDate(Date date, View view) {
             mDate = date;
             strDate = Constants.FOR_EVENTS_FORMATTER.format(date);
-         //   clickedDate.setText("Wydarzenia " + Constants.REVERSED_FORMATTER.format(date));
-            clickedDate.setText("Zajęcia " + Constants.REVERSED_FORMATTER.format(date));
 
+            if (mTimeTable != null) {
+                mTimetableDayFragment.onScheduleAvailable(mTimeTable, date);
+            }
             mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
             mViewPager.setAdapter(mPagerAdapter);
             mPagerAdapter.notifyDataSetChanged();
-            mTimetableDayFragment.onScheduleAvailable(mTimeTable, date);
         }
     };
 
-    // CUSTOM FUNCTION FOR PARSING STRING TO DATA
-    public Date ParseDate(String date_str) {
-        Date dateStr = null;
-        try {
-            dateStr = Constants.FORMATTER.parse(date_str);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return dateStr;
-    }
-
-    @Override
-    public void onRefresh() {
-        mParityLoader.requestRefresh();
-        mEventsDataLoader.requestRefresh();
-    }
-
-    private void updateEventsInDay() {
-        eventsInDay = new ArrayList<>();
-        if (eventsData != null) {
-            for (ListItemContainer item : eventsData) {
-                String date = item.getDate().substring(0, 10);
-                if (date.equals(strDate)) {
-                    eventsInDay.add(item);
-                }
-            }
-        }
-        initializeAdapter();
-    }
-
-    private final BaseDataLoader.DataLoadedListener<List<DayParity>> mParityListener = new BaseDataLoader.DataLoadedListener<List<DayParity>>() {
+    private final BaseDataLoader.DataLoadedListener<Timetable> mTimeTableListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
         @Override
-        public void onDataLoaded(List<DayParity> data) {
-            parityList = data;
-            initUI();
+        public void onDataLoaded(Timetable timetable) {
+            mTimeTable = timetable;
+            if (mTimetableDayFragment != null && timetable != null) {
+                mTimetableDayFragment.onScheduleAvailable(timetable, mDate);
+            }
         }
     };
 
     private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
         @Override
         public void onDataLoaded(List<ListItemContainer> data) {
-            eventsData = data;
 
             // Count events on days
             mEventCountsOnDays.clear();
@@ -316,17 +254,16 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             }
 
             initUI();
-//            updateEventsInDay();
         }
     };
 
-    @Override
-    public void onDataLoaded(Timetable timetable) {
-        mTimeTable = timetable;
-        if (mTimetableDayFragment != null) {
-            mTimetableDayFragment.onScheduleAvailable(timetable, mDate);
-        }
-    }
+//    @Override
+//    public void onDataLoaded(Timetable timetable) {
+//        mTimeTable = timetable;
+//        if (mTimetableDayFragment != null && timetable != null) {
+//            mTimetableDayFragment.onScheduleAvailable(timetable, mDate);
+//        }
+//    }
 
     private class ScheduleAndEventsAdapter extends FragmentPagerAdapter {
 
@@ -336,10 +273,16 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) {
-                return mTimetableDayFragment = TimetableDayFragment.newInstance(mDate.getDay());
-            } else {
-                return TimetableDayFragment.newInstance(2);
+
+            switch (position) {
+                case 0:
+                    mTimetableDayFragment = TimetableDayFragment.newInstance(mDate.getDay());
+                    return mTimetableDayFragment;
+                case 1:
+                    mEventsFragment = new EventsFragment();
+                    return mEventsFragment;
+                default:
+                    return null;
             }
         }
 
