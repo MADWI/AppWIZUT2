@@ -40,8 +40,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private final static String CURRENT_YEAR = "current_year";
     private final static String CURRENT_CLICKED_DATE = "clicked_date";
 
-    private TextView clickedDate;
-
     String strDate="";
     private int mMonth = 0;
     private int mYear = 0;
@@ -103,7 +101,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
         // Wrap calendarView into out fragment
         ViewGroup wrapper = (ViewGroup) inflater.inflate(R.layout.calendar_layout, container, false);
-        clickedDate = (TextView) wrapper.findViewById(R.id.dateTextView);
 
         ((ViewGroup) wrapper.findViewById(R.id.calendar_goes_here)).addView(calendarView, 0);
 
@@ -114,8 +111,8 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
         mViewPager = (ViewPager) wrapper.findViewById(R.id.pager);
         TabLayout tabLayout = (TabLayout) wrapper.findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Zajęcia"));
-        tabLayout.addTab(tabLayout.newTab().setText("Wydarzenia"));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.lessons));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.events));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
@@ -159,7 +156,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         if (savedInstanceState != null){
             String selectedDate = savedInstanceState.getString(CURRENT_CLICKED_DATE);
             if(selectedDate != null ){
-                clickedDate.setText(selectedDate);
+                //clickedDate.setText(selectedDate);
             }
         }
     }
