@@ -83,10 +83,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e(TAG, "onCreateView");
-        // TODO: remove initUI method
-        // (It shouldn't belong to onCreateView, this forces you to know day parity synchronously)
-        initUI();
 
         // Get calendar view from superclass
         ViewGroup calendarView = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
@@ -136,14 +132,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         Log.e(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putString(Constants.CURRENT_CLICKED_DATE, mDateString);
-    }
-
-    private void initUI() {
-        // Set event counts in views
-        HashMap<String, Object> extraData = getExtraData();
-        extraData.put("EVENTS", mEventCountsOnDays);
-
-        refreshView();
     }
 
     @Override
@@ -205,7 +193,10 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
                     }
                 }
             }
-            initUI();
+            HashMap<String, Object> extraData = getExtraData();
+            extraData.put("EVENTS", mEventCountsOnDays);
+
+            refreshView();
         }
     };
 

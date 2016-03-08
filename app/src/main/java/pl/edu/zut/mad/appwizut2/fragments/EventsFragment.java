@@ -6,17 +6,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
@@ -39,7 +35,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private ProgressBar progressBar;
 
     private EventsLoader mEventsDataLoader;
-    private String mDate;
+    private String mSelectedDate;
 
     public static EventsFragment newInstance(String date) {
         Bundle bundle = new Bundle();
@@ -70,7 +66,7 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            mDate = bundle.getString(Constants.CURRENT_CLICKED_DATE);
+            mSelectedDate = bundle.getString(Constants.CURRENT_CLICKED_DATE);
         }
 
         DataLoadingManager loadingManager = DataLoadingManager.getInstance(getContext());
@@ -83,11 +79,12 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onDataLoaded(List<ListItemContainer> data) {
         eventsData = data;
-        updateEventsInDay(mDate);
+        updateEventsInDay(mSelectedDate);
         swipeRefreshLayout.setRefreshing(false);
     }
 
     public void updateEventsInDay(String selectDate) {
+        mSelectedDate = selectDate;
         eventsInDay = new ArrayList<>();
         if (eventsData != null ) {
             for (ListItemContainer item : eventsData) {
