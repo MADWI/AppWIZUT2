@@ -5,15 +5,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/calendar_default">
 
-    <LinearLayout android:layout_width="wrap_content"
+    <LinearLayout android:layout_width="0dp"
         android:id="@+id/calendar_goes_here"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="horizontal"
         android:layout_marginBottom="3dp">  <!-- TODO fix caldroid height (match_parent doesn't work) -->
     </LinearLayout>
 
-    <RelativeLayout android:layout_width="wrap_content"
-        android:layout_height="fill_parent">
+    <RelativeLayout android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
 
 
         <include

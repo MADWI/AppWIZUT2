@@ -76,7 +76,6 @@ public class TimetableDayFragment extends Fragment {
         if (scheduleDay == null) {
             mHoursInDay = Collections.emptyList();
             mAdapter.notifyDataSetChanged();
-            Log.w(TAG, "Day missing in schedule");
             return;
         }
 

@@ -18,6 +18,8 @@ import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,10 +37,6 @@ import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 public class CaldroidCustomFragment extends CaldroidFragment {
-
-    private final static String CURRENT_MONTH = "current_month";
-    private final static String CURRENT_YEAR = "current_year";
-    private final static String CURRENT_CLICKED_DATE = "clicked_date";
 
     private Date mSelectDate;
     private String mDateString;
@@ -68,8 +66,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         if (savedInstanceState != null) {
             // Delete info for child fragment manager
             savedInstanceState.remove("android:support:fragments");
-            mMonth = savedInstanceState.getInt(CURRENT_MONTH);
-            mYear = savedInstanceState.getInt(CURRENT_YEAR);
         }
         // Call super
         super.onCreate(savedInstanceState);
@@ -80,12 +76,14 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         // TODO: remove initUI method
         // (It shouldn't belong to onCreateView, this forces you to know day parity synchronously)
         initUI();
-        if (mMonth != 0 && mYear != 0) {
-            month = mMonth;
-            year = mYear;
-        }
 
-        mSelectDate = new Date(System.currentTimeMillis());
+        try {
+            DateFormat formatter = Constants.FOR_EVENTS_FORMATTER;
+            mSelectDate = formatter.parse(formatter.format(new Date()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        mDateString = Constants.FOR_EVENTS_FORMATTER.format(mSelectDate);
 
         // Get calendar view from superclass
         ViewGroup calendarView = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
@@ -138,6 +136,8 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         mTimeTableLoader = loadingManager.getLoader(ScheduleEdzLoader.class);
         mTimeTableLoader.registerAndLoad(mTimeTableListener);
 
+        setCaldroidListener(listener);
+
         return wrapper;
     }
 
@@ -154,7 +154,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null) {
-            String selectedDate = savedInstanceState.getString(CURRENT_CLICKED_DATE);
+            String selectedDate = savedInstanceState.getString(Constants.CURRENT_CLICKED_DATE);
             if (selectedDate != null) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -167,10 +167,8 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (listener != null) {
-            outState.putString(CURRENT_CLICKED_DATE, mDateString);
+            outState.putString(Constants.CURRENT_CLICKED_DATE, mDateString);
         }
-        outState.putInt(CURRENT_MONTH, getMonth());
-        outState.putInt(CURRENT_YEAR, getYear());
     }
 
     private void initUI() {
@@ -179,7 +177,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         HashMap<String, Object> extraData = getExtraData();
         extraData.put("EVENTS", mEventCountsOnDays);
 
-        setCaldroidListener(listener);
         refreshView();
     }
 
@@ -205,7 +202,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             mViewPager.setAdapter(mPagerAdapter);
             mPagerAdapter.notifyDataSetChanged();
 
-            mEventsFragment.updateEventsInDay(mSelectDate);
+            mEventsFragment.updateEventsInDay(mDateString);
             setBackgroundResourceForDate(R.color.even, mSelectDate);
             refreshView();
         }
@@ -256,10 +253,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
                     mTimetableDayFragment = TimetableDayFragment.newInstance(mSelectDate.getDay());
                     return mTimetableDayFragment;
                 case 1:
-                    mEventsFragment = new EventsFragment(mSelectDate);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(CURRENT_CLICKED_DATE, mDateString);
-                    mEventsFragment.setArguments(bundle);
+                    mEventsFragment = EventsFragment.newInstance(mDateString);
                     return mEventsFragment;
                 default:
                     return null;

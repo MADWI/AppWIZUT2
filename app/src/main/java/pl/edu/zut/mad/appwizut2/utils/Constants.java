@@ -67,4 +67,7 @@ public class Constants {
     public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd", java.util.Locale.getDefault());
     public static final SimpleDateFormat REVERSED_FORMATTER = new SimpleDateFormat("dd.MM.yyyy", java.util.Locale.getDefault());
     public static final SimpleDateFormat FOR_EVENTS_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
+
+    /** calendar - key for bundle */
+    public static final String CURRENT_CLICKED_DATE = "clicked_date";
 }

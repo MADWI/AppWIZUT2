@@ -12,9 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
@@ -37,10 +39,16 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private ProgressBar progressBar;
 
     private EventsLoader mEventsDataLoader;
-    private Date mDate;
+    private String mDate;
 
-    public EventsFragment(Date date) {
-        mDate = date;
+    public static EventsFragment newInstance(String date) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.CURRENT_CLICKED_DATE, date);
+
+        EventsFragment eventsFragment = new EventsFragment();
+        eventsFragment.setArguments(bundle);
+
+        return eventsFragment;
     }
 
     @Nullable
@@ -60,15 +68,14 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         itemListView.setLayoutManager(linearLayoutManager);
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mDate = bundle.getString(Constants.CURRENT_CLICKED_DATE);
+        }
+
         DataLoadingManager loadingManager = DataLoadingManager.getInstance(getContext());
         mEventsDataLoader = loadingManager.getLoader(EventsLoader.class);
         mEventsDataLoader.registerAndLoad(this);
-
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            String date = bundle.getString("clicked_date");
-            Log.e("data", ""+date);
-        }
 
         return rootView;
     }
@@ -80,13 +87,12 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    public void updateEventsInDay(Date selectDate) {
+    public void updateEventsInDay(String selectDate) {
         eventsInDay = new ArrayList<>();
-        if (eventsData != null) {
+        if (eventsData != null ) {
             for (ListItemContainer item : eventsData) {
                 String itemDate = item.getDate().substring(0, 10);
-                String selectDateStr = Constants.FOR_EVENTS_FORMATTER.format(selectDate);
-                if (selectDateStr.compareTo(itemDate) == 0) {
+                if (selectDate.compareTo(itemDate) == 0) {
                     eventsInDay.add(item);
                 }
             }
