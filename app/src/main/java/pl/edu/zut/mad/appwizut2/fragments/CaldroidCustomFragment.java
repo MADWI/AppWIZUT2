@@ -19,6 +19,8 @@ import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +42,8 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private final static String CURRENT_YEAR = "current_year";
     private final static String CURRENT_CLICKED_DATE = "clicked_date";
 
-    String strDate="";
+    private Date mDate;
+    private String mDateString;
     private int mMonth = 0;
     private int mYear = 0;
 
@@ -52,7 +55,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private BaseDataLoader<Timetable, ?> mTimeTableLoader;
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
-    private Date mDate;
+
     private Timetable mTimeTable;
 
     @Override
@@ -69,7 +72,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             savedInstanceState.remove("android:support:fragments");
             mMonth = savedInstanceState.getInt(CURRENT_MONTH);
             mYear = savedInstanceState.getInt(CURRENT_YEAR);
-
         }
         // Call super
         super.onCreate(savedInstanceState);
@@ -80,7 +82,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         // TODO: remove initUI method
         // (It shouldn't belong to onCreateView, this forces you to know day parity synchronously)
         initUI();
-        if(mMonth != 0 && mYear != 0){
+        if (mMonth != 0 && mYear != 0) {
             month = mMonth;
             year = mYear;
         }
@@ -155,7 +157,9 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         super.onViewCreated(view, savedInstanceState);
         if (savedInstanceState != null){
             String selectedDate = savedInstanceState.getString(CURRENT_CLICKED_DATE);
-            if(selectedDate != null ){
+            if(selectedDate != null ) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
                 //clickedDate.setText(selectedDate);
             }
         }
@@ -165,7 +169,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (listener != null) {
-//            outState.putString(CURRENT_CLICKED_DATE, clickedDate.getText().toString());
+            outState.putString(CURRENT_CLICKED_DATE, mDateString);
         }
         outState.putInt(CURRENT_MONTH, getMonth());
         outState.putInt(CURRENT_YEAR, getYear());
@@ -195,7 +199,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             setBackgroundResourceForDate(R.color.calendar_default, mDate);
             setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
             mDate = date;
-            strDate = Constants.FOR_EVENTS_FORMATTER.format(date);
+            mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
 
             if (mTimeTable != null) {
                 mTimetableDayFragment.onScheduleAvailable(mTimeTable, date);
@@ -237,7 +241,6 @@ public class CaldroidCustomFragment extends CaldroidFragment {
                     }
                 }
             }
-
             initUI();
         }
     };
