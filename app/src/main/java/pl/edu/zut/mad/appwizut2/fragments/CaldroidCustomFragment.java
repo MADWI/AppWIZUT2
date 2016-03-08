@@ -2,7 +2,6 @@ package pl.edu.zut.mad.appwizut2.fragments;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +18,7 @@ import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,12 +34,10 @@ import pl.edu.zut.mad.appwizut2.network.EventsLoader;
 import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
-public class CaldroidCustomFragment extends CaldroidFragment {
+public class CaldroidCustomFragment extends CaldroidFragment implements TabLayout.OnTabSelectedListener{
 
     private Date mSelectDate;
     private String mDateString;
-    private int mMonth = 0;
-    private int mYear = 0;
 
     private EventsLoader mEventsDataLoader;
     private final Map<String, Integer> mEventCountsOnDays = new HashMap<>();
@@ -49,10 +45,9 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private EventsFragment mEventsFragment;
     private TimetableDayFragment mTimetableDayFragment;
     private BaseDataLoader<Timetable, ?> mTimeTableLoader;
-    private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
-
     private Timetable mTimeTable;
+
 
     @Override
     public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
@@ -62,10 +57,25 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.e(TAG, "onCreate");
         // michalbednarski: Hacky workaround for Caldroid's saved state mishandling
         if (savedInstanceState != null) {
             // Delete info for child fragment manager
             savedInstanceState.remove("android:support:fragments");
+            mDateString = savedInstanceState.getString(Constants.CURRENT_CLICKED_DATE);
+            try {
+                mSelectDate = Constants.FOR_EVENTS_FORMATTER.parse(mDateString);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                mSelectDate = Constants.FOR_EVENTS_FORMATTER.parse(
+                        Constants.FOR_EVENTS_FORMATTER.format(new Date()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            mDateString = Constants.FOR_EVENTS_FORMATTER.format(mSelectDate);
         }
         // Call super
         super.onCreate(savedInstanceState);
@@ -73,17 +83,10 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e(TAG, "onCreateView");
         // TODO: remove initUI method
         // (It shouldn't belong to onCreateView, this forces you to know day parity synchronously)
         initUI();
-
-        try {
-            DateFormat formatter = Constants.FOR_EVENTS_FORMATTER;
-            mSelectDate = formatter.parse(formatter.format(new Date()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        mDateString = Constants.FOR_EVENTS_FORMATTER.format(mSelectDate);
 
         // Get calendar view from superclass
         ViewGroup calendarView = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
@@ -112,67 +115,30 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         tabLayout.addTab(tabLayout.newTab().setText(R.string.lessons));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.events));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setOnTabSelectedListener(this);
 
-        mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
-        mViewPager.setAdapter(mPagerAdapter);
+        PagerAdapter pagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(pagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                mViewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
 
         mTimeTableLoader = loadingManager.getLoader(ScheduleEdzLoader.class);
         mTimeTableLoader.registerAndLoad(mTimeTableListener);
 
         setCaldroidListener(listener);
 
+        changeSelectDate(mSelectDate);
+        mTimeTableLoader.requestRefresh();
         return wrapper;
     }
 
     @Override
-    public void onDestroyView() {
-        mEventsDataLoader.unregister(mEventsDataListener);
-        mEventsDataLoader = null;
-        mTimeTableLoader.unregister(mTimeTableListener);
-        mTimeTableLoader = null;
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null) {
-            String selectedDate = savedInstanceState.getString(Constants.CURRENT_CLICKED_DATE);
-            if (selectedDate != null) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-                //clickedDate.setText(selectedDate);
-            }
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.e(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
-        if (listener != null) {
-            outState.putString(Constants.CURRENT_CLICKED_DATE, mDateString);
-        }
+        outState.putString(Constants.CURRENT_CLICKED_DATE, mDateString);
     }
 
     private void initUI() {
-
         // Set event counts in views
         HashMap<String, Object> extraData = getExtraData();
         extraData.put("EVENTS", mEventCountsOnDays);
@@ -190,23 +156,27 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     public CaldroidListener listener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
-            setBackgroundResourceForDate(R.color.calendar_default, mSelectDate);
-            setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
-            mSelectDate = date;
-            mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
+            changeSelectDate(date);
 
-            if (mTimeTable != null) {
+            if (mTimeTable != null && mTimetableDayFragment != null) {
                 mTimetableDayFragment.onScheduleAvailable(mTimeTable, date);
             }
-            mPagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
-            mViewPager.setAdapter(mPagerAdapter);
-            mPagerAdapter.notifyDataSetChanged();
 
-            mEventsFragment.updateEventsInDay(mDateString);
-            setBackgroundResourceForDate(R.color.even, mSelectDate);
-            refreshView();
+            if (mEventsFragment != null) {
+                mEventsFragment.updateEventsInDay(mDateString);
+            }
         }
     };
+
+    private void changeSelectDate(Date date) {
+        setBackgroundResourceForDate(R.color.calendar_default, mSelectDate);
+        setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
+        mSelectDate = date;
+        mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
+
+        setBackgroundResourceForDate(R.color.even, mSelectDate);
+        refreshView();
+    }
 
     private final BaseDataLoader.DataLoadedListener<Timetable> mTimeTableListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
         @Override
@@ -238,6 +208,30 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             initUI();
         }
     };
+
+    @Override
+    public void onDestroyView() {
+        mEventsDataLoader.unregister(mEventsDataListener);
+        mEventsDataLoader = null;
+        mTimeTableLoader.unregister(mTimeTableListener);
+        mTimeTableLoader = null;
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
 
     private class ScheduleAndEventsAdapter extends FragmentPagerAdapter {
 
