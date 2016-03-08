@@ -10,15 +10,13 @@ Features
 -----------
 * Schedule
 * Changes in schedule
-* Calenda
+* Event calendar
 * Announcements
-* Timetable
-* Settings
-* About us
+* Public transport timetable
 
 Contact
 -------
-  * Webpage: http://www.mad.zut.edu.pl
+* Webpage: http://www.mad.zut.edu.pl
 * E-mail: mad@zut.edu.pl
 * Facebook profile: https://www.facebook.com/MADWIZUT
 
