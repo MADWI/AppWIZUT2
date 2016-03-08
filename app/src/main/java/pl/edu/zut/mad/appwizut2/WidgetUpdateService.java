@@ -13,6 +13,21 @@ import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
  */
 public class WidgetUpdateService extends Service implements DataLoadingManager.MultipleOneshotLoadCallback {
 
+    /**
+     * Intent action indicating that widget update is initiated by user (as opposed to timer)
+     */
+    public static final String ACTION_REFRESH_BY_USER = "pl.edu.zut.mad.appwizut2.WIDGET_USER_REFRESH";
+
+    /**
+     * Maximum time between two consecutive refresh button presses to trigger full refresh
+     */
+    private static final int FULL_REFRESH_TRIGGER_TIME = 10000;
+
+    /**
+     * Time of last refresh request from user in {@link System#currentTimeMillis()}
+     */
+    private static long sLastRefreshRequest;
+
     private boolean mIsLoading = false;
 
     @Override
@@ -23,10 +38,21 @@ public class WidgetUpdateService extends Service implements DataLoadingManager.M
         }
         mIsLoading = true;
 
+        // Show loading indicator
+        WidgetProvider.showWidgetLoading(this, AppWidgetManager.getInstance(this));
+
+        // Check if we're requested to do full refresh
+        boolean requestRefresh = false;
+        if (ACTION_REFRESH_BY_USER.equals(intent.getAction())) {
+            long currentTime = System.currentTimeMillis();
+            requestRefresh = sLastRefreshRequest > currentTime - FULL_REFRESH_TRIGGER_TIME && sLastRefreshRequest < currentTime;
+            sLastRefreshRequest = currentTime;
+        }
+
         // Load required data
         DataLoadingManager
                 .getInstance(this)
-                .multipleOneshotLoad(WidgetProvider.LOADER_CLASSES, this);
+                .multipleOneshotLoad(WidgetProvider.LOADER_CLASSES, this, requestRefresh);
         return START_NOT_STICKY;
     }
 

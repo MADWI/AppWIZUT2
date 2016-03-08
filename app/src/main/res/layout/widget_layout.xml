@@ -5,23 +5,41 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_top_s">
+        android:background="@drawable/background_top_s"
+        android:gravity="center_vertical">
+        <!-- Logo -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/widget_mad_logo"
-            android:src="@drawable/widget_top_text"
-            android:layout_gravity="left"/>
+            android:src="@drawable/widget_top_text"/>
+
+        <!-- Spacer -->
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Loading indicator -->
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/loading_indicator"
+            android:visibility="invisible"
+            tools:visibility="visible"/>
+
+        <!-- Refresh button -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:id="@+id/refresh_button"
-            android:src="@drawable/bar_refresh"
-            android:layout_gravity="right|center_vertical"/>
-    </FrameLayout>
+            android:src="@drawable/bar_refresh"/>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/widget_upcoming_hour"

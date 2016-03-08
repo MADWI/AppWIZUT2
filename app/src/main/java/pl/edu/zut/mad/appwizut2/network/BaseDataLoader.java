@@ -159,9 +159,36 @@ public abstract class BaseDataLoader<Data, RawData extends Serializable> {
      */
     @MainThread
     public void registerAndLoad(final DataLoadedListener<Data> callback) {
+        registerAndLoad(callback, false);
+    }
+
+    /**
+     * Asynchronously obtain data and invoke callback when they are ready
+     *
+     * Note that callback may be invoked immediately after or during this method call,
+     * only call this when you're ready to receive it
+     *
+     * Callback registered here must be later unregistered with {@link #unregister(DataLoadedListener)}
+     */
+    @MainThread
+    public void registerAndLoad(final DataLoadedListener<Data> callback, boolean requestRefresh) {
         boolean isFirstRegistered = mCallbacks.isEmpty();
         mCallbacks.add(callback);
-        if (mData != null && mLoadTask == null && (!isFirstRegistered || mInMemoryDataExpiresOn > System.currentTimeMillis())) {
+
+        // Decide whenever we want to load from cache or start a new load task
+
+        // Are we able to load results from cache?
+        boolean loadFromCache = mData != null && mLoadTask == null;
+
+        // If refresh was requested, don't load from cache
+        if (requestRefresh) {
+            loadFromCache = false;
+        }
+
+        // We also won't load from cache if this loader was inactive for some time
+        loadFromCache &= !isFirstRegistered || mInMemoryDataExpiresOn > System.currentTimeMillis();
+
+        if (loadFromCache) {
             callback.onDataLoaded(mData);
         } else {
             startLoadTaskIfNotStarted();

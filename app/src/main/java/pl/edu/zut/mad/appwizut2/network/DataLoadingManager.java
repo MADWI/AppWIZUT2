@@ -87,7 +87,7 @@ public class DataLoadingManager {
      * Results will be passed to {@link MultipleOneshotLoadCallback#onLoaded(Object[])},
      * with every array item corresponding to loader specified here in loaderClasses param.
      */
-    public void multipleOneshotLoad(Class<? extends BaseDataLoader>[] loaderClasses, final MultipleOneshotLoadCallback callback) {
+    public void multipleOneshotLoad(Class<? extends BaseDataLoader>[] loaderClasses, final MultipleOneshotLoadCallback callback, boolean requestRefresh) {
         final int loadersCount = loaderClasses.length;
 
         // The collected results from loaders
@@ -135,7 +135,7 @@ public class DataLoadingManager {
                         callback.onLoaded(results);
                     }
                 }
-            });
+            }, requestRefresh);
         }
     }
 }

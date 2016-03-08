@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import java.util.List;
@@ -95,6 +96,9 @@ public class WidgetProvider extends AppWidgetProvider {
             views.setTextViewText(R.id.widget_last_change, text);
         }
 
+        // Hide loading indicator
+        views.setViewVisibility(R.id.loading_indicator, View.INVISIBLE);
+
         // Set actions
         views.setOnClickPendingIntent(R.id.widget_mad_logo, PendingIntent.getActivity(
                 context,
@@ -117,7 +121,12 @@ public class WidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.refresh_button, PendingIntent.getService(
                 context,
                 0,
-                new Intent(context, WidgetUpdateService.class),
+                new Intent(
+                        WidgetUpdateService.ACTION_REFRESH_BY_USER,
+                        null,
+                        context,
+                        WidgetUpdateService.class
+                ),
                 0
         ));
 
@@ -126,9 +135,19 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
 
+    static void showWidgetLoading(Context context, AppWidgetManager appWidgetManager) {
+        // Create RemoteViews showing loading indicator
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+        views.setViewVisibility(R.id.loading_indicator, View.VISIBLE);
+
+        // Partially update app widget
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        appWidgetManager.partiallyUpdateAppWidget(appWidgetIds, views);
+    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        showWidgetLoading(context, appWidgetManager);
         context.startService(
                 new Intent(context, WidgetUpdateService.class)
         );
