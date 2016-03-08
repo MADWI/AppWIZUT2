@@ -1,22 +1,40 @@
+# **WI ZUT App**
 
-#Dane offline
-Przykład wykorzystania nowego offline API 
+#
 
+####  A 'must have' app for every WI student.
 
-             WeekParityChecker checker = new WeekParityChecker(getBaseContext());
-                  //zwraca dane parzystosci na dzien dzisiejszy i jutrzejszy
-            checker.getNextDaysParity(new WeekParityChecker.DataTwoDaysCallback() {
-                @Override
-                public void twoDaysData(String[] data) {
-                    System.out.println("ee");
-                }
-            });
-            // zwraca cale posiadane dane parzystosci
-            checker.getCurrentData(new WeekParityChecker.DataCallback() {
-                @Override
-                public void foundData(ArrayList<DayParity> data) {
-                    System.out.println("ee");
-                }
-            });
-            
-            
+![Wizut APP](http://www.mad.zut.edu.pl/images/news/wizutapp.png)
+
+Features
+-----------
+* Schedule
+* Changes in schedule
+* Calenda
+* Announcements
+* Timetable
+* Settings
+* About us
+
+Contact
+-------
+  * Webpage: http://www.mad.zut.edu.pl
+* E-mail: mad@zut.edu.pl
+* Facebook profile: https://www.facebook.com/MADWIZUT
+
+License
+-------
+###### Copyright (c) 2014 Mobile Applications Developers WI ZUT 
+
+Application use open source software: Caldroid Copyright (c) 2013 by Roomorama Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.   
