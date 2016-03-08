@@ -1,6 +1,7 @@
 package pl.edu.zut.mad.appwizut2.network;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.MainThread;
 import android.support.v4.util.ArrayMap;
 
@@ -102,10 +103,28 @@ public class DataLoadingManager {
             final BaseDataLoader loader = getLoader(loaderClasses[i]);
             final int loaderIndex = i;
             loader.registerAndLoad(new BaseDataLoader.DataLoadedListener() {
+                boolean mSeenResult;
+
                 @Override
                 public void onDataLoaded(Object o) {
-                    // Unregister from this loader (oneshot)
-                    loader.unregister(this);
+                    // Run handler only once
+                    if (mSeenResult) {
+                        return;
+                    }
+                    mSeenResult = true;
+
+                    // Unregister from this loader
+                    // Post because this is called from iteration over callbacks list,
+                    // so modifying it right now would cause ConcurrentModificationException
+                    // (All modifications are done from main thread, so no "synchronized")
+                    final BaseDataLoader.DataLoadedListener thisCallback = this;
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            loader.unregister(thisCallback);
+                        }
+                    });
+
 
                     // Put result in array
                     results[loaderIndex] = o;
