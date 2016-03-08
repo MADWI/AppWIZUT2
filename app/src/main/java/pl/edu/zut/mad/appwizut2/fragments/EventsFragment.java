@@ -6,15 +6,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -24,11 +22,12 @@ import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
  * Created by macko on 07.03.2016.
  */
-public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, BaseDataLoader.DataLoadedListener<List<ListItemContainer>> {
 
     private List<ListItemContainer> eventsData = new ArrayList<>();
     private List<ListItemContainer> eventsInDay = new ArrayList<>();
@@ -63,32 +62,37 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         DataLoadingManager loadingManager = DataLoadingManager.getInstance(getContext());
         mEventsDataLoader = loadingManager.getLoader(EventsLoader.class);
-        mEventsDataLoader.registerAndLoad(mEventsDataListener);
+        mEventsDataLoader.registerAndLoad(this);
 
-        initializeAdapter();
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String date = bundle.getString("clicked_date");
+            Log.e("data", ""+date);
+        }
 
         return rootView;
     }
 
-    public void updateEventsInDay(Date selectedDate) {
+    @Override
+    public void onDataLoaded(List<ListItemContainer> data) {
+        eventsData = data;
+        updateEventsInDay(mDate);
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    public void updateEventsInDay(Date selectDate) {
         eventsInDay = new ArrayList<>();
         if (eventsData != null) {
             for (ListItemContainer item : eventsData) {
                 String itemDate = item.getDate().substring(0, 10);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                try {
-                    Date date = simpleDateFormat.parse(itemDate);
-                    if (date.compareTo(selectedDate) == 0) {
-                        eventsInDay.add(item);
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                String selectDateStr = Constants.FOR_EVENTS_FORMATTER.format(selectDate);
+                if (selectDateStr.compareTo(itemDate) == 0) {
+                    eventsInDay.add(item);
                 }
-
-
             }
         }
-        initializeAdapter();
+        ListItemAdapter listItemAdapter = new ListItemAdapter(eventsInDay);
+        itemListView.setAdapter(listItemAdapter);
     }
 
     @Override
@@ -96,24 +100,9 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         mEventsDataLoader.requestRefresh();
     }
 
-    private void initializeAdapter() {
-        ListItemAdapter listItemAdapter = new ListItemAdapter(eventsInDay);
-        itemListView.setAdapter(listItemAdapter);
-    }
-
-    private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
-        @Override
-        public void onDataLoaded(List<ListItemContainer> data) {
-            eventsData = data;
-            updateEventsInDay(mDate);
-
-            swipeRefreshLayout.setRefreshing(false);
-        }
-    };
-
     @Override
     public void onDestroyView() {
-        mEventsDataLoader.unregister(mEventsDataListener);
+        mEventsDataLoader.unregister(this);
         mEventsDataLoader = null;
         super.onDestroyView();
     }

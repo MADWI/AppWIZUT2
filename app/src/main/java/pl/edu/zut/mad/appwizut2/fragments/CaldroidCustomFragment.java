@@ -13,13 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +40,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     private final static String CURRENT_YEAR = "current_year";
     private final static String CURRENT_CLICKED_DATE = "clicked_date";
 
-    private Date mDate;
+    private Date mSelectDate;
     private String mDateString;
     private int mMonth = 0;
     private int mYear = 0;
@@ -87,7 +85,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             year = mYear;
         }
 
-        mDate = new Date(System.currentTimeMillis());
+        mSelectDate = new Date(System.currentTimeMillis());
 
         // Get calendar view from superclass
         ViewGroup calendarView = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
@@ -155,9 +153,9 @@ public class CaldroidCustomFragment extends CaldroidFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null){
+        if (savedInstanceState != null) {
             String selectedDate = savedInstanceState.getString(CURRENT_CLICKED_DATE);
-            if(selectedDate != null ) {
+            if (selectedDate != null) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
                 //clickedDate.setText(selectedDate);
@@ -191,14 +189,13 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         super.retrieveInitialArgs();
     }
 
-
     // Setup listener
     public CaldroidListener listener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
-            setBackgroundResourceForDate(R.color.calendar_default, mDate);
+            setBackgroundResourceForDate(R.color.calendar_default, mSelectDate);
             setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
-            mDate = date;
+            mSelectDate = date;
             mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
 
             if (mTimeTable != null) {
@@ -208,8 +205,8 @@ public class CaldroidCustomFragment extends CaldroidFragment {
             mViewPager.setAdapter(mPagerAdapter);
             mPagerAdapter.notifyDataSetChanged();
 
-            mEventsFragment.updateEventsInDay(mDate);
-            setBackgroundResourceForDate(R.color.even, mDate);
+            mEventsFragment.updateEventsInDay(mSelectDate);
+            setBackgroundResourceForDate(R.color.even, mSelectDate);
             refreshView();
         }
     };
@@ -219,7 +216,7 @@ public class CaldroidCustomFragment extends CaldroidFragment {
         public void onDataLoaded(Timetable timetable) {
             mTimeTable = timetable;
             if (mTimetableDayFragment != null && timetable != null) {
-                mTimetableDayFragment.onScheduleAvailable(timetable, mDate);
+                mTimetableDayFragment.onScheduleAvailable(timetable, mSelectDate);
             }
         }
     };
@@ -256,10 +253,13 @@ public class CaldroidCustomFragment extends CaldroidFragment {
 
             switch (position) {
                 case 0:
-                    mTimetableDayFragment = TimetableDayFragment.newInstance(mDate.getDay());
+                    mTimetableDayFragment = TimetableDayFragment.newInstance(mSelectDate.getDay());
                     return mTimetableDayFragment;
                 case 1:
-                    mEventsFragment = new EventsFragment(mDate);
+                    mEventsFragment = new EventsFragment(mSelectDate);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(CURRENT_CLICKED_DATE, mDateString);
+                    mEventsFragment.setArguments(bundle);
                     return mEventsFragment;
                 default:
                     return null;
