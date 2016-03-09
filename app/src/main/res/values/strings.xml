@@ -91,5 +91,6 @@
     <string name="repo_link">github.com/MADWI/AppWIZUT2/</string>
     <string name="events">Wydarzenia</string>
     <string name="lessons">Zajęcia</string>
+    <string name="no_events">Brak wydarzeń</string>
 
 </resources>

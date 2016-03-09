@@ -37,8 +37,6 @@ import pl.edu.zut.mad.appwizut2.utils.DateUtils;
 public class TimetableDayFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable> {
     private static final String TAG = "TimetableDayFragment";
 
-    public static final String ARG_DATE = "TDF.Day";
-
     private Date mDate;
     private RecyclerView mRecyclerView;
     private List<Timetable.Hour> mHoursInDay = Collections.emptyList();
@@ -51,7 +49,7 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
         super.onCreate(savedInstanceState);
 
         Bundle retainableArguments = savedInstanceState != null ? savedInstanceState : getArguments();
-        mDate = new Date(retainableArguments.getLong(ARG_DATE));
+        mDate = new Date(retainableArguments.getLong(Constants.ARG_DATE));
 
         mAdapter = new Adapter();
     }
@@ -59,7 +57,7 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(ARG_DATE, mDate.getTime());
+        outState.putLong(Constants.ARG_DATE, mDate.getTime());
     }
 
     private void putDataInView() {
@@ -85,15 +83,6 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
     public void setDate(Date date) {
         mDate = date;
         putDataInView();
-    }
-
-    /**
-     * Use {@link #setDate(Date)} instead
-     * TODO: Remove this method
-     */
-    @Deprecated
-    void onScheduleAvailable(Timetable timetable, Date date) {
-        setDate(date);
     }
 
     @Override
@@ -122,7 +111,7 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
      */
     public static TimetableDayFragment newInstance(Date date) {
         Bundle args = new Bundle();
-        args.putLong(ARG_DATE, date.getTime());
+        args.putLong(Constants.ARG_DATE, date.getTime());
 
         TimetableDayFragment fragment = new TimetableDayFragment();
         fragment.setArguments(args);

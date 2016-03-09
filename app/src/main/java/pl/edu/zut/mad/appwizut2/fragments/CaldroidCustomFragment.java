@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
-public class CaldroidCustomFragment extends CaldroidFragment implements TabLayout.OnTabSelectedListener{
+public class CaldroidCustomFragment extends CaldroidFragment implements TabLayout.OnTabSelectedListener {
 
     private Date mSelectDate;
     private String mDateString;
@@ -53,7 +52,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.e(TAG, "onCreate");
         // michalbednarski: Hacky workaround for Caldroid's saved state mishandling
         if (savedInstanceState != null) {
             // Delete info for child fragment manager
@@ -113,7 +111,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-        setCaldroidListener(listener);
+        setCaldroidListener(caldroidListener);
 
         changeSelectedDate(mSelectDate);
         return wrapper;
@@ -121,7 +119,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.e(TAG, "onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putString(Constants.CURRENT_CLICKED_DATE, mDateString);
     }
@@ -132,8 +129,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         super.retrieveInitialArgs();
     }
 
-    // Setup listener
-    public CaldroidListener listener = new CaldroidListener() {
+    public CaldroidListener caldroidListener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
             changeSelectedDate(date);
@@ -142,7 +138,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
                 mTimetableDayFragment.setDate(date);
             }
             if (mEventsFragment != null) {
-                mEventsFragment.updateEventsInDay(mDateString);
+                mEventsFragment.setDate(date);
             }
         }
     };
@@ -150,6 +146,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     private void changeSelectedDate(Date date) {
         setBackgroundResourceForDate(R.color.calendar_default, mSelectDate);
         setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
+
         mSelectDate = date;
         mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
 
@@ -181,12 +178,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         }
     };
 
-    @Override
-    public void onDestroyView() {
-        mEventsDataLoader.unregister(mEventsDataListener);
-        mEventsDataLoader = null;
-        super.onDestroyView();
-    }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
@@ -203,6 +194,13 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
     }
 
+    @Override
+    public void onDestroyView() {
+        mEventsDataLoader.unregister(mEventsDataListener);
+        mEventsDataLoader = null;
+        super.onDestroyView();
+    }
+
     private class ScheduleAndEventsAdapter extends FragmentPagerAdapter {
 
         public ScheduleAndEventsAdapter(FragmentManager fm) {
@@ -214,10 +212,10 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
             switch (position) {
                 case 0:
-                    mTimetableDayFragment = TimetableDayFragment.newInstance(mSelectDate.getDay());
+                    mTimetableDayFragment = TimetableDayFragment.newInstance(mSelectDate);
                     return mTimetableDayFragment;
                 case 1:
-                    mEventsFragment = EventsFragment.newInstance(mDateString);
+                    mEventsFragment = EventsFragment.newInstance(mSelectDate);
                     return mEventsFragment;
                 default:
                     return null;
