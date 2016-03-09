@@ -78,7 +78,7 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
         strDate += (day < 10) ? "0" + day : day;
 
 
-        if(events.containsKey(strDate)) {
+        if (events != null && events.containsKey(strDate)) {
             int count = (int )events.get(strDate);
             eventsIndicator.setLineCount(count);
         } else {
