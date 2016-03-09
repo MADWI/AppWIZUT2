@@ -27,11 +27,9 @@ import java.util.Map;
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
-import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
-import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 public class CaldroidCustomFragment extends CaldroidFragment implements TabLayout.OnTabSelectedListener{
@@ -44,9 +42,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
     private EventsFragment mEventsFragment;
     private TimetableDayFragment mTimetableDayFragment;
-    private BaseDataLoader<Timetable, ?> mTimeTableLoader;
     private ViewPager mViewPager;
-    private Timetable mTimeTable;
 
 
     @Override
@@ -117,13 +113,9 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-        mTimeTableLoader = loadingManager.getLoader(ScheduleEdzLoader.class);
-        mTimeTableLoader.registerAndLoad(mTimeTableListener);
-
         setCaldroidListener(listener);
 
-        changeSelectDate(mSelectDate);
-        mTimeTableLoader.requestRefresh();
+        changeSelectedDate(mSelectDate);
         return wrapper;
     }
 
@@ -144,19 +136,18 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     public CaldroidListener listener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
-            changeSelectDate(date);
+            changeSelectedDate(date);
 
-            if (mTimeTable != null && mTimetableDayFragment != null) {
-                mTimetableDayFragment.onScheduleAvailable(mTimeTable, date);
+            if (mTimetableDayFragment != null) {
+                mTimetableDayFragment.setDate(date);
             }
-
             if (mEventsFragment != null) {
                 mEventsFragment.updateEventsInDay(mDateString);
             }
         }
     };
 
-    private void changeSelectDate(Date date) {
+    private void changeSelectedDate(Date date) {
         setBackgroundResourceForDate(R.color.calendar_default, mSelectDate);
         setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
         mSelectDate = date;
@@ -165,16 +156,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         setBackgroundResourceForDate(R.color.even, mSelectDate);
         refreshView();
     }
-
-    private final BaseDataLoader.DataLoadedListener<Timetable> mTimeTableListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
-        @Override
-        public void onDataLoaded(Timetable timetable) {
-            mTimeTable = timetable;
-            if (mTimetableDayFragment != null && timetable != null) {
-                mTimetableDayFragment.onScheduleAvailable(timetable, mSelectDate);
-            }
-        }
-    };
 
     private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
         @Override
@@ -204,8 +185,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     public void onDestroyView() {
         mEventsDataLoader.unregister(mEventsDataListener);
         mEventsDataLoader = null;
-        mTimeTableLoader.unregister(mTimeTableListener);
-        mTimeTableLoader = null;
         super.onDestroyView();
     }
 

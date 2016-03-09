@@ -120,9 +120,9 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
     /**
      * Create instance of this fragment to show schedule for specified Date
      */
-    public static TimetableDayFragment newInstance(Date day) {
+    public static TimetableDayFragment newInstance(Date date) {
         Bundle args = new Bundle();
-        args.putLong(ARG_DATE, day.getTime());
+        args.putLong(ARG_DATE, date.getTime());
 
         TimetableDayFragment fragment = new TimetableDayFragment();
         fragment.setArguments(args);
