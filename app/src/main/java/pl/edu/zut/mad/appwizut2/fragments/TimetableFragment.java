@@ -1,9 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -21,10 +19,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.activities.MyGroups;
@@ -32,27 +28,21 @@ import pl.edu.zut.mad.appwizut2.activities.WebPlanActivity;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
-import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
-import pl.edu.zut.mad.appwizut2.network.ScheduleLoader;
-import pl.edu.zut.mad.appwizut2.utils.Constants;
+import pl.edu.zut.mad.appwizut2.network.ScheduleCommonLoader;
 
 /**
  * Created by Dawid on 19.11.2015.
  */
-public class TimetableFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable>, SharedPreferences.OnSharedPreferenceChangeListener {
+public class TimetableFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable> {
 
     private String[] mDayNames;
 
-    private Timetable mTimetable;
-
-    private List<TimetableDayFragment> mActiveDayFragments = new ArrayList<>();
-    private BaseDataLoader<Timetable, ?> mScheduleLoader;
+    private ScheduleCommonLoader mScheduleLoader;
     private View mTimetableUnavailableWrapper;
     private TextView mTimetableUnavailableMessage;
     private Button mOpenPdfButton;
     private ProgressBar mLoadingIndicator;
     private View mTimetableWrapper;
-    private SharedPreferences mPreferences;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,32 +111,15 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             pager.setCurrentItem(tabToSelect);
         }
 
-        // Choose loader
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mScheduleLoader = chooseLoaderFromSettings(mPreferences);
-
-        // Start loader
+        // Initialize loader
+        mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleCommonLoader.class);
         mScheduleLoader.registerAndLoad(this);
-        mPreferences.registerOnSharedPreferenceChangeListener(this);
 
         return view;
     }
 
-    private BaseDataLoader<Timetable, ?> chooseLoaderFromSettings(SharedPreferences preferences) {
-        DataLoadingManager dataLoadingManager = DataLoadingManager.getInstance(getActivity());
-
-        if ("edziekanat".equals(preferences.getString(Constants.PREF_TIMETABLE_DATA_SOURCE, ""))) {
-            return dataLoadingManager.getLoader(ScheduleEdzLoader.class);
-        } else {
-            return dataLoadingManager.getLoader(ScheduleLoader.class);
-        }
-    }
-
     @Override
     public void onDestroyView() {
-        if (mPreferences != null) {
-            mPreferences.unregisterOnSharedPreferenceChangeListener(this);
-        }
         mScheduleLoader.unregister(this);
 
         super.onDestroyView();
@@ -183,27 +156,12 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
         mLoadingIndicator.setVisibility(View.GONE);
     }
 
-    void registerDayFragment(TimetableDayFragment dayFragment) {
-        mActiveDayFragments.add(dayFragment);
-        if (mTimetable != null) {
-            dayFragment.onScheduleAvailable(mTimetable);
-        }
-    }
-
-    void unregisterDayFragment(TimetableDayFragment dayFragment) {
-        mActiveDayFragments.remove(dayFragment);
-    }
-
     @Override
     public void onDataLoaded(Timetable timetable) {
         if (timetable != null) {
-            mTimetable = timetable;
-            for (TimetableDayFragment dayFragment : mActiveDayFragments) {
-                dayFragment.onScheduleAvailable(timetable);
-            }
             showTimetable();
         } else {
-            showTimetableUnavailable(mScheduleLoader instanceof ScheduleLoader && ((ScheduleLoader) mScheduleLoader).isConfigured());
+            showTimetableUnavailable(mScheduleLoader.isConfigured());
         }
     }
 
@@ -250,15 +208,6 @@ public class TimetableFragment extends Fragment implements BaseDataLoader.DataLo
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (Constants.PREF_TIMETABLE_DATA_SOURCE.equals(key)) {
-            mScheduleLoader.unregister(TimetableFragment.this);
-            mScheduleLoader = chooseLoaderFromSettings(sharedPreferences);
-            mScheduleLoader.registerAndLoad(TimetableFragment.this);
-        }
     }
 
     private void openPdf() {

@@ -3,9 +3,10 @@ package pl.edu.zut.mad.appwizut2.models;
 
 // TODO: Better names (especially for 'Hour')
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import pl.edu.zut.mad.appwizut2.utils.DateUtils;
 
 /**
  * The timetable for a (exercise, not laboratory) group
@@ -97,40 +98,13 @@ public class Timetable {
     }
 
     public Day getScheduleForDate(Date date) {
-        if (date != null) {
-            for (Day day : mDays) {
-                if (date.compareTo(day.mDate.getTime()) == 0) {
-                    return day;
-                }
-            }
-        }
-        return null;
-    }
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        DateUtils.stripTime(calendar);
 
-    public Day getScheduleForDay(int day) {
-        GregorianCalendar today = new GregorianCalendar();
-        today.set(Calendar.HOUR_OF_DAY, 0);
-        today.set(Calendar.MINUTE, 0);
-        today.set(Calendar.SECOND, 0);
-        today.set(Calendar.MILLISECOND, 0);
-        for (Day checkedDay : mDays) {
-            if (checkedDay == null) {
-                continue;
-            }
-            GregorianCalendar checkedDayDate = checkedDay.getDate();
-            if (!checkedDayDate.before(today) && checkedDayDate.get(Calendar.DAY_OF_WEEK) == day) {
-                return checkedDay;
-            }
-        }
-
-        // Just check weekday if day is missing
-        for (Day checkedDay : mDays) {
-            if (checkedDay == null) {
-                continue;
-            }
-            GregorianCalendar checkedDayDate = checkedDay.getDate();
-            if (checkedDayDate.get(Calendar.DAY_OF_WEEK) == day) {
-                return checkedDay;
+        for (Day day : mDays) {
+            if (calendar.equals(day.mDate)) {
+                return day;
             }
         }
         return null;
