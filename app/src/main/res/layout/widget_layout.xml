@@ -41,14 +41,44 @@
 
     </LinearLayout>
 
-    <TextView
+    <RelativeLayout
         android:id="@+id/widget_upcoming_hour"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/widget_upper_background"
         android:padding="@dimen/widget_padding"
-        tools:text="[Upcoming schedule hour]"
-        />
+        >
+        <TextView
+            android:id="@+id/widget_upcoming_hour_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/widget_upper_text"
+            android:textStyle="bold"
+            tools:text="[8:15]"/>
+
+        <TextView
+            android:id="@+id/widget_upcoming_hour_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:textColor="@color/widget_upper_text"
+            android:textStyle="bold"
+            tools:text="[WI1-110]"/>
+
+        <TextView
+            android:id="@+id/widget_upcoming_hour_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/widget_upcoming_hour_room"
+            android:layout_toEndOf="@+id/widget_upcoming_hour_room"
+            android:layout_toRightOf="@+id/widget_upcoming_hour_room"
+            android:textColor="@color/widget_upper_text"
+            tools:text="[Subject name]"/>
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/widget_last_change"
@@ -56,7 +86,7 @@
         android:layout_height="wrap_content"
         android:background="@color/widget_lower_background"
         android:padding="@dimen/widget_padding"
-        android:textColor="#000000"
+        android:textColor="@color/widget_lower_text"
         tools:text="[Latest change]"
         />
 

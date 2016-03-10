@@ -62,15 +62,9 @@ public class WidgetProvider extends AppWidgetProvider {
         if (upcomingHour != null) {
             Timetable.TimeRange time = upcomingHour.getTime();
 
-            StringBuilder text = new StringBuilder();
-            text
-                    .append(time.fromHour).append(":").append(time.fromMinute)
-                    .append("\n")
-                    .append(upcomingHour.getSubjectName())
-                    .append("\n")
-                    .append(upcomingHour.getRoom());
-
-            views.setTextViewText(R.id.widget_upcoming_hour, text.toString());
+            views.setTextViewText(R.id.widget_upcoming_hour_time, time.fromHour + ":" + time.fromMinute);
+            views.setTextViewText(R.id.widget_upcoming_hour_title, upcomingHour.getSubjectName());
+            views.setTextViewText(R.id.widget_upcoming_hour_room, upcomingHour.getRoom());
 
             views.setViewVisibility(R.id.widget_upcoming_hour, View.VISIBLE);
         } else {
