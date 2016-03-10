@@ -71,6 +71,10 @@ public class WidgetProvider extends AppWidgetProvider {
                     .append(upcomingHour.getRoom());
 
             views.setTextViewText(R.id.widget_upcoming_hour, text.toString());
+
+            views.setViewVisibility(R.id.widget_upcoming_hour, View.VISIBLE);
+        } else {
+            views.setViewVisibility(R.id.widget_upcoming_hour, View.GONE);
         }
 
         // Fill data about changes in schedule
