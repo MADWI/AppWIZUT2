@@ -16,7 +16,7 @@
 
 
             <include
-                layout="@layout/calendar_schedule_layout"/>
+                layout="@layout/calendar_tabs_layout"/>
 
         </LinearLayout>
 

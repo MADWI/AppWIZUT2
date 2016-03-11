@@ -32,10 +32,11 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     private List<ListItemContainer> eventsData = new ArrayList<>();
 
+    private TextView mNoDataView;
     private RecyclerView mItemListView;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressBar mProgressBar;
-    private TextView mNoDataView;
 
     private EventsLoader mEventsDataLoader;
     private Date mDate;

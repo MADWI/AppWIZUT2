@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.activities.WebPlanActivity;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
@@ -43,6 +45,8 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
     private Adapter mAdapter;
     private Timetable mTimetable;
     private BaseDataLoader<Timetable, ?> mLoader;
+    private TextView mNoClassesMessage;
+    private Button mImportFromEdziekanatButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,11 +73,13 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
         if (scheduleDay == null) {
             Log.w(TAG, "Day missing in schedule: " + Constants.FORMATTER.format(mDate));
             mHoursInDay = Collections.emptyList();
-            return;
+            mNoClassesMessage.setVisibility(View.VISIBLE);
+        } else {
+            // TODO: Show this in UI?
+            Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(mDate));
+            mHoursInDay = Arrays.asList(scheduleDay.getTasks());
+            mNoClassesMessage.setVisibility(View.GONE);
         }
-        // TODO: Show this in UI?
-        Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(mDate));
-        mHoursInDay = Arrays.asList(scheduleDay.getTasks());
         mAdapter.notifyDataSetChanged();
     }
 
@@ -88,8 +94,18 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.timetable_page, container, false);
+
+        mNoClassesMessage = (TextView) view.findViewById(R.id.no_classes);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.scheduleList);
         mRecyclerView.setAdapter(mAdapter);
+
+        mImportFromEdziekanatButton = (Button) view.findViewById(R.id.import_from_edziekanat);
+        mImportFromEdziekanatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), WebPlanActivity.class));
+            }
+        });
 
         mLoader = DataLoadingManager
                 .getInstance(getContext())
@@ -148,7 +164,12 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
     @Override
     public void onDataLoaded(Timetable timetable) {
         mTimetable = timetable;
-        putDataInView();
+        if (timetable == null) {
+            mImportFromEdziekanatButton.setVisibility(View.VISIBLE);
+        } else {
+            mImportFromEdziekanatButton.setVisibility(View.GONE);
+            putDataInView();
+        }
     }
 
     private static class VH extends RecyclerView.ViewHolder {

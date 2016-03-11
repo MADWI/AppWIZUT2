@@ -92,5 +92,6 @@
     <string name="events">Wydarzenia</string>
     <string name="lessons">Zajęcia</string>
     <string name="no_events">Brak wydarzeń</string>
+    <string name="no_classes">Brak zajęć</string>
 
 </resources>
