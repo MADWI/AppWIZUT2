@@ -200,6 +200,18 @@ public class MainActivity extends AppCompatActivity
         return null;
     }
 
+
+    /**
+     * For last parameter of constructor DrawerFragmentItem
+     */
+    private static class BundleWrapper {
+        public static Bundle getBundleWithInt(String key, int value) {
+            Bundle bundle = new Bundle();
+            bundle.putInt(key, value);
+            return bundle;
+        }
+    }
+
     /**
      * See {@link #DRAWER_FRAGMENTS}
      */

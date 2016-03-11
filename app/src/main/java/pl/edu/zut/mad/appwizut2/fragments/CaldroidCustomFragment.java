@@ -155,9 +155,9 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
          * depending on day with classes or no
          */
         setBackgroundForClassesDay(mSelectedDate);
-        setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
-
-        setBackgroundResourceForDate(R.color.even, date);
+    //    setBackgroundResourceForDate(R.color.colorPrimaryBright, new Date(System.currentTimeMillis()));
+        setBackgroundResourceForDate(R.drawable.red_border_background_transparent, new Date(System.currentTimeMillis()));
+        setBackgroundResourceForDate(R.color.calendar_selected, date);
         refreshView();
 
         mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
