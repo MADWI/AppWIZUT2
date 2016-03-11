@@ -1,7 +1,6 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -46,7 +45,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     private EventsFragment mEventsFragment;
     private TimetableDayFragment mTimetableDayFragment;
     private ViewPager mViewPager;
-
+    private Timetable mTimetable;
 
     @Override
     public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
@@ -120,7 +119,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
         setCaldroidListener(caldroidListener);
 
-        changeSelectedDate(mSelectedDate);
+        setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
         return wrapper;
     }
 
@@ -141,12 +140,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         public void onSelectDate(Date date, View view) {
             changeSelectedDate(date);
 
-            ColorDrawable color = (ColorDrawable) view.getBackground();
-            if (color.equals(R.color.colorPrimary)) {
-
-            }
-
-
             if (mTimetableDayFragment != null) {
                 mTimetableDayFragment.setDate(date);
             }
@@ -157,14 +150,33 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     };
 
     private void changeSelectedDate(Date date) {
-        setBackgroundResourceForDate(R.color.calendar_default, mSelectedDate);
+        /**
+         * Use previous selected date to color background
+         * depending on day with classes or no
+         */
+        setBackgroundForClassesDay(mSelectedDate);
         setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
 
-        mSelectedDate = date;
-        mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
-
-        setBackgroundResourceForDate(R.color.even, mSelectedDate);
+        setBackgroundResourceForDate(R.color.even, date);
         refreshView();
+
+        mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
+        mSelectedDate = date;
+    }
+
+    private void setBackgroundForClassesDay(Date date) {
+        if (date == null || mTimetable == null) {
+            return;
+        }
+
+        Timetable.Day[] days = mTimetable.getDays();
+        for (Timetable.Day day : days) {
+            if (date.compareTo(day.getDate().getTime()) == 0) {
+                setBackgroundResourceForDate(R.color.colorPrimary, date);
+                return;
+            }
+        }
+        setBackgroundResourceForDate(R.color.calendar_default, mSelectedDate);
     }
 
     private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
@@ -194,6 +206,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     private final BaseDataLoader.DataLoadedListener<Timetable> mScheduleListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
         @Override
         public void onDataLoaded(Timetable timetable) {
+            mTimetable = timetable;
             if (timetable == null) {
                 return;
             }
@@ -201,6 +214,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
             for (Timetable.Day day : days) {
                 setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
             }
+            setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
             refreshView();
         }
     };
