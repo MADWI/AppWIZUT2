@@ -1,6 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -139,6 +140,12 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         @Override
         public void onSelectDate(Date date, View view) {
             changeSelectedDate(date);
+
+            ColorDrawable color = (ColorDrawable) view.getBackground();
+            if (color.equals(R.color.colorPrimary)) {
+
+            }
+
 
             if (mTimetableDayFragment != null) {
                 mTimetableDayFragment.setDate(date);
