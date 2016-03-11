@@ -26,17 +26,20 @@ import java.util.Map;
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
+import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
+import pl.edu.zut.mad.appwizut2.network.ScheduleCommonLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 public class CaldroidCustomFragment extends CaldroidFragment implements TabLayout.OnTabSelectedListener {
 
-    private Date mSelectDate;
+    private Date mSelectedDate;
     private String mDateString;
 
     private EventsLoader mEventsDataLoader;
+    private ScheduleCommonLoader mScheduleLoader;
     private final Map<String, Integer> mEventCountsOnDays = new HashMap<>();
 
     private EventsFragment mEventsFragment;
@@ -58,18 +61,18 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
             savedInstanceState.remove("android:support:fragments");
             mDateString = savedInstanceState.getString(Constants.CURRENT_CLICKED_DATE);
             try {
-                mSelectDate = Constants.FOR_EVENTS_FORMATTER.parse(mDateString);
+                mSelectedDate = Constants.FOR_EVENTS_FORMATTER.parse(mDateString);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                mSelectDate = Constants.FOR_EVENTS_FORMATTER.parse(
+                mSelectedDate = Constants.FOR_EVENTS_FORMATTER.parse(
                         Constants.FOR_EVENTS_FORMATTER.format(new Date()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            mDateString = Constants.FOR_EVENTS_FORMATTER.format(mSelectDate);
+            mDateString = Constants.FOR_EVENTS_FORMATTER.format(mSelectedDate);
         }
         // Call super
         super.onCreate(savedInstanceState);
@@ -100,6 +103,9 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         mEventsDataLoader = loadingManager.getLoader(EventsLoader.class);
         mEventsDataLoader.registerAndLoad(mEventsDataListener);
 
+        mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleCommonLoader.class);
+        mScheduleLoader.registerAndLoad(mScheduleListener);
+
         mViewPager = (ViewPager) wrapper.findViewById(R.id.pager);
         TabLayout tabLayout = (TabLayout) wrapper.findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.lessons));
@@ -113,7 +119,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
         setCaldroidListener(caldroidListener);
 
-        changeSelectedDate(mSelectDate);
+        changeSelectedDate(mSelectedDate);
         return wrapper;
     }
 
@@ -144,13 +150,13 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     };
 
     private void changeSelectedDate(Date date) {
-        setBackgroundResourceForDate(R.color.calendar_default, mSelectDate);
+        setBackgroundResourceForDate(R.color.calendar_default, mSelectedDate);
         setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
 
-        mSelectDate = date;
+        mSelectedDate = date;
         mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
 
-        setBackgroundResourceForDate(R.color.even, mSelectDate);
+        setBackgroundResourceForDate(R.color.even, mSelectedDate);
         refreshView();
     }
 
@@ -162,12 +168,12 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
             mEventCountsOnDays.clear();
             if (data != null) {
                 for (ListItemContainer entry : data) {
-                    String date = entry.getDate();
-                    Integer countSoFar = mEventCountsOnDays.get(date);
+                    String dateString = entry.getDate();
+                    Integer countSoFar = mEventCountsOnDays.get(dateString);
                     if (countSoFar == null) {
-                        mEventCountsOnDays.put(date, 1);
+                        mEventCountsOnDays.put(dateString, 1);
                     } else {
-                        mEventCountsOnDays.put(date, countSoFar + 1);
+                        mEventCountsOnDays.put(dateString, countSoFar + 1);
                     }
                 }
             }
@@ -178,6 +184,19 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         }
     };
 
+    private final BaseDataLoader.DataLoadedListener<Timetable> mScheduleListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
+        @Override
+        public void onDataLoaded(Timetable timetable) {
+            if (timetable == null) {
+                return;
+            }
+            Timetable.Day[] days = timetable.getDays();
+            for (Timetable.Day day : days) {
+                setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
+            }
+            refreshView();
+        }
+    };
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
@@ -198,6 +217,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     public void onDestroyView() {
         mEventsDataLoader.unregister(mEventsDataListener);
         mEventsDataLoader = null;
+        mScheduleLoader.unregister(mScheduleListener);
+        mScheduleLoader = null;
         super.onDestroyView();
     }
 
@@ -212,10 +233,10 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
             switch (position) {
                 case 0:
-                    mTimetableDayFragment = TimetableDayFragment.newInstance(mSelectDate);
+                    mTimetableDayFragment = TimetableDayFragment.newInstance(mSelectedDate);
                     return mTimetableDayFragment;
                 case 1:
-                    mEventsFragment = EventsFragment.newInstance(mSelectDate);
+                    mEventsFragment = EventsFragment.newInstance(mSelectedDate);
                     return mEventsFragment;
                 default:
                     return null;

@@ -19,6 +19,10 @@ public class Timetable {
         mDays = days;
     }
 
+    public Day[] getDays() {
+        return mDays;
+    }
+
     /**
      * Time on which task starts and ends
      */
