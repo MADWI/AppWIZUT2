@@ -2,13 +2,18 @@ package pl.edu.zut.mad.appwizut2;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import hirondelle.date4j.DateTime;
@@ -60,13 +65,6 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
                     .getColor(com.caldroid.R.color.caldroid_darker_gray));
         }
 
-
-        if (!(dateTime.equals(getToday()))) {
-            cellView.setBackgroundResource(R.color.calendar_default);
-        } else {
-            cellView.setBackgroundResource(com.caldroid.R.drawable.red_border_gray_bg);
-        }
-
         int day = dateTime.getDay();
         int month = dateTime.getMonth();
         int year = dateTime.getYear();
@@ -87,13 +85,83 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
         tv1.setText("" + dateTime.getDay());
 
 
-        // Somehow after setBackgroundResource, the padding collapse.
-        // This is to recover the padding
-        cellView.setPadding(leftPadding, topPadding, rightPadding,
-                bottomPadding);
         // Set custom color if required
         setCustomResources(dateTime, cellView, tv1);
 
+        // Somehow after setBackgroundResource, the padding collapse.
+        // This is to recover the padding
+        // MB: Couldn't reproduce, but keeping it for now
+        cellView.setPadding(leftPadding, topPadding, rightPadding,
+                bottomPadding);
+
         return cellView;
+    }
+
+    /**
+     * Set background for view, adding to it a border as we use for today date
+     */
+    private void setBackgroundResourceWithBorder(View view, int backgroundResource) {
+        Resources resources = view.getContext().getResources();
+        Drawable backgroundDrawable = resources.getDrawable(backgroundResource);
+
+        // We only support wrapping ColorDrawable
+        if (backgroundDrawable instanceof ColorDrawable) {
+            // Load our base border drawable
+            GradientDrawable
+                    withBorderDrawable = (GradientDrawable) resources.getDrawable(R.drawable.today_date_border).mutate();
+
+            // Set color in it
+            withBorderDrawable.setColor(((ColorDrawable) backgroundDrawable).getColor());
+
+            // Set that drawable as background
+            // TODO: Replace with setBackground once we drop API 15 support
+            // They seem to be the same thing, however
+            view.setBackgroundDrawable(withBorderDrawable);
+        } else {
+            view.setBackgroundResource(backgroundResource);
+        }
+    }
+
+    /**
+     * Apply styles for this cell specified with e.g. {@link CaldroidFragment#setBackgroundResourceForDate(int, Date)}
+     */
+    @SuppressWarnings("unchecked")
+    protected void setCustomResources(DateTime dateTime, View backgroundView,
+                                      TextView textView) {
+        // Get requested custom background resource (same way as original Caldroid implementation)
+        HashMap<DateTime, Integer> backgroundForDateTimeMap = (HashMap<DateTime, Integer>) caldroidData
+                .get(CaldroidFragment._BACKGROUND_FOR_DATETIME_MAP);
+        Integer backgroundResourceObj = null;
+
+        if (backgroundForDateTimeMap != null) {
+            // Get background resource for the dateTime
+            backgroundResourceObj = backgroundForDateTimeMap.get(dateTime);
+        }
+
+        // Apply default value if we don't have any
+        int backgroundResource = backgroundResourceObj != null ? backgroundResourceObj : R.color.calendar_default;
+
+        // Set it, framing it if it's today
+        if (dateTime.equals(getToday())) {
+            setBackgroundResourceWithBorder(backgroundView, backgroundResource);
+        } else {
+            backgroundView.setBackgroundResource(backgroundResource);
+        }
+
+        // Setting custom text color is same as in superclass implementation
+        // Not used for now but if we'd removed it we'd later could end puzzled why we cannot set it
+
+        // Set custom text color
+        HashMap<DateTime, Integer> textColorForDateTimeMap = (HashMap<DateTime, Integer>) caldroidData
+                .get(CaldroidFragment._TEXT_COLOR_FOR_DATETIME_MAP);
+        if (textColorForDateTimeMap != null) {
+            // Get textColor for the dateTime
+            Integer textColorResource = textColorForDateTimeMap.get(dateTime);
+
+            // Set it
+            if (textColorResource != null) {
+                textView.setTextColor(resources.getColor(textColorResource));
+            }
+        }
     }
 }

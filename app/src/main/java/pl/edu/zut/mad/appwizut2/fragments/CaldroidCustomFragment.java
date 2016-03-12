@@ -119,7 +119,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
         setCaldroidListener(caldroidListener);
 
-        setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
         return wrapper;
     }
 
@@ -155,8 +154,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
          * depending on day with classes or no
          */
         setBackgroundForClassesDay(mSelectedDate);
-    //    setBackgroundResourceForDate(R.color.colorPrimaryBright, new Date(System.currentTimeMillis()));
-        setBackgroundResourceForDate(R.drawable.red_border_background_transparent, new Date(System.currentTimeMillis()));
         setBackgroundResourceForDate(R.color.calendar_selected, date);
         refreshView();
 
@@ -176,7 +173,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
                 return;
             }
         }
-        setBackgroundResourceForDate(R.color.calendar_default, mSelectedDate);
+        clearBackgroundResourceForDate(mSelectedDate);
     }
 
     private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
@@ -214,7 +211,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
             for (Timetable.Day day : days) {
                 setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
             }
-            setBackgroundResourceForDate(R.color.backgroundGray, new Date(System.currentTimeMillis()));
             refreshView();
         }
     };
