@@ -34,9 +34,9 @@ public class ScheduleCommonLoader extends BaseDataLoader<Timetable, Serializable
     }
 
     @Override
-    public void registerAndLoad(DataLoadedListener<Timetable> callback) {
+    public void registerAndLoad(DataLoadedListener<Timetable> callback, boolean requestRefresh) {
         mCallbacks.add(callback);
-        mUnderlyingLoader.registerAndLoad(callback);
+        mUnderlyingLoader.registerAndLoad(callback, requestRefresh);
     }
 
     @Override

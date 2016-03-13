@@ -20,7 +20,7 @@ import pl.edu.zut.mad.appwizut2.activities.MainActivity;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.PlanChangesLoader;
-import pl.edu.zut.mad.appwizut2.network.ScheduleEdzLoader;
+import pl.edu.zut.mad.appwizut2.network.ScheduleCommonLoader;
 
 /**
  * Implementation of App Widget functionality.
@@ -33,7 +33,7 @@ public class WidgetProvider extends AppWidgetProvider {
      * in updateTheWidget loadersResults parameter
      */
     static final Class[] LOADER_CLASSES = new Class[]{
-            ScheduleEdzLoader.class, // index 0
+            ScheduleCommonLoader.class, // index 0
             PlanChangesLoader.class // index 1
     };
 
