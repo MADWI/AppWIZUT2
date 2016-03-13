@@ -163,6 +163,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     }
 
     private void setBackgroundForClassesDay(Date date) {
+        clearBackgroundResourceForDate(mSelectedDate);
+
         if (date == null || mTimetable == null) {
             return;
         }
@@ -174,7 +176,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
                 return;
             }
         }
-        clearBackgroundResourceForDate(mSelectedDate);
     }
 
     private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
