@@ -83,6 +83,10 @@
     <string name="no_data">Brak danych</string>
     <string name="import_from_edziekanat">Importuj z E-Dziekanatu</string>
     <string name="please_wait">Proszę czekać</string>
+    <string name="no_events">Brak wydarzeń</string>
+    <string name="no_classes">Brak zajęć</string>
+    <string name="classes">Zajęcia</string>
+    <string name="events">Wydarzenia</string>
 
 
 </resources>

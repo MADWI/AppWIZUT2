@@ -89,9 +89,9 @@
     <string name="commit_hash">Commit hash</string>
     <string name="email_contact">mad@zut.edu.pl</string>
     <string name="repo_link">github.com/MADWI/AppWIZUT2/</string>
-    <string name="events">Wydarzenia</string>
-    <string name="lessons">Zajęcia</string>
-    <string name="no_events">Brak wydarzeń</string>
-    <string name="no_classes">Brak zajęć</string>
+    <string name="events">Events</string>
+    <string name="classes">Classes</string>
+    <string name="no_events">No events</string>
+    <string name="no_classes">No classes</string>
 
 </resources>

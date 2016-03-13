@@ -109,7 +109,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
         mViewPager = (ViewPager) wrapper.findViewById(R.id.pager);
         TabLayout tabLayout = (TabLayout) wrapper.findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.lessons));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.classes));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.events));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         tabLayout.setOnTabSelectedListener(this);
