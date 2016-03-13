@@ -93,9 +93,11 @@ public class EventsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onDataLoaded(List<ListItemContainer> data) {
+        mProgressBar.setVisibility(View.GONE);
+        mSwipeRefreshLayout.setRefreshing(false);
+
         eventsData = data;
         putDataInView();
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public void putDataInView() {

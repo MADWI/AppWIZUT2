@@ -65,6 +65,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            setBackgroundResourceForDate(R.color.calendar_selected, mSelectedDate);
         } else {
             try {
                 mSelectedDate = Constants.FOR_EVENTS_FORMATTER.parse(
