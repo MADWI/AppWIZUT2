@@ -130,6 +130,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
     @Override
     protected void retrieveInitialArgs() {
+        startDayOfWeek = CaldroidFragment.MONDAY;
         setThemeResource(R.style.CaldroidCustomized);
         super.retrieveInitialArgs();
     }
@@ -168,7 +169,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
         Timetable.Day[] days = mTimetable.getDays();
         for (Timetable.Day day : days) {
-            if (date.compareTo(day.getDate().getTime()) == 0) {
+            if (date.equals(day.getDate().getTime())) {
                 setBackgroundResourceForDate(R.color.colorPrimary, date);
                 return;
             }
