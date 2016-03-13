@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -50,7 +50,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
         itemListView.setLayoutManager(layoutManager);
 
         //set empty adapter, not to get the "layout not set" warning
-        itemListView.setAdapter(new ListItemAdapter(new ArrayList<ListItemContainer>()));
+        itemListView.setAdapter(new ListItemAdapter(Collections.<ListItemContainer>emptyList()));
 
         // Load data
         mLoader = createLoader();
@@ -82,7 +82,7 @@ public abstract class FeedFragment extends Fragment implements SwipeRefreshLayou
             ListItemAdapter listItemAdapter = new ListItemAdapter(data);
             itemListView.setAdapter(listItemAdapter);
         }else {
-            itemListView.setAdapter(null);
+            itemListView.setAdapter(new ListItemAdapter(Collections.<ListItemContainer>emptyList()));
             mNoDataMessageView.setVisibility(View.VISIBLE);
         }
     }
