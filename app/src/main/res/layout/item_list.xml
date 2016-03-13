@@ -26,6 +26,7 @@
         android:layout_centerInParent="true"
         android:id="@+id/item_list_progress_bar"
         style="android.R.attr.progressBarStyleLarge" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

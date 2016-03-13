@@ -9,15 +9,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.activities.WebPlanActivity;
 import pl.edu.zut.mad.appwizut2.models.Timetable;
+import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
+import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.network.ScheduleCommonLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
+import pl.edu.zut.mad.appwizut2.utils.DateUtils;
 
 /**
  * Schedule for a particular day
@@ -27,59 +36,140 @@ import pl.edu.zut.mad.appwizut2.utils.Constants;
  * Note: this is child fragment
  *       (so e.g. {@link #onActivityResult(int, int, Intent)} won't work)
  */
-public class TimetableDayFragment extends Fragment {
+public class TimetableDayFragment extends Fragment implements BaseDataLoader.DataLoadedListener<Timetable> {
     private static final String TAG = "TimetableDayFragment";
 
-    public static String ARG_DAY = "TDF.Day";
-
-    private int mDay;
-    private TimetableFragment mTimetableFragment;
+    private Date mDate;
     private RecyclerView mRecyclerView;
     private List<Timetable.Hour> mHoursInDay = Collections.emptyList();
     private Adapter mAdapter;
+    private Timetable mTimetable;
+    private BaseDataLoader<Timetable, ?> mLoader;
+    private TextView mNoClassesMessage;
+    private Button mImportFromEdziekanatButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDay = getArguments().getInt(ARG_DAY);
-        mTimetableFragment = (TimetableFragment) getParentFragment();
+
+        Bundle retainableArguments = savedInstanceState != null ? savedInstanceState : getArguments();
+        mDate = new Date(retainableArguments.getLong(Constants.ARG_DATE));
+
         mAdapter = new Adapter();
-        mTimetableFragment.registerDayFragment(this);
     }
 
     @Override
-    public void onDestroy() {
-        mTimetableFragment.unregisterDayFragment(this);
-        super.onDestroy();
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(Constants.ARG_DATE, mDate.getTime());
     }
 
-    void onScheduleAvailable(Timetable timetable) {
-        Timetable.Day scheduleDay = timetable.getScheduleForDay(mDay);
-        if (scheduleDay == null) {
-            Log.w(TAG, "Day missing in schedule");
+    private void putDataInView() {
+        if (mTimetable == null) {
             return;
         }
-        // TODO: Show this in UI?
-        Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(scheduleDay.getDate().getTime()));
-        mHoursInDay = Arrays.asList(scheduleDay.getTasks());
+
+        Timetable.Day scheduleDay = mTimetable.getScheduleForDate(mDate);
+        if (scheduleDay == null) {
+            Log.w(TAG, "Day missing in schedule: " + Constants.FORMATTER.format(mDate));
+            mHoursInDay = Collections.emptyList();
+            mNoClassesMessage.setVisibility(View.VISIBLE);
+        } else {
+            // TODO: Show this in UI?
+            Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(mDate));
+            mHoursInDay = Arrays.asList(scheduleDay.getTasks());
+            mNoClassesMessage.setVisibility(View.GONE);
+        }
         mAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Set Date for which schedule is to be displayed
+     */
+    public void setDate(Date date) {
+        mDate = date;
+        putDataInView();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.timetable_page, container, false);
+
+        mNoClassesMessage = (TextView) view.findViewById(R.id.no_classes);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.scheduleList);
         mRecyclerView.setAdapter(mAdapter);
+
+        mImportFromEdziekanatButton = (Button) view.findViewById(R.id.import_from_edziekanat);
+        mImportFromEdziekanatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), WebPlanActivity.class));
+            }
+        });
+
+        mLoader = DataLoadingManager
+                .getInstance(getContext())
+                .getLoader(ScheduleCommonLoader.class);
+        mLoader.registerAndLoad(this);
+
         return view;
     }
 
-    public static TimetableDayFragment newInstance(int day) {
+    @Override
+    public void onDestroyView() {
+        mRecyclerView.setAdapter(null);
+        mLoader.unregister(this);
+        super.onDestroyView();
+    }
+
+    /**
+     * Create instance of this fragment to show schedule for specified Date
+     */
+    public static TimetableDayFragment newInstance(Date date) {
         Bundle args = new Bundle();
-        args.putInt(ARG_DAY, day);
+        args.putLong(Constants.ARG_DATE, date.getTime());
 
         TimetableDayFragment fragment = new TimetableDayFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    /**
+     * Create instance of this fragment to show schedule for specified day of week
+     */
+    public static TimetableDayFragment newInstance(int dayOfWeek) {
+        GregorianCalendar calendar = new GregorianCalendar();
+        DateUtils.stripTime(calendar);
+
+        int todayWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
+
+        // Rewind calendar to last monday
+        int daysFromMonday = todayWeekDay - Calendar.MONDAY;
+        if (daysFromMonday < 0) {
+            daysFromMonday += 7;
+        }
+        calendar.add(Calendar.DATE, -daysFromMonday);
+
+        // If we're in weekend skip to next week
+        if (todayWeekDay == Calendar.SATURDAY || todayWeekDay == Calendar.SUNDAY) {
+            calendar.add(Calendar.DATE, 7);
+        }
+
+        // Now move forward to requested day
+        calendar.add(Calendar.DATE, dayOfWeek - Calendar.MONDAY);
+
+        return newInstance(calendar.getTime());
+    }
+
+    @Override
+    public void onDataLoaded(Timetable timetable) {
+        mTimetable = timetable;
+        if (timetable == null) {
+            mImportFromEdziekanatButton.setVisibility(View.VISIBLE);
+        } else {
+            mImportFromEdziekanatButton.setVisibility(View.GONE);
+            putDataInView();
+        }
     }
 
     private static class VH extends RecyclerView.ViewHolder {

@@ -2,23 +2,22 @@ package pl.edu.zut.mad.appwizut2.fragments;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidGridAdapter;
 import com.roomorama.caldroid.CaldroidListener;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,36 +25,27 @@ import java.util.Map;
 
 import pl.edu.zut.mad.appwizut2.CaldroidCustomAdapter;
 import pl.edu.zut.mad.appwizut2.R;
-import pl.edu.zut.mad.appwizut2.models.DayParity;
-import pl.edu.zut.mad.appwizut2.models.ListItemAdapter;
 import pl.edu.zut.mad.appwizut2.models.ListItemContainer;
+import pl.edu.zut.mad.appwizut2.models.Timetable;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.EventsLoader;
-import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
+import pl.edu.zut.mad.appwizut2.network.ScheduleCommonLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
 
-public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class CaldroidCustomFragment extends CaldroidFragment implements TabLayout.OnTabSelectedListener {
 
-    private final static String CURRENT_MONTH = "current_month";
-    private final static String CURRENT_YEAR = "current_year";
-    private final static String CURRENT_CLICKED_DATE = "clicked_date";
-    private List<DayParity> parityList;
-    private List<ListItemContainer> eventsData = new ArrayList<>();
-    private List<ListItemContainer> eventsInDay = new ArrayList<>();
+    private Date mSelectedDate;
+    private String mDateString;
 
-    private TextView clickedDate;
-    private RecyclerView itemListView;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ProgressBar progressBar;
-
-    String strDate="";
-    private int mMonth = 0;
-    private int mYear = 0;
-
-    private WeekParityLoader mParityLoader;
     private EventsLoader mEventsDataLoader;
+    private ScheduleCommonLoader mScheduleLoader;
     private final Map<String, Integer> mEventCountsOnDays = new HashMap<>();
+
+    private EventsFragment mEventsFragment;
+    private TimetableDayFragment mTimetableDayFragment;
+    private ViewPager mViewPager;
+    private Timetable mTimetable;
 
     @Override
     public CaldroidGridAdapter getNewDatesGridAdapter(int month, int year) {
@@ -69,9 +59,21 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
         if (savedInstanceState != null) {
             // Delete info for child fragment manager
             savedInstanceState.remove("android:support:fragments");
-            mMonth = savedInstanceState.getInt(CURRENT_MONTH);
-            mYear = savedInstanceState.getInt(CURRENT_YEAR);
-
+            mDateString = savedInstanceState.getString(Constants.CURRENT_CLICKED_DATE);
+            try {
+                mSelectedDate = Constants.FOR_EVENTS_FORMATTER.parse(mDateString);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            setBackgroundResourceForDate(R.color.calendar_selected, mSelectedDate);
+        } else {
+            try {
+                mSelectedDate = Constants.FOR_EVENTS_FORMATTER.parse(
+                        Constants.FOR_EVENTS_FORMATTER.format(new Date()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            mDateString = Constants.FOR_EVENTS_FORMATTER.format(mSelectedDate);
         }
         // Call super
         super.onCreate(savedInstanceState);
@@ -79,13 +81,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // TODO: remove initUI method
-        // (It shouldn't belong to onCreateView, this forces you to know day parity synchronously)
-        initUI();
-        if(mMonth != 0 && mYear != 0){
-            month = mMonth;
-            year = mYear;
-        }
 
         // Get calendar view from superclass
         ViewGroup calendarView = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
@@ -96,181 +91,183 @@ public class CaldroidCustomFragment extends CaldroidFragment implements SwipeRef
             calendarView.getChildAt(i).setSaveFromParentEnabled(false);
         }
 
-
         //setting toolbar title
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.nav_calendar);
 
         // Wrap calendarView into out fragment
         ViewGroup wrapper = (ViewGroup) inflater.inflate(R.layout.calendar_layout, container, false);
-        clickedDate = (TextView) wrapper.findViewById(R.id.dateTextView);
-        ///////////////////////////////Setting for RecyclerView and ProgressBar
-        itemListView = (RecyclerView) wrapper.findViewById(R.id.itemList);
-
-        swipeRefreshLayout = (SwipeRefreshLayout)wrapper.findViewById(R.id.item_list_swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        progressBar = (ProgressBar)wrapper.findViewById(R.id.item_list_progress_bar);
-        progressBar.clearAnimation();
-        progressBar.setVisibility(View.GONE);
-
-        itemListView.setHasFixedSize(true);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        itemListView.setLayoutManager(layoutManager);
-
-        //inicjalizacja pustego adaptera w celu uniknięcia błędu nieokreślonego layoutu
-        initializeAdapter();
-        ////////////////////////////////////////////////////////////////////////////////
 
         ((ViewGroup) wrapper.findViewById(R.id.calendar_goes_here)).addView(calendarView, 0);
 
         // Initialize data load
         DataLoadingManager loadingManager = DataLoadingManager.getInstance(getContext());
-        mParityLoader = loadingManager.getLoader(WeekParityLoader.class);
-        mParityLoader.registerAndLoad(mParityListener);
         mEventsDataLoader = loadingManager.getLoader(EventsLoader.class);
         mEventsDataLoader.registerAndLoad(mEventsDataListener);
+
+        mScheduleLoader = DataLoadingManager.getInstance(getActivity()).getLoader(ScheduleCommonLoader.class);
+        mScheduleLoader.registerAndLoad(mScheduleListener);
+
+        mViewPager = (ViewPager) wrapper.findViewById(R.id.pager);
+        TabLayout tabLayout = (TabLayout) wrapper.findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.classes));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.events));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setOnTabSelectedListener(this);
+
+        PagerAdapter pagerAdapter = new ScheduleAndEventsAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(pagerAdapter);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        setCaldroidListener(caldroidListener);
 
         return wrapper;
     }
 
     @Override
-    public void onDestroyView() {
-        mEventsDataLoader.unregister(mEventsDataListener);
-        mParityLoader.unregister(mParityListener);
-        mEventsDataLoader = null;
-        mParityLoader = null;
-        super.onDestroyView();
-    }
-
-    private void initializeAdapter(){
-        ListItemAdapter listItemAdapter = new ListItemAdapter(eventsInDay);
-        itemListView.setAdapter(listItemAdapter);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null){
-            String selectedDate = savedInstanceState.getString(CURRENT_CLICKED_DATE);
-            if(selectedDate != null ){
-                clickedDate.setText(selectedDate);
-            }
-            updateEventsInDay();
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(listener != null) {
-            outState.putString(CURRENT_CLICKED_DATE, clickedDate.getText().toString());
-        }
-        outState.putInt(CURRENT_MONTH, getMonth());
-        outState.putInt(CURRENT_YEAR, getYear());
-    }
-
-
-    private void initUI() {
-
-        // Set cells background according to parity
-        if (parityList != null) {
-            for (DayParity dayParities : parityList) {
-                DayParity.Parity parity = dayParities.getParity();
-                if (parity == DayParity.Parity.EVEN) {
-                    setBackgroundResourceForDate(R.color.even, dayParities.getDate());
-                } else {
-                    setBackgroundResourceForDate(R.color.uneven, dayParities.getDate());
-                }
-            }
-        }
-
-        // Set event counts in views
-        HashMap<String, Object> extraData = getExtraData();
-        extraData.put("EVENTS", mEventCountsOnDays);
-
-        setCaldroidListener(listener);
-        refreshView();
+        outState.putString(Constants.CURRENT_CLICKED_DATE, mDateString);
     }
 
     @Override
     protected void retrieveInitialArgs() {
+        startDayOfWeek = CaldroidFragment.MONDAY;
         setThemeResource(R.style.CaldroidCustomized);
         super.retrieveInitialArgs();
     }
 
-
-    // Setup listener
-    public CaldroidListener listener = new CaldroidListener() {
+    public CaldroidListener caldroidListener = new CaldroidListener() {
         @Override
         public void onSelectDate(Date date, View view) {
+            changeSelectedDate(date);
 
-            strDate = Constants.FOR_EVENTS_FORMATTER.format(date);
-            updateEventsInDay();
-            clickedDate.setText("Wydarzenia " + Constants.REVERSED_FORMATTER.format(date));
-        }
-    };
-
-
-    // CUSTOM FUNCTION FOR PARSING STRING TO DATA
-    public Date ParseDate(String date_str) {
-        Date dateStr = null;
-        try {
-            dateStr = Constants.FORMATTER.parse(date_str);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return dateStr;
-    }
-
-    @Override
-    public void onRefresh() {
-        mParityLoader.requestRefresh();
-        mEventsDataLoader.requestRefresh();
-    }
-
-    private void updateEventsInDay() {
-        eventsInDay = new ArrayList<>();
-        if (eventsData != null) {
-            for (ListItemContainer item : eventsData) {
-                String date = item.getDate().substring(0, 10);
-                if (date.equals(strDate)) {
-                    eventsInDay.add(item);
-                }
+            if (mTimetableDayFragment != null) {
+                mTimetableDayFragment.setDate(date);
+            }
+            if (mEventsFragment != null) {
+                mEventsFragment.setDate(date);
             }
         }
-        initializeAdapter();
+    };
+
+    private void changeSelectedDate(Date date) {
+        clearBackgroundResourceForDate(mSelectedDate);
+        /**
+         * Use previous selected date to color background
+         * depending on day with classes or no
+         */
+        setBackgroundForClassesDay(mSelectedDate);
+        setBackgroundResourceForDate(R.color.calendar_selected, date);
+        refreshView();
+
+        mDateString = Constants.FOR_EVENTS_FORMATTER.format(date);
+        mSelectedDate = date;
     }
 
-    private final BaseDataLoader.DataLoadedListener<List<DayParity>> mParityListener = new BaseDataLoader.DataLoadedListener<List<DayParity>>() {
-        @Override
-        public void onDataLoaded(List<DayParity> data) {
-            parityList = data;
-            initUI();
+    private void setBackgroundForClassesDay(Date date) {
+        if (date == null || mTimetable == null) {
+            return;
         }
-    };
+
+        Timetable.Day[] days = mTimetable.getDays();
+        for (Timetable.Day day : days) {
+            if (date.equals(day.getDate().getTime())) {
+                setBackgroundResourceForDate(R.color.colorPrimary, date);
+                return;
+            }
+        }
+    }
 
     private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
         @Override
         public void onDataLoaded(List<ListItemContainer> data) {
-            eventsData = data;
 
             // Count events on days
             mEventCountsOnDays.clear();
             if (data != null) {
                 for (ListItemContainer entry : data) {
-                    String date = entry.getDate();
-                    Integer countSoFar = mEventCountsOnDays.get(date);
+                    String dateString = entry.getDate();
+                    Integer countSoFar = mEventCountsOnDays.get(dateString);
                     if (countSoFar == null) {
-                        mEventCountsOnDays.put(date, 1);
+                        mEventCountsOnDays.put(dateString, 1);
                     } else {
-                        mEventCountsOnDays.put(date, countSoFar + 1);
+                        mEventCountsOnDays.put(dateString, countSoFar + 1);
                     }
                 }
             }
+            HashMap<String, Object> extraData = getExtraData();
+            extraData.put("EVENTS", mEventCountsOnDays);
 
-            initUI();
-            updateEventsInDay();
-
-            swipeRefreshLayout.setRefreshing(false);
+            refreshView();
         }
     };
+
+    private final BaseDataLoader.DataLoadedListener<Timetable> mScheduleListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
+        @Override
+        public void onDataLoaded(Timetable timetable) {
+            mTimetable = timetable;
+            if (timetable == null) {
+                return;
+            }
+
+            Timetable.Day[] days = timetable.getDays();
+            for (Timetable.Day day : days) {
+                if (!mSelectedDate.equals(day.getDate().getTime())) {
+                    setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
+                }
+            }
+            refreshView();
+        }
+    };
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        mEventsDataLoader.unregister(mEventsDataListener);
+        mEventsDataLoader = null;
+        mScheduleLoader.unregister(mScheduleListener);
+        mScheduleLoader = null;
+        super.onDestroyView();
+    }
+
+    private class ScheduleAndEventsAdapter extends FragmentPagerAdapter {
+
+        public ScheduleAndEventsAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            switch (position) {
+                case 0:
+                    mTimetableDayFragment = TimetableDayFragment.newInstance(mSelectedDate);
+                    return mTimetableDayFragment;
+                case 1:
+                    mEventsFragment = EventsFragment.newInstance(mSelectedDate);
+                    return mEventsFragment;
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+    }
 }
