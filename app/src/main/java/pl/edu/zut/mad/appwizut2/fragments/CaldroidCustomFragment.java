@@ -150,6 +150,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     };
 
     private void changeSelectedDate(Date date) {
+        clearBackgroundResourceForDate(mSelectedDate);
         /**
          * Use previous selected date to color background
          * depending on day with classes or no
@@ -163,8 +164,6 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     }
 
     private void setBackgroundForClassesDay(Date date) {
-        clearBackgroundResourceForDate(mSelectedDate);
-
         if (date == null || mTimetable == null) {
             return;
         }
@@ -209,9 +208,12 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
             if (timetable == null) {
                 return;
             }
+
             Timetable.Day[] days = timetable.getDays();
             for (Timetable.Day day : days) {
-                setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
+                if (!mSelectedDate.equals(day.getDate().getTime())) {
+                    setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
+                }
             }
             refreshView();
         }

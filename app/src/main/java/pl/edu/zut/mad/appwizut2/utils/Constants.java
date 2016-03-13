@@ -70,5 +70,5 @@ public class Constants {
 
     /** calendar - key for bundle */
     public static final String CURRENT_CLICKED_DATE = "clicked_date";
-    public static final String ARG_DATE = "TDF.Day";
+    public static final String ARG_DATE = "argument_date";
 }
