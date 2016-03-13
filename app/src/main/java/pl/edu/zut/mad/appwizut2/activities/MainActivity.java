@@ -16,9 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.Date;
-import java.util.List;
-
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.fragments.AboutUsFragment;
 import pl.edu.zut.mad.appwizut2.fragments.AnnouncementFragment;
@@ -26,11 +23,6 @@ import pl.edu.zut.mad.appwizut2.fragments.BusTimetableFragment;
 import pl.edu.zut.mad.appwizut2.fragments.CaldroidCustomFragment;
 import pl.edu.zut.mad.appwizut2.fragments.PlanChangesFragment;
 import pl.edu.zut.mad.appwizut2.fragments.TimetableFragment;
-import pl.edu.zut.mad.appwizut2.models.DayParity;
-import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
-import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
-import pl.edu.zut.mad.appwizut2.network.WeekParityLoader;
-import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 
 public class MainActivity extends AppCompatActivity
@@ -92,8 +84,6 @@ public class MainActivity extends AppCompatActivity
     private static final String ACTION_PREFIX_OPEN_FRAGMENT = "pl.edu.zut.mad.appwizut2.OPEN_FRAGMENT.";
 
     private static final String PREF_LAST_DRAWER_FRAGMENT = "last_selected_drawer_fragment";
-    private WeekParityLoader mWeekParityLoader;
-    private DayParity.Parity mTodayParity;
     private NavigationView mNavigationView;
 
     @Override
@@ -139,9 +129,6 @@ public class MainActivity extends AppCompatActivity
             openFragment(item);
             mNavigationView.setCheckedItem(item.id);
         }
-
-        mWeekParityLoader = DataLoadingManager.getInstance(this).getLoader(WeekParityLoader.class);
-        mWeekParityLoader.registerAndLoad(mParityListener);
     }
 
     @Override
@@ -162,12 +149,6 @@ public class MainActivity extends AppCompatActivity
             return findDrawerItemFragmentWithName(action.substring(ACTION_PREFIX_OPEN_FRAGMENT.length()));
         }
         return null;
-    }
-
-    @Override
-    protected void onDestroy() {
-        mWeekParityLoader.unregister(mParityListener);
-        super.onDestroy();
     }
 
     private void openFragment(DrawerFragmentItem item) {
@@ -298,32 +279,4 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        int icon = R.drawable.ic_event_white_48dp;
-        if (mTodayParity == DayParity.Parity.EVEN) {
-            icon = R.drawable.ic_event_even_48dp;
-        } else if (mTodayParity == DayParity.Parity.ODD) {
-            icon = R.drawable.ic_event_uneven_48dp;
-        }
-        menu.findItem(R.id.event_calendar).setIcon(icon);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    BaseDataLoader.DataLoadedListener<List<DayParity>> mParityListener = new BaseDataLoader.DataLoadedListener<List<DayParity>>() {
-        @Override
-        public void onDataLoaded(List<DayParity> dayParities) {
-            if (dayParities == null) {
-                return;
-            }
-            String todayStr = Constants.FOR_EVENTS_FORMATTER.format(new Date());
-            for (DayParity checkedParity : dayParities) {
-                if (todayStr.equals(Constants.FOR_EVENTS_FORMATTER.format(checkedParity.getDate()))) {
-                    mTodayParity = checkedParity.getParity();
-                    break;
-                }
-            }
-            invalidateOptionsMenu();
-        }
-    };
 }

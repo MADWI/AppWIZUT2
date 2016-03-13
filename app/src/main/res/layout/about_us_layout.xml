@@ -110,7 +110,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="mad@zut.edu.pl"
+            android:text="@string/email_contact"
             android:id="@+id/mail_string"
             android:layout_below="@+id/website_string"
             android:layout_marginTop="10dp"
@@ -124,11 +124,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/facebook_page_string"
+            android:layout_below="@id/mail_string"
+            android:text="@string/facebook_page_address"
+            android:autoLink="web"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textSize="25dp"
             android:text="@string/app_info"
             android:id="@+id/appInfo"
             android:textColor="@color/textGray"
-            android:layout_below="@+id/mail_string"
+            android:layout_below="@+id/facebook_page_string"
             android:layout_marginTop="5dp"
             android:layout_alignParentLeft="true"
             android:gravity="left" />
@@ -143,10 +155,32 @@
             android:textColor="@color/textGray" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/repo"
+            android:text="@string/repo"
+            android:textSize="12dp"
+            android:textColor="@color/textGray"
+            android:layout_below="@+id/app_version"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/repo_link"
+            android:text="@string/repo_link"
+            android:autoLink="web"
+            android:textSize="12dp"
+            android:layout_below="@+id/repo"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
             android:id="@+id/legalNoticesTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/app_version"
+            android:layout_below="@+id/repo_link"
             android:textStyle="bold"
             android:text="@string/legalNoticesTitle"
             android:textSize="14sp" />

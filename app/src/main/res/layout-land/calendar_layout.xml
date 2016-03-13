@@ -10,31 +10,16 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="horizontal"
-        android:layout_marginBottom="3dp">  <!-- TODO fix caldroid height (match_parent doesnt work) -->
+        android:layout_marginBottom="3dp">  <!-- TODO fix caldroid height (match_parent doesn't work) -->
     </LinearLayout>
 
     <RelativeLayout android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1" >
 
-        <TextView
-            android:id="@+id/dateTextView"
-            android:textSize="20sp"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/white"
-            android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:textStyle="normal"
-            android:translationZ="3dp"/>
 
         <include
-            layout="@layout/item_list_in_calendar"
-            android:background="@color/calendar_default"
-            android:layout_below="@+id/dateTextView"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"/>
+            layout="@layout/calendar_tabs_layout"/>
 
     </RelativeLayout>
 

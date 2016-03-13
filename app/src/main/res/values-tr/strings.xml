@@ -45,6 +45,7 @@
     <string name="refreshing_body">Lütfen bekleyiniz &#8230;</string>
 
     <string name="pref_default_tab">Default card</string>
+    <string name="tab_last_opened">En son açılmış</string>
     <string name="pref_default_language">Language</string>
 
     <string name="studies_type">Çalışmaların türü:</string>

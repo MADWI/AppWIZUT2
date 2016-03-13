@@ -1,5 +1,8 @@
 package pl.edu.zut.mad.appwizut2.utils;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 public class DateUtils {
     /**
      * Get date of easter for specified day
@@ -26,5 +29,15 @@ public class DateUtils {
 
         //n - month, p - day
         return String.valueOf(n) + " " + String.valueOf(p);
+    }
+
+    /**
+     * Clear time from given Calendar, leaving only date information
+     */
+    public static void stripTime(GregorianCalendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
     }
 }

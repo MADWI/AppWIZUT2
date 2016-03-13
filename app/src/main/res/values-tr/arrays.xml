@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="pref_default_tab_titles">
-        <item>En son açılmış</item>
-        <item>Ders programındaki değişiklikler</item>
-        <item>Takvim</item>
-        <item>İlanlar</item>
-        <item>çizelge</item>
-    </string-array>
     <string-array name="pref_languages_list">
         <item>Sistematik</item>
         <item>Ingilizce </item>

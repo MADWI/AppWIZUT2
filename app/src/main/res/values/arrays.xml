@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="pref_default_tab_titles">
-        <item>Last opened</item>
-        <item>Changes in schedule</item>
-        <item>Calendar</item>
-        <item>Announcements</item>
-        <item>Timetable</item>
-    </string-array>
     <string-array name="pref_languages_list">
         <item>Systematic</item>
         <item>English</item>
