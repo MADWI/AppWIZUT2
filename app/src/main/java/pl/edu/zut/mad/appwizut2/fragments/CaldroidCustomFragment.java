@@ -120,6 +120,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
         setCaldroidListener(caldroidListener);
 
+        changeSelectedDate(mSelectedDate);
+
         return wrapper;
     }
 
