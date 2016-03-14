@@ -212,9 +212,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
             Timetable.Day[] days = timetable.getDays();
             for (Timetable.Day day : days) {
-                if (!mSelectedDate.equals(day.getDate().getTime())) {
-                    setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
-                }
+                setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
             }
             refreshView();
         }
