@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="pref_default_tab_titles">
-        <item>Ostatnio otwarta</item>
-        <item>Zmiany w planie</item>
-        <item>Kalendarz</item>
-        <item>Ogłoszenia</item>
-        <item>Rozkład jazdy</item>
-    </string-array>
     <string-array name="pref_languages_list">
         <item>Systemowy</item>
         <item>Polski</item>

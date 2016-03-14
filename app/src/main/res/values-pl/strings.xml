@@ -50,6 +50,7 @@
     <string name="refreshing_body">Proszę czekać &#8230;</string>
 
     <string name="pref_default_tab">Domyślna karta</string>
+    <string name="tab_last_opened">Ostatnio otwarta</string>
     <string name="pref_default_language">Język</string>
 
     <string name="studies_type">Rodzaj studiów:</string>
