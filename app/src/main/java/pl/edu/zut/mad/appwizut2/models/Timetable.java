@@ -3,6 +3,7 @@ package pl.edu.zut.mad.appwizut2.models;
 
 // TODO: Better names (especially for 'Hour')
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -114,4 +115,49 @@ public class Timetable {
         return null;
     }
 
+    public Hour getUpcomingHour() {
+        GregorianCalendar today = new GregorianCalendar();
+
+        // Get current minute in day
+        int currentMinute = today.get(Calendar.HOUR_OF_DAY) * 60 + today.get(Calendar.MINUTE);
+
+        // Strip time off date
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
+        for (Day day : mDays) {
+            // Day that passed
+            if (day.getDate().before(today)) {
+                continue;
+            }
+
+            // Today
+            if (day.getDate().equals(today)) {
+                // Choose first with non-expired date
+                for (Hour hour : day.getTasks()) {
+                    TimeRange time = hour.getTime();
+                    int activityMinute = (
+                            time.fromHour * 60 +
+                            time.toHour * 60 +
+                            time.fromMinute +
+                            time.toMinute) / 2;
+
+                    if (activityMinute > currentMinute) {
+                        return hour;
+                    }
+                }
+
+                continue;
+            }
+
+            // Next day
+            if (day.getTasks().length != 0) {
+                return day.getTasks()[0];
+            }
+        }
+
+        return null;
+    }
 }

@@ -17,4 +17,7 @@
 
     <!-- Border of tile in sliding puzzle -->
     <dimen name="puzzle_piece_separator_width">2dp</dimen>
+
+
+    <dimen name="widget_padding">8dp</dimen>
 </resources>
