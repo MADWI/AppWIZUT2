@@ -196,6 +196,7 @@ public class MainActivity extends AppCompatActivity
             if (drawerFragmentItem != null) {
                 openFragment(drawerFragmentItem);
                 rememberSelectedItem(drawerFragmentItem);
+                mNavigationView.setCheckedItem(id);
             }
             return true;
         }
