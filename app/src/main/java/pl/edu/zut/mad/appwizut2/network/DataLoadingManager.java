@@ -1,6 +1,7 @@
 package pl.edu.zut.mad.appwizut2.network;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.MainThread;
 import android.support.v4.util.ArrayMap;
 
@@ -73,6 +74,68 @@ public class DataLoadingManager {
     public void dispatchSettingsChanged() {
         for (BaseDataLoader loader : mRegisteredLoaders.values()) {
             loader.onSettingsChanged();
+        }
+    }
+
+    public interface MultipleOneshotLoadCallback {
+        void onLoaded(Object[] results);
+    }
+
+    /**
+     * Load asynchronously data from multiple loaders
+     *
+     * Results will be passed to {@link MultipleOneshotLoadCallback#onLoaded(Object[])},
+     * with every array item corresponding to loader specified here in loaderClasses param.
+     */
+    public void multipleOneshotLoad(Class<? extends BaseDataLoader>[] loaderClasses, final MultipleOneshotLoadCallback callback, boolean requestRefresh) {
+        final int loadersCount = loaderClasses.length;
+
+        // The collected results from loaders
+        final Object[] results = new Object[loadersCount];
+
+        // Single element array containing in only element
+        // a number of loaders that returned result
+        // when this value reached loadersCount we're done
+        final int[] sharedLoadedValue = new int[1];
+
+        for (int i = 0; i < loadersCount; i++) {
+            //
+            final BaseDataLoader loader = getLoader(loaderClasses[i]);
+            final int loaderIndex = i;
+            loader.registerAndLoad(new BaseDataLoader.DataLoadedListener() {
+                boolean mSeenResult;
+
+                @Override
+                public void onDataLoaded(Object o) {
+                    // Run handler only once
+                    if (mSeenResult) {
+                        return;
+                    }
+                    mSeenResult = true;
+
+                    // Unregister from this loader
+                    // Post because this is called from iteration over callbacks list,
+                    // so modifying it right now would cause ConcurrentModificationException
+                    // (All modifications are done from main thread, so no "synchronized")
+                    final BaseDataLoader.DataLoadedListener thisCallback = this;
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            loader.unregister(thisCallback);
+                        }
+                    });
+
+
+                    // Put result in array
+                    results[loaderIndex] = o;
+
+                    // Increment loaded counter
+                    int loaded = ++sharedLoadedValue[0];
+                    if (loaded == loadersCount) {
+                        callback.onLoaded(results);
+                    }
+                }
+            }, requestRefresh);
         }
     }
 }

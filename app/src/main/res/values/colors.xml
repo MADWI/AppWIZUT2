@@ -13,4 +13,9 @@
     <color name="white">#ffffff</color>
     <color name="days_off">#9E9E9E</color>
     <color name="caldroid_middle_gray">#ffffff</color>
+
+    <color name="widget_upper_background">#bf4db8e0</color>
+    <color name="widget_upper_text">#ffffff</color>
+    <color name="widget_lower_background">#bfffffff</color>
+    <color name="widget_lower_text">#000000</color>
 </resources>
