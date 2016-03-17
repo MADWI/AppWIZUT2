@@ -92,6 +92,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
             // Put in widget
             views.setTextViewText(R.id.widget_last_change, text);
+        } else {
+            views.setTextViewText(R.id.widget_last_change, context.getString(R.string.no_data));
         }
 
         // Hide loading indicator
