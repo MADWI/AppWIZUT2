@@ -198,7 +198,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
                 }
             }
             HashMap<String, Object> extraData = getExtraData();
-            extraData.put("EVENTS", mEventCountsOnDays);
+            extraData.put(Constants.EVENTS, mEventCountsOnDays);
 
             refreshView();
         }
@@ -207,6 +207,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     private final BaseDataLoader.DataLoadedListener<Timetable> mScheduleListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
         @Override
         public void onDataLoaded(Timetable timetable) {
+            changeSelectedDate(mSelectedDate);
+
             mTimetable = timetable;
             if (timetable == null) {
                 return;
