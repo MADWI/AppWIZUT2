@@ -120,6 +120,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
 
         setCaldroidListener(caldroidListener);
 
+        changeSelectedDate(mSelectedDate);
+
         return wrapper;
     }
 
@@ -151,12 +153,12 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
     };
 
     private void changeSelectedDate(Date date) {
+        // set default background for day
         clearBackgroundResourceForDate(mSelectedDate);
-        /**
-         * Use previous selected date to color background
-         * depending on day with classes or no
-         */
-        setBackgroundForClassesDay(mSelectedDate);
+
+        // Use previous selected date to color background
+        // depending on day with classes or no
+        setBackgroundForPreviousDay(mSelectedDate);
         setBackgroundResourceForDate(R.color.calendar_selected, date);
         refreshView();
 
@@ -164,7 +166,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
         mSelectedDate = date;
     }
 
-    private void setBackgroundForClassesDay(Date date) {
+    private void setBackgroundForPreviousDay(Date date) {
         if (date == null || mTimetable == null) {
             return;
         }
@@ -177,6 +179,23 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
             }
         }
     }
+
+    private final BaseDataLoader.DataLoadedListener<Timetable> mScheduleListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
+        @Override
+        public void onDataLoaded(Timetable timetable) {
+            mTimetable = timetable;
+            if (timetable == null) {
+                return;
+            }
+
+            Timetable.Day[] days = timetable.getDays();
+            for (Timetable.Day day : days) {
+                setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
+            }
+            setBackgroundResourceForDate(R.color.calendar_selected, mSelectedDate);
+            refreshView();
+        }
+    };
 
     private final BaseDataLoader.DataLoadedListener<List<ListItemContainer>> mEventsDataListener = new BaseDataLoader.DataLoadedListener<List<ListItemContainer>>() {
         @Override
@@ -196,26 +215,8 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
                 }
             }
             HashMap<String, Object> extraData = getExtraData();
-            extraData.put("EVENTS", mEventCountsOnDays);
+            extraData.put(Constants.EVENTS, mEventCountsOnDays);
 
-            refreshView();
-        }
-    };
-
-    private final BaseDataLoader.DataLoadedListener<Timetable> mScheduleListener = new BaseDataLoader.DataLoadedListener<Timetable>() {
-        @Override
-        public void onDataLoaded(Timetable timetable) {
-            mTimetable = timetable;
-            if (timetable == null) {
-                return;
-            }
-
-            Timetable.Day[] days = timetable.getDays();
-            for (Timetable.Day day : days) {
-                if (!mSelectedDate.equals(day.getDate().getTime())) {
-                    setBackgroundResourceForDate(R.color.colorPrimary, day.getDate().getTime());
-                }
-            }
             refreshView();
         }
     };

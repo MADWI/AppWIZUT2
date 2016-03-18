@@ -8,12 +8,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_top_s"
-        android:gravity="center_vertical">
+        android:background="@color/widget_upper_background"
+        android:gravity="center_vertical"
+        android:translationZ="3dp">
+
         <!-- Logo -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="5dp"
             android:id="@+id/widget_mad_logo"
             android:src="@drawable/widget_top_text"/>
 
