@@ -215,7 +215,7 @@ public class CaldroidCustomFragment extends CaldroidFragment implements TabLayou
                 }
             }
             HashMap<String, Object> extraData = getExtraData();
-            extraData.put(Constants.EVENTS, mEventCountsOnDays);
+            extraData.put(Constants.EVENTS_COUNT_KEY, mEventCountsOnDays);
 
             refreshView();
         }
