@@ -62,7 +62,7 @@ public class WidgetProvider extends AppWidgetProvider {
         if (upcomingHour != null) {
             Timetable.TimeRange time = upcomingHour.getTime();
 
-            views.setTextViewText(R.id.widget_upcoming_hour_time, time.fromHour + ":" + time.fromMinute);
+            views.setTextViewText(R.id.widget_upcoming_hour_time, String.format("%d:%02d", time.fromHour, time.fromMinute));
             views.setTextViewText(R.id.widget_upcoming_hour_title, upcomingHour.getSubjectName());
             views.setTextViewText(R.id.widget_upcoming_hour_room, upcomingHour.getRoom());
 
