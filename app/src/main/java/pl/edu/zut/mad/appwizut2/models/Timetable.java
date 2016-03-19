@@ -108,7 +108,7 @@ public class Timetable {
         DateUtils.stripTime(calendar);
 
         for (Day day : mDays) {
-            if (calendar.equals(day.mDate)) {
+            if (calendar.getTimeInMillis() == day.mDate.getTimeInMillis()) {
                 return day;
             }
         }
