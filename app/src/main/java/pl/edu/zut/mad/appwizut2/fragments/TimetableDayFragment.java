@@ -199,7 +199,7 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
         @Override
         public void onBindViewHolder(VH holder, int position) {
             Timetable.Hour hour = mHoursInDay.get(position);
-            holder.timeTextView.setText(hour.getTime().fromHour + ":" + hour.getTime().fromMinute);
+            holder.timeTextView.setText(String.format("%d:%02d", hour.getTime().fromHour, hour.getTime().fromMinute));
 
 
             String subjectName = hour.getSubjectName();

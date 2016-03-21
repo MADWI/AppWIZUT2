@@ -71,5 +71,7 @@ public class Constants {
     /** calendar - key for bundle */
     public static final String CURRENT_CLICKED_DATE = "clicked_date";
     public static final String ARG_DATE = "argument_date";
-    public static final String EVENTS = "EVENTS";
+
+    /** calendar - key for events count */
+    public static final String EVENTS_COUNT_KEY = "events_count";
 }

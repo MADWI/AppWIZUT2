@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import hirondelle.date4j.DateTime;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 import pl.edu.zut.mad.appwizut2.views.EventsIndicatorView;
 
 /**
@@ -34,7 +35,7 @@ public class CaldroidCustomAdapter extends CaldroidGridAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View cellView = convertView;
 
-        HashMap events = (HashMap) extraData.get("EVENTS");
+        HashMap events = (HashMap) extraData.get(Constants.EVENTS_COUNT_KEY);
 
         // For reuse
         if (convertView == null) {
