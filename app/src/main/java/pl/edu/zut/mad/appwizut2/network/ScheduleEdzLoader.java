@@ -75,18 +75,18 @@ public class ScheduleEdzLoader extends BaseDataLoader<Timetable, ScheduleEdzLoad
                 } catch (ParseException e) {
                     throw new JSONException(e.toString());
                 }
-            } else if (row.length() == 9 && forDay != null) {
+            } else if (row.length() == 10 && forDay != null) {
                 // Actual row
-                Matcher startHour = HOUR_PATTERN.matcher(row.getString(1));
-                Matcher endHour = HOUR_PATTERN.matcher(row.getString(2));
+                Matcher startHour = HOUR_PATTERN.matcher(row.getString(2));
+                Matcher endHour = HOUR_PATTERN.matcher(row.getString(3));
                 if (!startHour.find() || !endHour.find()) {
                     throw new JSONException("Unable to match hour");
                 }
                 Timetable.Hour hour = new Timetable.Hour(
-                        row.getString(3),
-                        row.getString(7),
-                        row.getString(5),
-                        row.getString(4),
+                        row.getString(4), // name
+                        row.getString(8), // type
+                        row.getString(6), // room
+                        row.getString(5), // teacher
                         null, // No information about group/parity
                         new Timetable.TimeRange(
                                 Integer.parseInt(startHour.group(1)),
