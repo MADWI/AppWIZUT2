@@ -96,6 +96,27 @@ public class ScheduleEdzLoader extends BaseDataLoader<Timetable, ScheduleEdzLoad
                         )
                 );
                 hoursInDay.add(hour);
+            } else if (row.length() == 9 && forDay != null) {
+                // Actual row in old, 9-column format
+                Matcher startHour = HOUR_PATTERN.matcher(row.getString(1));
+                Matcher endHour = HOUR_PATTERN.matcher(row.getString(2));
+                if (!startHour.find() || !endHour.find()) {
+                    throw new JSONException("Unable to match hour");
+                }
+                Timetable.Hour hour = new Timetable.Hour(
+                        row.getString(3),
+                        row.getString(7),
+                        row.getString(5),
+                        row.getString(4),
+                        null, // No information about group/parity
+                        new Timetable.TimeRange(
+                                Integer.parseInt(startHour.group(1)),
+                                Integer.parseInt(startHour.group(2)),
+                                Integer.parseInt(endHour.group(1)),
+                                Integer.parseInt(endHour.group(2))
+                        )
+                );
+                hoursInDay.add(hour);
             } else {
                 Log.e(TAG, "Unrecognized row");
             }
