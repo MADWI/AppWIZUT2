@@ -1,12 +1,19 @@
 package pl.edu.zut.mad.appwizut2;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
  * Helper service for asynchronously loading data for {@link WidgetProvider}
@@ -67,6 +74,9 @@ public class WidgetUpdateService extends Service implements DataLoadingManager.M
                 results
         );
 
+        // Schedule next update
+        setupNextUpdate(this);
+
         // Stop this service
         mIsLoading = false;
         stopSelf();
@@ -76,5 +86,50 @@ public class WidgetUpdateService extends Service implements DataLoadingManager.M
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+
+    public static void setupNextUpdate(Context context) {
+        // Check if widget is added
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        boolean widgetEnabled = ids != null && ids.length != 0;
+
+        // Get widget update interval from preferences
+        int widgetUpdateInterval;
+        if (widgetEnabled) {
+            // This setting is stored as string because ListPreference uses strings instead of ints
+            widgetUpdateInterval =
+                    Integer.parseInt(
+                            PreferenceManager
+                                    .getDefaultSharedPreferences(context)
+                                    .getString(
+                                            Constants.PREF_WIDGET_UPDATE_INTERVAL,
+                                            String.valueOf(Constants.DEFAULT_WIDGET_UPDATE_INTERVAL)
+                                    )
+                    );
+        } else {
+            widgetUpdateInterval = 0;
+        }
+
+        // Set or clear alarm
+        PendingIntent alarmIntent = PendingIntent.getService(
+                context,
+                0,
+                new Intent(context, WidgetUpdateService.class),
+                0
+        );
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+
+        if (widgetUpdateInterval > 0) {
+            alarmManager.setInexactRepeating(
+                    AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + widgetUpdateInterval,
+                    widgetUpdateInterval,
+                    alarmIntent
+            );
+        } else {
+            alarmManager.cancel(alarmIntent);
+        }
     }
 }

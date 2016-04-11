@@ -74,4 +74,10 @@ public class Constants {
 
     /** calendar - key for events count */
     public static final String EVENTS_COUNT_KEY = "events_count";
+
+    /** Preference name for widget update interval */
+    public static final String PREF_WIDGET_UPDATE_INTERVAL = "widget_update_millis";
+
+    /** Default widget update interval in milliseconds, keep in sync with preferences.xml */
+    public static final int DEFAULT_WIDGET_UPDATE_INTERVAL = 86400000; /* 24h */
 }

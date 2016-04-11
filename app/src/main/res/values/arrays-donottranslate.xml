@@ -40,4 +40,24 @@ This file contains arrays that are not exposed to user and should not be transla
         <item>BI</item>
         <item>IC</item>
     </string-array>
+
+    <!-- Values must match update_interval_descriptions; values in ms -->
+    <string-array name="update_interval_values">
+        <item>0</item> <!-- No auto refresh -->
+        <item>1800000</item> <!-- 1/2 h -->
+        <item>3600000</item> <!-- 1 h -->
+        <item>7200000</item> <!-- 2 h -->
+        <item>14400000</item> <!-- 4 h -->
+        <item>86400000</item> <!-- 24 h -->
+    </string-array>
+
+    <!-- Values must match update_interval_values -->
+    <string-array name="update_interval_descriptions">
+        <item>@string/update_interval_none</item>
+        <item>@string/update_interval_0_5h</item>
+        <item>@string/update_interval_1h</item>
+        <item>@string/update_interval_2h</item>
+        <item>@string/update_interval_4h</item>
+        <item>@string/update_interval_24h</item>
+    </string-array>
 </resources>

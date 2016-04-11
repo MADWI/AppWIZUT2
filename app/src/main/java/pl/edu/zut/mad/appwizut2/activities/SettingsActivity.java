@@ -1,10 +1,12 @@
 package pl.edu.zut.mad.appwizut2.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,7 +18,9 @@ import android.view.LayoutInflater;
 
 import pl.edu.zut.mad.appwizut2.R;
 
+import pl.edu.zut.mad.appwizut2.WidgetUpdateService;
 import pl.edu.zut.mad.appwizut2.fragments.SettingsFragment;
+import pl.edu.zut.mad.appwizut2.utils.Constants;
 
 /**
  * Created by Waldemar on 21.11.2015.
@@ -32,7 +36,9 @@ import pl.edu.zut.mad.appwizut2.fragments.SettingsFragment;
  * API Guide</a> for more information on developing a Settings UI.
  */
 //extends AppCompatActivity
-public class SettingsActivity extends PreferenceActivity  {
+public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private SharedPreferences mSharedPreferences;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -88,6 +94,21 @@ public class SettingsActivity extends PreferenceActivity  {
             }
         });
 
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        super.onDestroy();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (Constants.PREF_WIDGET_UPDATE_INTERVAL.equals(key)) {
+            WidgetUpdateService.setupNextUpdate(SettingsActivity.this);
+        }
     }
 
 //    /**

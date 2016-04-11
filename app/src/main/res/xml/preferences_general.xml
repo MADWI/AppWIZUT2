@@ -44,4 +44,16 @@
             android:key="import_from_edziekanat"
             android:title="@string/import_from_edziekanat" />
 
+    <pl.edu.zut.mad.appwizut2.fragments.MyPreferenceCategory android:title="@string/widget_settings_category" />
+        <ListPreference
+            android:background="@color/colorPrimaryBright"
+            android:key="widget_update_millis"
+            android:title="@string/update_interval"
+            android:summary="%s"
+            android:defaultValue="86400000"
+            android:entries="@array/update_interval_descriptions"
+            android:entryValues="@array/update_interval_values"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null" />
+
 </PreferenceScreen>

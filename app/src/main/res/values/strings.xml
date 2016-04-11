@@ -95,4 +95,13 @@
     <string name="no_events">No events</string>
     <string name="no_classes">No classes</string>
 
+    <string name="widget_settings_category">Widget</string>
+    <string name="update_interval">Widget refresh interval</string>
+    <string name="update_interval_none">Don\'t auto refresh</string>
+    <string name="update_interval_0_5h">Every 30 minutes</string>
+    <string name="update_interval_1h">Every hour</string>
+    <string name="update_interval_2h">Every 2 hours</string>
+    <string name="update_interval_4h">Every 4 hours</string>
+    <string name="update_interval_24h">Every 24 hours</string>
+
 </resources>
