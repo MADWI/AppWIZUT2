@@ -23,6 +23,7 @@ import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
+import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
 
 /**
  * Dialog for selecting line to add, will continue to {@link AddBusChooseStopFragment}
@@ -142,7 +143,7 @@ public class AddBusChooseLineFragment extends DialogFragment {
         @Override
         protected List<BusLine> doInBackground(Void... params) {
             try {
-                String jsonStr = BusTimetableLoader.downloadFromAvrisApi("http://bus.avris.it/api/linie");
+                String jsonStr = BusTimetableLoader.downloadFromAvrisApi(HTTPLinks.BUS + "linie");
                 JSONArray categories = new JSONObject(jsonStr).getJSONArray("categories");
 
                 List<BusLine> result = new ArrayList<>();

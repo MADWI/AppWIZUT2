@@ -27,6 +27,7 @@ import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.models.BusStop;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
+import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
 import pl.edu.zut.mad.appwizut2.utils.MyTextUtils;
 import pl.edu.zut.mad.appwizut2.utils.SelectedBuses;
 
@@ -174,7 +175,7 @@ public class AddBusChooseStopFragment extends DialogFragment {
                 String lineName = arguments.getString(ARG_LINE_NAME);
 
                 // Download json
-                String url = String.format(Locale.US, "http://bus.avris.it/api/linia-%d", lineId);
+                String url = String.format(Locale.US, HTTPLinks.BUS + "linia-%d", lineId);
                 String jsonStr = BusTimetableLoader.downloadFromAvrisApi(url);
                 JSONArray directions = new JSONObject(jsonStr).getJSONArray("directions");
 

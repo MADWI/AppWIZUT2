@@ -5,9 +5,9 @@ package pl.edu.zut.mad.appwizut2.network;
  */
 public class HTTPLinks {
 
-
-    public final static String BUS_STOP_HOURS = "http://bus.avris.it/api/przystanek-%d";
-    public final static String BUS_UPDATE_CHECK = "http://bus.avris.it/api/najnowsza-wersja";
+    public final static String BUS = "https://bus.avris.it/api/";
+    public final static String BUS_STOP_HOURS = BUS + "przystanek-%d";
+    public final static String BUS_UPDATE_CHECK = BUS + "najnowsza-wersja";
 
     /**
      * Zmienna zawierajaca adres strony z danymi o parzystosci tygodnia w formacie
