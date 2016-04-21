@@ -143,7 +143,7 @@ public class AddBusChooseLineFragment extends DialogFragment {
         @Override
         protected List<BusLine> doInBackground(Void... params) {
             try {
-                String jsonStr = BusTimetableLoader.downloadFromAvrisApi(HTTPLinks.BUS + "linie");
+                String jsonStr = BusTimetableLoader.downloadFromAvrisApi(HTTPLinks.BUS_LINES);
                 JSONArray categories = new JSONObject(jsonStr).getJSONArray("categories");
 
                 List<BusLine> result = new ArrayList<>();

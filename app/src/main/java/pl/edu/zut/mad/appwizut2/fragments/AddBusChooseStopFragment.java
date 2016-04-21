@@ -175,7 +175,7 @@ public class AddBusChooseStopFragment extends DialogFragment {
                 String lineName = arguments.getString(ARG_LINE_NAME);
 
                 // Download json
-                String url = String.format(Locale.US, HTTPLinks.BUS + "linia-%d", lineId);
+                String url = String.format(Locale.US, HTTPLinks.BUS_LINE_ID, lineId);
                 String jsonStr = BusTimetableLoader.downloadFromAvrisApi(url);
                 JSONArray directions = new JSONObject(jsonStr).getJSONArray("directions");
 
