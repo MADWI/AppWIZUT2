@@ -119,7 +119,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 MainActivity.getIntentToOpenWithTab(context, MainActivity.TAB_CHANGES_IN_SCHEDULE),
                 0
         ));
-        views.setOnClickPendingIntent(R.id.refresh_button, PendingIntent.getService(
+        PendingIntent refreshPendingIntent = PendingIntent.getService(
                 context,
                 0,
                 new Intent(
@@ -129,7 +129,9 @@ public class WidgetProvider extends AppWidgetProvider {
                         WidgetUpdateService.class
                 ),
                 0
-        ));
+        );
+        views.setOnClickPendingIntent(R.id.refresh_button, refreshPendingIntent);
+        views.setOnClickPendingIntent(R.id.loading_indicator, refreshPendingIntent);
 
         // Publish result
         appWidgetManager.updateAppWidget(new ComponentName(context, WidgetProvider.class), views);
