@@ -1,5 +1,7 @@
 package pl.edu.zut.mad.appwizut2.fragments;
 
+import android.graphics.Canvas;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -295,6 +297,20 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
                         }
                     });
             mSnackbar.show();
+        }
+
+        @Override
+        public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    boolean isRaised = isCurrentlyActive || dY != 0;
+                    viewHolder.itemView.animate()
+                            .setDuration(getResources().getInteger(R.integer.card_drag_raise_duration))
+                            .translationZ(isRaised ? getResources().getDimension(R.dimen.card_drag_raise_translate_z) : 0f)
+                            .start();
+                }
+            }
         }
     }
 }

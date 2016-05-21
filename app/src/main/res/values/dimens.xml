@@ -20,4 +20,13 @@
 
 
     <dimen name="widget_padding">8dp</dimen>
+
+    <!-- Card dragging -->
+    <!-- Duration of card raising animation [ms] -->
+    <integer name="card_drag_raise_duration">100</integer>
+    <!--
+    https://www.google.com/design/spec/what-is-material/elevation-shadows.html#elevation-shadows-elevation-android-
+    6dp = 8dp (Card (when picked up)) - 2dp (Card (resting elevation))
+    -->
+    <dimen name="card_drag_raise_translate_z">6dp</dimen>
 </resources>
