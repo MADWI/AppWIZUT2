@@ -7,6 +7,9 @@
     <dimen name="activity_vertical_margin">8dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
+    <!-- Margin at bottom of (scrolled to bottom) list under FAB -->
+    <dimen name="list_margin_bottom_for_fab">80dp</dimen>
+
     <!-- Cards in schedules (on Android 4 where we can't clip card) -->
     <dimen name="schedule_card_corner_radius">10dp</dimen>
     <dimen name="schedule_card_left_margin">10dp</dimen>

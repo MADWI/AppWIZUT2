@@ -2,6 +2,8 @@ package pl.edu.zut.mad.appwizut2.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,8 +16,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +50,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
     private BusTimetableLoader mLoader;
     private final BusAdapter mAdapter = new BusAdapter();
     private Snackbar mSnackbar;
+    private FloatingActionButton mFab;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +77,16 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
         ItemTouchHelper touchHelper = new ItemTouchHelper(new TouchHelperCallback());
         touchHelper.attachToRecyclerView(mRecyclerView);
 
+        // Add FAB
+        mFab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AddBusChooseLineFragment().show(getFragmentManager(), "AddBusChoLine");
+            }
+        });
+        mFab.show();
+
         // Create and register loader
         mLoader = DataLoadingManager.getInstance(getContext()).getLoader(BusTimetableLoader.class);
         mLoader.registerAndLoad(this);
@@ -80,6 +95,13 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
 
     @Override
     public void onDestroyView() {
+        // Remove FAB
+        if (mFab != null) {
+            mFab.setOnClickListener(null);
+            mFab.hide();
+            mFab = null;
+        }
+
         // Unregister from loader
         mLoader.unregister(this);
 
@@ -88,20 +110,6 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
             mSnackbar.dismiss();
         }
         super.onDestroyView();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.bus_timetable, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.add_bus) {
-            new AddBusChooseLineFragment().show(getFragmentManager(), "AddBusChoLine");
-            return true;
-        }
-        return false;
     }
 
     public void onRefresh(){
