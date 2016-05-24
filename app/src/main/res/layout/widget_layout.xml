@@ -10,7 +10,11 @@
         android:layout_height="wrap_content"
         android:background="@color/widget_upper_background"
         android:gravity="center_vertical"
-        android:translationZ="3dp">
+        android:translationZ="3dp"
+        android:paddingLeft="0dp"
+        android:paddingStart="0dp"
+        android:paddingRight="@dimen/widget_refresh_button_margin"
+        android:paddingEnd="@dimen/widget_refresh_button_margin">
 
         <!-- Logo -->
         <ImageView
@@ -28,19 +32,22 @@
 
         <!-- Loading indicator -->
         <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/widget_refresh_button_size"
+            android:layout_height="@dimen/widget_refresh_button_size"
             android:id="@+id/loading_indicator"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+            android:visibility="gone"
+            android:indeterminateOnly="true"
+            android:indeterminateDrawable="@drawable/bar_refresh_running"
+            android:indeterminateDuration="@integer/widget_refresh_anim_duration"/>
 
         <!-- Refresh button -->
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/widget_refresh_button_size"
+            android:layout_height="@dimen/widget_refresh_button_size"
             android:id="@+id/refresh_button"
-            android:src="@drawable/bar_refresh"/>
+            android:src="@drawable/bar_refresh"
+            android:layout_margin="0dp"
+            />
 
     </LinearLayout>
 

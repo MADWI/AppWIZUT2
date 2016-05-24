@@ -97,7 +97,8 @@ public class WidgetProvider extends AppWidgetProvider {
         }
 
         // Hide loading indicator
-        views.setViewVisibility(R.id.loading_indicator, View.INVISIBLE);
+        views.setViewVisibility(R.id.refresh_button, View.VISIBLE);
+        views.setViewVisibility(R.id.loading_indicator, View.GONE);
 
         // Set actions
         views.setOnClickPendingIntent(R.id.widget_mad_logo, PendingIntent.getActivity(
@@ -118,7 +119,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 MainActivity.getIntentToOpenWithTab(context, MainActivity.TAB_CHANGES_IN_SCHEDULE),
                 0
         ));
-        views.setOnClickPendingIntent(R.id.refresh_button, PendingIntent.getService(
+        PendingIntent refreshPendingIntent = PendingIntent.getService(
                 context,
                 0,
                 new Intent(
@@ -128,7 +129,9 @@ public class WidgetProvider extends AppWidgetProvider {
                         WidgetUpdateService.class
                 ),
                 0
-        ));
+        );
+        views.setOnClickPendingIntent(R.id.refresh_button, refreshPendingIntent);
+        views.setOnClickPendingIntent(R.id.loading_indicator, refreshPendingIntent);
 
         // Publish result
         appWidgetManager.updateAppWidget(new ComponentName(context, WidgetProvider.class), views);
@@ -138,6 +141,7 @@ public class WidgetProvider extends AppWidgetProvider {
     static void showWidgetLoading(Context context, AppWidgetManager appWidgetManager) {
         // Create RemoteViews showing loading indicator
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+        views.setViewVisibility(R.id.refresh_button, View.GONE);
         views.setViewVisibility(R.id.loading_indicator, View.VISIBLE);
 
         // Partially update app widget
