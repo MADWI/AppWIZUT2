@@ -38,6 +38,8 @@
         <item>WED</item>
         <item>THU</item>
         <item>FRI</item>
+        <item>SAT</item>
+        <item>SUN</item>
     </string-array>
     <string name="timetable_unavailable">Cannot display the schedule in the app</string>
     <string name="timetable_not_configured">You have not chosen a group</string>
