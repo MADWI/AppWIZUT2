@@ -37,6 +37,8 @@
         <item>ŚR</item>
         <item>CZW</item>
         <item>PT</item>
+        <item>SOB</item>
+        <item>NIEDZ</item>
     </string-array>
     <string name="timetable_unavailable">Nie możemy pokazać tego planu w aplikacji</string>
     <string name="timetable_not_configured">Nie wybrałeś żadnej grupy</string>

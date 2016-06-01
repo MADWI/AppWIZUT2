@@ -13,10 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
@@ -26,7 +24,6 @@ import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.ScheduleCommonLoader;
 import pl.edu.zut.mad.appwizut2.utils.Constants;
-import pl.edu.zut.mad.appwizut2.utils.DateUtils;
 
 /**
  * Schedule for a particular day
@@ -64,6 +61,15 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
         outState.putLong(Constants.ARG_DATE, mDate.getTime());
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            // TODO: Show this in UI?
+            Log.v(TAG, "Showing schedule for day: " + Constants.FORMATTER.format(mDate));
+        }
+    }
+
     private void putDataInView() {
         if (mTimetable == null) {
             return;
@@ -75,8 +81,6 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
             mHoursInDay = Collections.emptyList();
             mNoClassesMessage.setVisibility(View.VISIBLE);
         } else {
-            // TODO: Show this in UI?
-            Log.v(TAG, "About to display schedule for day: " + Constants.FORMATTER.format(mDate));
             mHoursInDay = Arrays.asList(scheduleDay.getTasks());
             mNoClassesMessage.setVisibility(View.GONE);
         }
@@ -132,33 +136,6 @@ public class TimetableDayFragment extends Fragment implements BaseDataLoader.Dat
         TimetableDayFragment fragment = new TimetableDayFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    /**
-     * Create instance of this fragment to show schedule for specified day of week
-     */
-    public static TimetableDayFragment newInstance(int dayOfWeek) {
-        GregorianCalendar calendar = new GregorianCalendar();
-        DateUtils.stripTime(calendar);
-
-        int todayWeekDay = calendar.get(Calendar.DAY_OF_WEEK);
-
-        // Rewind calendar to last monday
-        int daysFromMonday = todayWeekDay - Calendar.MONDAY;
-        if (daysFromMonday < 0) {
-            daysFromMonday += 7;
-        }
-        calendar.add(Calendar.DATE, -daysFromMonday);
-
-        // If we're in weekend skip to next week
-        if (todayWeekDay == Calendar.SATURDAY || todayWeekDay == Calendar.SUNDAY) {
-            calendar.add(Calendar.DATE, 7);
-        }
-
-        // Now move forward to requested day
-        calendar.add(Calendar.DATE, dayOfWeek - Calendar.MONDAY);
-
-        return newInstance(calendar.getTime());
     }
 
     @Override

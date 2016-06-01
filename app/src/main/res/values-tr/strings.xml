@@ -32,6 +32,9 @@
         <item>Çar</item>
         <item>Per</item>
         <item>Cum</item>
+        <!-- TODO: Review and shorten, these two are from Google Translate -->
+        <item>Cumartesi</item>
+        <item>Pazar</item>
     </string-array>
     <string name="timetable_unavailable">Görüntülenemiyor takvimi app</string>
     <string name="timetable_not_configured">Hiçbir grup</string>
