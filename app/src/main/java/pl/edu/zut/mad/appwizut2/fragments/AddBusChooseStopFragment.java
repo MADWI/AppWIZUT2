@@ -30,6 +30,7 @@ import pl.edu.zut.mad.appwizut2.network.DataLoadingManager;
 import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
 import pl.edu.zut.mad.appwizut2.utils.MyTextUtils;
 import pl.edu.zut.mad.appwizut2.utils.SelectedBuses;
+import pl.edu.zut.mad.appwizut2.views.NonShrinkingRecyclerView;
 
 /**
  * Dialog for selecting bus stop on line, opened after user chooses line in {@link AddBusChooseLineFragment}
@@ -58,7 +59,7 @@ public class AddBusChooseStopFragment extends DialogFragment {
             dismissAllowingStateLoss();
             return null;
         }
-        mRecyclerView = new RecyclerView(getContext());
+        mRecyclerView = new NonShrinkingRecyclerView(getContext());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
         return mRecyclerView;

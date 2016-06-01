@@ -24,6 +24,7 @@ import java.util.List;
 import pl.edu.zut.mad.appwizut2.R;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
 import pl.edu.zut.mad.appwizut2.network.HTTPLinks;
+import pl.edu.zut.mad.appwizut2.views.NonShrinkingRecyclerView;
 
 /**
  * Dialog for selecting line to add, will continue to {@link AddBusChooseStopFragment}
@@ -48,7 +49,7 @@ public class AddBusChooseLineFragment extends DialogFragment {
             dismissAllowingStateLoss();
             return null;
         }
-        mRecyclerView = new RecyclerView(getContext());
+        mRecyclerView = new NonShrinkingRecyclerView(getContext());
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
         mRecyclerView.setAdapter(mAdapter);
         return mRecyclerView;
