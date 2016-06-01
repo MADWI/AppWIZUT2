@@ -1,11 +1,15 @@
 package pl.edu.zut.mad.appwizut2.activities;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -58,6 +62,10 @@ public class MainActivity extends AppCompatActivity
             new DrawerFragmentItem(R.id.public_transport, TAB_BUS_TIMETABLE, BusTimetableFragment.class)
     };
 
+    private static final int MSG_HIDE_FAB = 1;
+    private FloatingActionButton mFab;
+    private MyHandler mHandler;
+
     /**
      * Get Intent that can be used to open MainActivity and select the specified tab
      *
@@ -93,6 +101,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mHandler = new MyHandler();
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -280,4 +290,32 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Get FAB and inform MainActivity to not hide it now (but caller still has to show() it)
+     */
+    public FloatingActionButton getFab() {
+        mHandler.removeMessages(MSG_HIDE_FAB);
+        return mFab;
+    }
+
+    /**
+     * Unregister FAB from fragment and hide it if no other fragment requests it
+     * in next event loop iteration
+     */
+    public void releaseFab() {
+        mFab.setOnClickListener(null);
+        mHandler.sendEmptyMessage(MSG_HIDE_FAB);
+    }
+
+    @SuppressLint("HandlerLeak") // We won't post delayed messages, all messages are processed at next event loop iteration
+    private class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == MSG_HIDE_FAB) {
+                if (mFab != null) {
+                    mFab.hide();
+                }
+            }
+        }
+    }
 }
