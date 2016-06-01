@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,15 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +25,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.edu.zut.mad.appwizut2.R;
+import pl.edu.zut.mad.appwizut2.activities.MainActivity;
 import pl.edu.zut.mad.appwizut2.models.BusHours;
 import pl.edu.zut.mad.appwizut2.network.BaseDataLoader;
 import pl.edu.zut.mad.appwizut2.network.BusTimetableLoader;
@@ -52,7 +47,6 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
     private BusTimetableLoader mLoader;
     private final BusAdapter mAdapter = new BusAdapter();
     private Snackbar mSnackbar;
-    private FloatingActionButton mFab;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,14 +74,15 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
         touchHelper.attachToRecyclerView(mRecyclerView);
 
         // Add FAB
-        mFab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = ((MainActivity) getActivity()).getFab();
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new AddBusChooseLineFragment().show(getFragmentManager(), "AddBusChoLine");
             }
         });
-        mFab.show();
+        fab.setContentDescription(getResources().getString(R.string.add_bus));
+        fab.show();
 
         // Create and register loader
         mLoader = DataLoadingManager.getInstance(getContext()).getLoader(BusTimetableLoader.class);
@@ -98,11 +93,7 @@ public class BusTimetableFragment extends Fragment implements SwipeRefreshLayout
     @Override
     public void onDestroyView() {
         // Remove FAB
-        if (mFab != null) {
-            mFab.setOnClickListener(null);
-            mFab.hide();
-            mFab = null;
-        }
+        ((MainActivity) getActivity()).releaseFab();
 
         // Unregister from loader
         mLoader.unregister(this);
