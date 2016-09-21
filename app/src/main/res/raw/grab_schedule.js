@@ -1,6 +1,5 @@
 // This script is loaded into "https://edziekanat.zut.edu.pl/*"
 // In WebView in WebPlanActivity
-var flag = 0;
 (function () {
 // Are we on print table page?
 
