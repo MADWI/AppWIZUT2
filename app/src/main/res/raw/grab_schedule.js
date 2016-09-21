@@ -1,7 +1,9 @@
 // This script is loaded into "https://edziekanat.zut.edu.pl/*"
 // In WebView in WebPlanActivity
+var flag = 0;
 (function () {
 // Are we on print table page?
+
 if (location.pathname.indexOf("PodzGodzDruk") != -1) {
     // Pass the table to Java code
     var table = document.querySelector('table');
@@ -19,6 +21,7 @@ if (location.pathname.indexOf("PodzGodzDruk") != -1) {
     location.href = 'js-grabbed-table:' + encodeURI(JSON.stringify(tableDump));
 } else {
     // Are we on table selection page? (This page has "Semestralnie" checkbox)
+
     var semestralnie_checkbox = document.querySelector('input[id$="_rbJak_2"]');
     if (semestralnie_checkbox) {
         // Found checkbox
@@ -26,12 +29,15 @@ if (location.pathname.indexOf("PodzGodzDruk") != -1) {
             // Not checked, click it
             semestralnie_checkbox.click();
         } else {
-            // Click on "Drukuj" ("Print")
-            // Overwrite window.open to load content in same WebView
-            window.open = function (url) {
-                location.href = url;
-            };
-            document.querySelector('input[id$="_btDrukuj"]').onclick();
+            var semester = document.querySelector('span[id$="_lblData"]')
+            if(semester.textContent != "od: 30.09.2016 do: 26.02.2017") {
+                 var next_button = document.querySelector('input[id$="_butN"]').click();
+            } else {
+                 window.open = function (url) {
+                     location.href = url;
+                  };
+                 document.querySelector('input[id$="_btDrukuj"]').onclick();
+            }
         }
     } else {
         var login_error = document.querySelector('.login_criteria ~ * .error_label');

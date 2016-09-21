@@ -25,7 +25,7 @@ def getCheckedOutGitCommitHash() {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "pl.edu.zut.mad.appwizut2"
